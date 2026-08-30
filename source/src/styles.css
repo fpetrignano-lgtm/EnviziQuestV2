@@ -528,7 +528,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .compareRowTop{padding:14px 16px 10px;display:flex;flex-direction:column;gap:10px;flex-shrink:0}
 .compareDetail{font-size:clamp(26px,2.2vw,32px);line-height:1.5;color:#8ab3a5;margin:0}
 /* RIGA 2 — immagine ridotta */
-.compareImg{position:relative;width:100%;height:clamp(160px,22vh,260px);flex-shrink:0;overflow:hidden;margin-top:14px}
+.compareImg{position:relative;width:100%;height:clamp(240px,33vh,390px);flex-shrink:0;overflow:hidden;margin-top:14px}
 .compareImg img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:.22s}
 .compareCard:hover .compareImg img{transform:scale(1.04)}
 .compareImgOverlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(4,14,10,.5);opacity:0;transition:.18s}
