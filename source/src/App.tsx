@@ -2387,26 +2387,6 @@ export default function Home(){
           </div>;
         })}
       </div>
-      {/* riga PoC — solo colonna 2 (warning), solo missione 0 */}
-      {m0&&<div className="compareGrid compareGridSolutions">
-        <div/>
-        <div className="comparePocBox">
-          <span className="comparePocBoxTag">{isIt?"Envizi Proof of Concept":"Envizi Proof of Concept"}</span>
-          <p className="comparePocBoxDetail">{isIt?"Verifica con un test drive la copertura dei tuoi bisogni.":"Verify your needs coverage with a test drive."}</p>
-        </div>
-        <div/>
-      </div>}
-      {/* riga box soluzioni — stessa griglia 3 col, allineata sotto */}
-      {options.some(o=>(o as any).solutionTag)&&<div className="compareGrid compareGridSolutions">
-        {options.map(opt=>(
-          <div key={opt.key}>
-            {(opt as any).solutionTag&&<div className="compareSolutionBox">
-              <span className="compareSolutionBoxTag">{(opt as any).solutionTag}</span>
-              <p className="compareSolutionBoxDetail">{(opt as any).solutionDetail}</p>
-            </div>}
-          </div>
-        ))}
-      </div>}
     </section></main>;
   }
 
