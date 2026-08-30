@@ -1160,7 +1160,7 @@ export default function Home(){
     const frHighMaybe=frScore>=30;
     const frHighlight=frHighMaybe;
     const m5outcome=missionOutcomes[5];
-    const decisionTaken=m5outcome?(isIt?{positive:"Envizi ESG Reporting Frameworks con gestione integrata dei requisiti",warning:"Tool documentale con template framework",critical:"File locali aggiornati manualmente"}[m5outcome]:{positive:"Envizi ESG Reporting Frameworks with integrated requirements management",warning:"Document management tool with framework templates",critical:"Manually updated local files"}[m5outcome]):null;
+    const decisionTaken=m5outcome?(isIt?{positive:"Un ESG Reporting Frameworks con gestione integrata dei requisiti",warning:"Tool documentale con template framework",critical:"File locali aggiornati manualmente"}[m5outcome]:{positive:"An ESG Reporting Frameworks with integrated requirements management",warning:"Document management tool with framework templates",critical:"Manually updated local files"}[m5outcome]):null;
     const decisionImg=m5outcome==="positive"?"./framework-envizi.png":m5outcome==="warning"?"./framework-intermediate.png":"./framework-asis.png";
     const decisionColor=m5outcome==="positive"?"#39efb4":m5outcome==="warning"?"#ffc07c":"#ff7777";
     const highReqs=FR_REQUIREMENTS.filter(r=>frRatings[r.id]==="high");
