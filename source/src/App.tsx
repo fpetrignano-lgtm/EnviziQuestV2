@@ -390,39 +390,39 @@ export default function Home(){
     {labelIt:"Riepilogo finale",labelEn:"Final summary",screen:"summary",icon:"✓"},
   ];
   if(screen==="chapterMap"&&profile)return(
-    <main style={{display:"flex",flexDirection:"column",minHeight:"100dvh",background:"var(--bg)",overflowY:"auto"}}>
+    <main style={{display:"flex",flexDirection:"column",height:"100dvh",background:"var(--bg)",overflow:"hidden"}}>
       <header className="missionNav missionNavTrust">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL QUEST</div>
         {renderTrustBar()}
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
-      <section style={{display:"flex",flexDirection:"row",alignItems:"flex-start",padding:"40px 40px 60px",gap:"48px",width:"100%",boxSizing:"border-box"}}>
+      <section style={{flex:1,display:"flex",flexDirection:"row",alignItems:"stretch",padding:"24px 32px 20px",gap:"36px",overflow:"hidden",boxSizing:"border-box"}}>
         {/* colonna sinistra: foto profilo */}
-        <div style={{flexShrink:0,display:"flex",flexDirection:"column",alignItems:"center",gap:"16px",paddingTop:"8px"}}>
-          <img src={`./characters/${profile}-neutral.png`} alt={name} style={{width:"240px",height:"240px",objectFit:"contain",borderRadius:"50%",display:"block"}}/>
-          <span style={{fontWeight:700,fontSize:"20px",textAlign:"center",lineHeight:1.3}}>{name}<br/><small style={{fontWeight:400,fontSize:"14px",color:"var(--muted)"}}>ESG Manager</small></span>
+        <div style={{flexShrink:0,width:"200px",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:"12px"}}>
+          <img src={`./characters/${profile}-neutral.png`} alt={name} style={{width:"200px",height:"200px",objectFit:"contain",borderRadius:"50%",display:"block"}}/>
+          <span style={{fontWeight:700,fontSize:"16px",textAlign:"center",lineHeight:1.3}}>{name}<br/><small style={{fontWeight:400,fontSize:"12px",color:"var(--muted)"}}>ESG Manager</small></span>
         </div>
-        {/* colonna destra: titolo + griglia */}
-        <div style={{flex:1,display:"flex",flexDirection:"column",gap:"32px"}}>
+        {/* colonna destra: titolo + griglia a due colonne */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",gap:"16px",minWidth:0}}>
           <div>
-            <small style={{letterSpacing:".18em",fontSize:"22px",color:"var(--muted)",textTransform:"uppercase",fontWeight:700}}>{language==="it"?"ENVIZI QUEST · MAPPA DEI CAPITOLI":"ENVIZI QUEST · CHAPTER MAP"}</small>
-            <h1 style={{fontSize:"clamp(48px,5vw,80px)",fontWeight:800,margin:"12px 0 8px",lineHeight:1.15}}>{language==="it"?"L'Esperienza Envizi Quest":"The Envizi Quest Experience"}</h1>
-            <p style={{color:"var(--muted)",fontSize:"30px",lineHeight:1.6,margin:0}}>{language==="it"?"Salta direttamente al capitolo che ti interessa o procedi dall'inizio.":"Jump directly to the chapter you want or proceed from the beginning."}</p>
+            <small style={{letterSpacing:".14em",fontSize:"12px",color:"var(--muted)",textTransform:"uppercase",fontWeight:700}}>{language==="it"?"ENVIZI QUEST · MAPPA DEI CAPITOLI":"ENVIZI QUEST · CHAPTER MAP"}</small>
+            <h1 style={{fontSize:"clamp(28px,3.5vw,52px)",fontWeight:800,margin:"6px 0 4px",lineHeight:1.1}}>{language==="it"?"L'Esperienza Envizi Quest":"The Envizi Quest Experience"}</h1>
+            <p style={{color:"var(--muted)",fontSize:"15px",lineHeight:1.5,margin:0}}>{language==="it"?"Salta direttamente al capitolo che ti interessa o procedi dall'inizio.":"Jump directly to the chapter you want or proceed from the beginning."}</p>
           </div>
-          <div style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}}>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"8px",flex:1,alignContent:"start"}}>
             {CHAPTER_MAP_ITEMS.map((ch)=>(
-              <button key={ch.screen} onClick={()=>setScreen(ch.screen)} style={{display:"flex",alignItems:"center",gap:"24px",background:"var(--surface,#1a1a2e)",border:"1px solid var(--border,rgba(255,255,255,.1))",borderRadius:"12px",padding:"16px 28px",cursor:"pointer",textAlign:"left",transition:"border-color .15s",color:"inherit",width:"100%"}}
+              <button key={ch.screen} onClick={()=>setScreen(ch.screen)} style={{display:"flex",alignItems:"center",gap:"14px",background:"var(--surface,#1a1a2e)",border:"1px solid var(--border,rgba(255,255,255,.1))",borderRadius:"10px",padding:"12px 16px",cursor:"pointer",textAlign:"left",transition:"border-color .15s",color:"inherit"}}
                 onMouseEnter={e=>(e.currentTarget.style.borderColor="var(--accent,#39efb4)")}
                 onMouseLeave={e=>(e.currentTarget.style.borderColor="var(--border,rgba(255,255,255,.1))")}>
-                <span style={{minWidth:"52px",height:"52px",borderRadius:"10px",background:"var(--accent,#39efb4)",color:"#000",fontWeight:800,fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",letterSpacing:".04em",flexShrink:0}}>{ch.icon}</span>
-                <span style={{fontWeight:600,fontSize:"26px",lineHeight:1.3}}>{language==="it"?ch.labelIt:ch.labelEn}</span>
+                <span style={{minWidth:"40px",height:"40px",borderRadius:"8px",background:"var(--accent,#39efb4)",color:"#000",fontWeight:800,fontSize:"14px",display:"flex",alignItems:"center",justifyContent:"center",letterSpacing:".04em",flexShrink:0}}>{ch.icon}</span>
+                <span style={{fontWeight:600,fontSize:"15px",lineHeight:1.3}}>{language==="it"?ch.labelIt:ch.labelEn}</span>
               </button>
             ))}
           </div>
-          <div style={{display:"flex",gap:"16px"}}>
-            <button className="introBackBtn" style={{fontSize:"26px",padding:"14px 28px"}} onClick={()=>setScreen("approach")}>← {language==="it"?"Indietro":"Back"}</button>
-            <button className="actionButton approachIntroCta" style={{fontSize:"26px",padding:"18px 40px"}} onClick={()=>setScreen("questIntro")}>{language==="it"?"Inizia dall'inizio":"Start from the beginning"} <b>→</b></button>
+          <div style={{display:"flex",gap:"12px",paddingBottom:"4px"}}>
+            <button className="introBackBtn" onClick={()=>setScreen("approach")}>← {language==="it"?"Indietro":"Back"}</button>
+            <button className="actionButton approachIntroCta" onClick={()=>setScreen("questIntro")}>{language==="it"?"Inizia dall'inizio":"Start from the beginning"} <b>→</b></button>
           </div>
         </div>
       </section>
