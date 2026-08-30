@@ -410,13 +410,13 @@ export default function Home(){
             <h1 style={{fontSize:"clamp(48px,5vw,80px)",fontWeight:800,margin:"12px 0 8px",lineHeight:1.15}}>{language==="it"?"L'Esperienza Envizi Quest":"The Envizi Quest Experience"}</h1>
             <p style={{color:"var(--muted)",fontSize:"30px",lineHeight:1.6,margin:0}}>{language==="it"?"Salta direttamente al capitolo che ti interessa o procedi dall'inizio.":"Jump directly to the chapter you want or proceed from the beginning."}</p>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(320px,1fr))",gap:"18px",width:"100%"}}>
+          <div style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}}>
             {CHAPTER_MAP_ITEMS.map((ch)=>(
-              <button key={ch.screen} onClick={()=>setScreen(ch.screen)} style={{display:"flex",alignItems:"center",gap:"20px",background:"var(--surface,#1a1a2e)",border:"1px solid var(--border,rgba(255,255,255,.1))",borderRadius:"14px",padding:"20px 24px",cursor:"pointer",textAlign:"left",transition:"border-color .15s",color:"inherit"}}
+              <button key={ch.screen} onClick={()=>setScreen(ch.screen)} style={{display:"flex",alignItems:"center",gap:"24px",background:"var(--surface,#1a1a2e)",border:"1px solid var(--border,rgba(255,255,255,.1))",borderRadius:"12px",padding:"16px 28px",cursor:"pointer",textAlign:"left",transition:"border-color .15s",color:"inherit",width:"100%"}}
                 onMouseEnter={e=>(e.currentTarget.style.borderColor="var(--accent,#39efb4)")}
                 onMouseLeave={e=>(e.currentTarget.style.borderColor="var(--border,rgba(255,255,255,.1))")}>
                 <span style={{minWidth:"52px",height:"52px",borderRadius:"10px",background:"var(--accent,#39efb4)",color:"#000",fontWeight:800,fontSize:"20px",display:"flex",alignItems:"center",justifyContent:"center",letterSpacing:".04em",flexShrink:0}}>{ch.icon}</span>
-                <span style={{fontWeight:600,fontSize:"26px",lineHeight:1.35}}>{language==="it"?ch.labelIt:ch.labelEn}</span>
+                <span style={{fontWeight:600,fontSize:"26px",lineHeight:1.3}}>{language==="it"?ch.labelIt:ch.labelEn}</span>
               </button>
             ))}
           </div>
