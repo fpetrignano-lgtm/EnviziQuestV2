@@ -1615,16 +1615,16 @@ export default function Home(){
               <div className="csrdAlert csrdAlertDone">
                 <span className="csrdAlertIcon">⚠</span>
                 <div className="csrdAlertBody">
-                  <strong>{isIt?"Azienda soggetta a CSRD":"Company subject to CSRD"}</strong>
-                  <span>{isIt?"Oltre 1.000 dipendenti e €450M di fatturato.":"Over 1,000 employees and €450M revenue."}</span>
+                  <strong>{isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered."}</strong>
+                  <span>{isIt?"La valutazione deve essere verificata considerando perimetro societario, consolidamento, fatturato netto e specificità dell'organizzazione.":"This assessment should be verified considering corporate perimeter, consolidation, net revenue and organisational specifics."}</span>
                 </div>
               </div>
             ):(
               <div className="csrdAlert csrdAlertOk csrdAlertDone">
                 <span className="csrdAlertIcon">ℹ</span>
                 <div className="csrdAlertBody">
-                  <strong>{isIt?"Azienda non soggetta a CSRD":"Company not subject to CSRD"}</strong>
-                  <span>{isIt?"Meno di 1.000 dipendenti o fatturato sotto €450M.":"Under 1,000 employees or revenue below €450M."}</span>
+                  <strong>{isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered."}</strong>
+                  <span>{isIt?"La valutazione deve essere verificata considerando perimetro societario, consolidamento, fatturato netto e specificità dell'organizzazione.":"This assessment should be verified considering corporate perimeter, consolidation, net revenue and organisational specifics."}</span>
                 </div>
               </div>
             );
@@ -1636,8 +1636,8 @@ export default function Home(){
                 <span className="csrdAlertIcon">{csrdPendingChoice?"⚠":"ℹ"}</span>
                 <div className="csrdAlertBody">
                   <strong>{csrdPendingChoice
-                    ?(isIt?"Azienda soggetta a CSRD":"Company subject to CSRD")
-                    :(isIt?"Azienda non soggetta a CSRD":"Company not subject to CSRD")}
+                    ?(isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered.")
+                    :(isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered.")}
                   </strong>
                   <span>{isIt?"Sicuro?":"Are you sure?"}</span>
                 </div>
@@ -1653,7 +1653,7 @@ export default function Home(){
             <div className="csrdAlert">
               <span className="csrdAlertIcon">⚠</span>
               <div className="csrdAlertBody">
-                <strong>{isIt?"Azienda soggetta a CSRD":"Company subject to CSRD"}</strong>
+                <strong>{isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered."}</strong>
                 <span>{isIt?"Oltre 1.000 dipendenti e €450M di fatturato.":"Over 1,000 employees and €450M revenue."}</span>
               </div>
               <div className="csrdAlertBtns">
@@ -1665,7 +1665,7 @@ export default function Home(){
             <div className="csrdAlert csrdAlertOk">
               <span className="csrdAlertIcon">ℹ</span>
               <div className="csrdAlertBody">
-                <strong>{isIt?"Azienda non soggetta a CSRD":"Company not subject to CSRD"}</strong>
+                <strong>{isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered."}</strong>
                 <span>{isIt?"Meno di 1.000 dipendenti o fatturato sotto €450M.":"Under 1,000 employees or revenue below €450M."}</span>
               </div>
               <div className="csrdAlertBtns">
