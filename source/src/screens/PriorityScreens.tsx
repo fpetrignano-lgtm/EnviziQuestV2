@@ -1,3 +1,4 @@
+import React from "react";
 import type { Priority } from "../types";
 import type { CommonProps, NeedItem } from "./types";
 import { missionCatalog } from "../constants";
@@ -187,6 +188,21 @@ export function PriorityDataScreen({
   needIdToMission, needIdToCapability, displayCompanyName, t, name,
 }: PriorityDataProps) {
   const isIt = language === "it";
+  const [slideIdx, setSlideIdx] = React.useState(0);
+  const [selectedNeedId, setSelectedNeedId] = React.useState<string|null>(null);
+  const totalSlides = priorities.length;
+  const p = priorities[slideIdx];
+  const colItems = dataNeeds.filter(n => n.priority === p);
+
+  // Quando cambia slide, azzera la selezione
+  React.useEffect(()=>{ setSelectedNeedId(null); }, [slideIdx]);
+
+  const useCases = (t.needUseCases ?? {}) as Record<string,string>;
+  const examples = (t.needExamples ?? {}) as Record<string,string>;
+  const selectedItem = selectedNeedId ? colItems.find(n => n.id === selectedNeedId) ?? null : null;
+  const selectedUseCase = selectedItem ? (useCases[selectedItem.label] ?? null) : null;
+  const selectedExample = selectedItem ? (examples[selectedItem.label] ?? null) : null;
+
   const exportDataNeedsCsv = () => {
     const missionNames: {[k:number]:{it:string,en:string}} = {0:{it:"M1 · Fabbrica dei dati ESG",en:"M1 · ESG data factory"},1:{it:"M2 · Energia e decarbonizzazione",en:"M2 · Energy and decarbonisation"},2:{it:"M3 · Coinvolgimento supply chain",en:"M3 · Supply chain engagement"},3:{it:"M4 · Reporting e performance",en:"M4 · Reporting and performance"},4:{it:"M5 · Rotta verso Net Zero",en:"M5 · Net Zero pathway"},5:{it:"M6 · Framework ESG e disclosure",en:"M6 · ESG frameworks and disclosure"}};
     const esc = (s:string) => s.includes(",")||s.includes('"')||s.includes("\n")?`"${s.replace(/"/g,'""')}"`:s;
@@ -213,80 +229,138 @@ export function PriorityDataScreen({
     a.href=url; a.download=`Envizi-Quest-Esigenze-${displayCompanyName.replace(/[^a-zA-Z0-9]/g,"_")||"Export"}.csv`; a.click();
     URL.revokeObjectURL(url);
   };
-  return <main className="priorityDataScreen" style={{position:"relative"}}>
+
+  return <main className="pdSlideScreen">
     <header className="missionNav missionNavTrust">
       <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
       <div className="missionProgress"><span className="activeDot"/> DATA NEEDS</div>
       {renderTrustBar()}
       <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
     </header>
-    <div className="pdTopTitle">
-      <div className="pdTopTitleRow">
-        <h1 className="pdTopTitleText">{isIt?"Dagli obiettivi alle esigenze di gestione dati ESG":"From objectives to ESG data management needs"}</h1>
-        <div className="pdHelpWrap">
-          <button className="pdHelpBtn" onClick={()=>setPdHelpOpen(o=>!o)} aria-label="Help">?</button>
-          {pdHelpOpen&&<div className="pdHelpTooltip">
-            <button className="pdHelpClose" onClick={()=>setPdHelpOpen(false)}>✕</button>
-            <p>{isIt?"Seleziona gli elementi che intendi valutare: fai click sui cerchi per includerli. Poi assegna un punteggio di rilevanza (quanto è importante per la tua azienda) e un punteggio di criticità (quanto è problematico oggi per la tua azienda).":"Select the items you want to evaluate: click the circles to include them. Then assign a relevance score (how important it is for your organisation) and a criticality score (how problematic it is for your organisation today)."}</p>
-          </div>}
+
+    {/* ── Top bar: titolo + navigazione ── */}
+    <div className="pdSlideTopBar">
+      <div className="pdSlideTopLeft">
+        <p className="pdSlideTitleLabel">{isIt?"Dagli obiettivi alle esigenze di gestione dati ESG":"From objectives to ESG data management needs"}</p>
+        <div className="pdSlideObjHeader">
+          <span className="pdSlideObjNum">{String(slideIdx+1).padStart(2,"0")}</span>
+          <div>
+            <span className="pdSlideObjMeta">{isIt?"Obiettivo:":"Objective:"}</span>
+            <span className="pdSlideObjName">{(t.priorityNames as Record<string,string>)[p]}</span>
+          </div>
+        </div>
+      </div>
+      <div className="pdSlideNavRow">
+        {/* Dot pills navigazione obiettivi */}
+        <div className="pdSlideDots">
+          {priorities.map((_,i)=>(
+            <button key={i} className={`pdSlideDot${i===slideIdx?" pdSlideDotActive":""}`} onClick={()=>setSlideIdx(i)} aria-label={`Obiettivo ${i+1}`}/>
+          ))}
+        </div>
+        <div className="pdSlideNavBtns">
+          <button className="pdSlideNavBtn" onClick={()=>setSlideIdx(i=>Math.max(0,i-1))} disabled={slideIdx===0}>←</button>
+          <span className="pdSlideNavCount">{slideIdx+1} / {totalSlides}</span>
+          <button className="pdSlideNavBtn" onClick={()=>setSlideIdx(i=>Math.min(totalSlides-1,i+1))} disabled={slideIdx===totalSlides-1}>→</button>
         </div>
       </div>
     </div>
-    <div className="pdBody">
-      <div className="pdLeft">
-        <div className="pdTierLegend">
-          <span><span style={{color:"#ff4d4d"}}>⬡</span> <span style={{color:"#fde047"}}>{isIt?"Alta priorità (R>7 e C>7)":"High priority (R>7 and C>7)"}</span></span>
-          <span><span style={{color:"#7dd3fc"}}>⬡</span> <span style={{color:"#fde047"}}>{isIt?"Media priorità (R>4 o C>4)":"Medium priority (R>4 or C>4)"}</span></span>
-          <span><span style={{color:"#9ca3af"}}>⬡</span> <span style={{color:"#fde047"}}>{isIt?"Bassa priorità":"Low priority"}</span></span>
+
+    {/* ── Corpo: lista items + colonna destra fissa ── */}
+    <div className="pdSlideBody">
+      {/* Lista esigenze */}
+      <div className="pdSlideList">
+        {/* Header colonne */}
+        <div className="pdSlideColHeader">
+          <div className="pdSlideColHLabel">{isIt?"Esigenza di gestione dati ESG":"ESG data management need"}</div>
+          <div className="pdSlideColHIncl">{isIt?"Includi":"Include"}</div>
+          <div className="pdSlideColHScore">{isIt?"Rilevanza":"Relevance"}</div>
+          <div className="pdSlideColHScore">{isIt?"Criticità":"Criticality"}</div>
         </div>
-        <div className="pdColHeaders">
-          <div className="pdColHeaderSpacer"/>
-          <div className="pdColHeaderBand pdColHeaderIncl">{isIt?"Includi":"Include"}</div>
-          <div className="pdColHeaderBand pdColHeaderRel">{isIt?"Rilevanza":"Relevance"}</div>
-          <div className="pdColHeaderBand pdColHeaderCrit">{isIt?"Criticità":"Criticality"}</div>
-        </div>
-        {priorities.map((p,prioIdx)=>{
-          const colItems = dataNeeds.filter(n => n.priority === p);
-          const isSecondary = prioIdx >= 3;
-          return <div key={p} className={`pdGroup${isSecondary?" pdGroupSecondary":""}`}>
-            <div className="pdGroupHeader">
-              <span className="pdGroupNum">{String(prioIdx+1).padStart(2,"0")}</span>
-              <strong className="pdGroupName"><span className="pdGroupObjLabel">{isIt?"Obiettivo:":"Objective:"}</span> <span className="pdGroupNameUnder">{t.priorityNames[p]}</span></strong>
+        {colItems.map((item, posInGroup)=>{
+          const rankLabel = `${slideIdx+1}.${posInGroup+1}`;
+          const relMax = 10;
+          const rel = Math.min(needRelevance[item.id]??5, 10);
+          const crit = needCriticality[item.id]??5;
+          const included = isNeedIncluded(item.id);
+          const tier = rel>7&&crit>7?"high":rel>4||crit>4?"mid":"low";
+          const tierColor = tier==="high"?"#ff4d4d":tier==="mid"?"#7dd3fc":"#9ca3af";
+          const isSelected = selectedNeedId === item.id;
+          return <div key={item.id} className={`pdSlideRow${included?"":" pdSlideRowDimmed"}${isSelected?" pdSlideRowSelected":""}`}>
+            <div className="pdSlideRowLabel pdSlideRowLabelClickable" style={{color: included ? tierColor : "#c5d8d2"}}
+              onClick={()=>setSelectedNeedId(isSelected ? null : item.id)}
+              title={isIt?"Seleziona per vedere lo use case":"Select to see the use case"}>
+              <span className="pdSlideRowCode">{rankLabel}</span>
+              <span className="pdSlideRowText">{item.label}</span>
+              <span className="pdSlideRowSelectHint">{isSelected?"▾":"▸"}</span>
             </div>
-            <div className="pdGroupSubheader">{isIt?"Esigenze di gestione dei dati ESG":"ESG data management needs"}</div>
-            {colItems.map((item,posInGroup)=>{
-              const rankLabel = `${prioIdx+1}.${posInGroup+1}`;
-              const relMax = 10;
-              const rel = Math.min(needRelevance[item.id]??5,10);
-              const crit = needCriticality[item.id]??5;
-              const included = isNeedIncluded(item.id);
-              const relNorm = rel;
-              const tier = relNorm>7&&crit>7?"high":relNorm>4||crit>4?"mid":"low";
-              const tierColor = tier==="high"?"#ff4d4d":tier==="mid"?"#7dd3fc":"#9ca3af";
-              return <div key={item.id} className={`pdRow${included?"":" pdRowDimmed"}`}>
-                <div className="pdRowLeft" style={{color:included?tierColor:"#ffffff"}}>
-                  <span className="pdRowCode">{rankLabel}</span>
-                  <span className="pdRowLabel">{item.label}</span>
-                </div>
-                <div className="pdColIncl">
-                  <button className={`pdInclBtn${included?" pdInclBtnOn":""}`} style={{"--incl-color":included?tierColor:"#4a7060"} as React.CSSProperties} onClick={()=>toggleNeedIncluded(item.id)} aria-label={included?(isIt?"Escludi dalla valutazione":"Exclude from assessment"):(isIt?"Includi nella valutazione":"Include in assessment")}/>
-                </div>
-                <div className="pdRowBand" style={{"--rel-max":relMax} as React.CSSProperties}>
-                  <input type="range" min={1} max={relMax} value={rel} style={{"--v":rel,"--vmax":relMax-1} as React.CSSProperties} onChange={e=>setNeedRelevance(v=>({...v,[item.id]:Number(e.target.value)}))} className="pdScoreSlider pdSliderRel" disabled={!included}/>
-                  <span className="pdBandVal pdBandValRel" style={{opacity:included?1:0.3}}>{rel}<span className="pdBandMax">/{relMax}</span></span>
-                </div>
-                <div className="pdRowBand">
-                  <input type="range" min={1} max={10} value={crit} style={{"--v":crit} as React.CSSProperties} onChange={e=>setNeedCriticality(v=>({...v,[item.id]:Number(e.target.value)}))} className="pdScoreSlider pdSliderCrit" disabled={!included}/>
-                  <span className="pdBandVal pdBandValCrit" style={{opacity:included?1:0.3}}>{crit}</span>
-                </div>
-              </div>;
-            })}
+            <div className="pdSlideRowIncl">
+              <button
+                className={`pdInclBtn${included?" pdInclBtnOn":""}`}
+                style={{"--incl-color": tierColor} as React.CSSProperties}
+                onClick={()=>toggleNeedIncluded(item.id)}
+                aria-label={included?(isIt?"Escludi":"Exclude"):(isIt?"Includi":"Include")}
+              />
+            </div>
+            <div className="pdSlideRowScore">
+              <input type="range" min={1} max={relMax} value={rel}
+                style={{"--v":rel,"--vmax":relMax-1} as React.CSSProperties}
+                onChange={e=>setNeedRelevance(v=>({...v,[item.id]:Number(e.target.value)}))}
+                className="pdScoreSlider pdSliderRel" disabled={!included}/>
+              <span className="pdBandVal pdBandValRel" style={{opacity:included?1:0.35}}>{rel}<span className="pdBandMax">/{relMax}</span></span>
+            </div>
+            <div className="pdSlideRowScore">
+              <input type="range" min={1} max={10} value={crit}
+                style={{"--v":crit} as React.CSSProperties}
+                onChange={e=>setNeedCriticality(v=>({...v,[item.id]:Number(e.target.value)}))}
+                className="pdScoreSlider pdSliderCrit" disabled={!included}/>
+              <span className="pdBandVal pdBandValCrit" style={{opacity:included?1:0.35}}>{crit}</span>
+            </div>
           </div>;
         })}
+
+        {/* ── Riquadro use case ── */}
+        <div className={`pdUseCaseBox${selectedUseCase ? " pdUseCaseBoxActive" : ""}`}>
+          {selectedUseCase ? (
+            <>
+              <div className="pdUseCaseBoxHeader">
+                <span className="pdUseCaseBoxIcon">💡</span>
+                <span className="pdUseCaseBoxLabel">{selectedItem?.label}</span>
+                <button className="pdUseCaseBoxClose" onClick={()=>setSelectedNeedId(null)}>✕</button>
+              </div>
+              <div className="pdUseCaseBoxContent">
+                {selectedUseCase.split("\n").map((line, i) => {
+                  const colonIdx = line.indexOf(" — ");
+                  if (colonIdx > -1) {
+                    return <p key={i} className="pdUseCaseLine">
+                      <strong>{line.slice(0, colonIdx)}</strong>
+                      <span>{line.slice(colonIdx)}</span>
+                    </p>;
+                  }
+                  return <p key={i} className="pdUseCaseLine">{line}</p>;
+                })}
+                {selectedExample && (
+                  <div className="pdUseCaseExample">
+                    <p className="pdUseCaseExampleLabel">
+                      <strong>{isIt ? "Scenario" : "Scenario"}</strong>
+                    </p>
+                    <p className="pdUseCaseExampleText">{selectedExample}</p>
+                  </div>
+                )}
+              </div>
+            </>
+          ) : (
+            <p className="pdUseCaseBoxHint">
+              <span className="pdUseCaseBoxHintIcon">▸</span>
+              {isIt
+                ? "Seleziona una esigenza per mostrare lo use case di esempio"
+                : "Select a need to show a sample use case"}
+            </p>
+          )}
+        </div>
       </div>
-      <div className="pdRight">
-        <p className="eyebrow">{t.priorityDataKicker}</p>
-        <p className="pdRightIntro">{t.priorityDataIntro}</p>
+
+      {/* Colonna destra fissa */}
+      <div className="pdSlideRight">
         <div className="pdPersona">
           <img src={`./characters/${profile}-neutral.png`} alt={name}/>
           <div><strong>{name}</strong><small>ESG MANAGER</small></div>
@@ -299,8 +373,18 @@ export function PriorityDataScreen({
             <div><strong>{isIt?"Criticità":"Criticality"}</strong><small>{isIt?"1 = poco problematico · 10 = molto problematico":"1 = low severity · 10 = very critical"}</small></div>
           </div>
         </div>
-        <button className="secondaryAction pdExportBtn" style={{marginBottom:"10px",fontSize:"clamp(14px,1.2vw,16px)",padding:"12px 16px",width:"100%"}} onClick={exportDataNeedsCsv}>↓ {isIt?"Esporta in Excel / CSV":"Export to Excel / CSV"}</button>
-        <button className="actionButton pdConfirmBtn" onClick={()=>setScreen("priorityMatrix")}>{t.priorityDataCta}<b>→</b></button>
+        <div className="pdTierLegend pdTierLegendVert">
+          <span><span style={{color:"#ff4d4d"}}>⬡</span> <span>{isIt?"Alta (R>7 e C>7)":"High (R>7 and C>7)"}</span></span>
+          <span><span style={{color:"#7dd3fc"}}>⬡</span> <span>{isIt?"Media (R>4 o C>4)":"Medium (R>4 or C>4)"}</span></span>
+          <span><span style={{color:"#9ca3af"}}>⬡</span> <span>{isIt?"Bassa":"Low"}</span></span>
+        </div>
+        <div className="pdSlideRightActions">
+          <button className="secondaryAction" style={{fontSize:"clamp(12px,1vw,14px)",padding:"10px 12px",width:"100%"}} onClick={exportDataNeedsCsv}>↓ {isIt?"Esporta CSV":"Export CSV"}</button>
+          {slideIdx < totalSlides-1
+            ? <button className="actionButton" style={{width:"100%"}} onClick={()=>setSlideIdx(i=>i+1)}>{isIt?"Prossimo obiettivo →":"Next objective →"}</button>
+            : <button className="actionButton" style={{width:"100%"}} onClick={()=>setScreen("priorityMatrix")}>{t.priorityDataCta}<b>→</b></button>
+          }
+        </div>
       </div>
     </div>
   </main>;

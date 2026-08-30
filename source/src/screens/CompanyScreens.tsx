@@ -190,7 +190,7 @@ export function CompanyScreen({
       <div className="csrdNoteWrap">
         <button className="csrdNoteToggle" onClick={()=>{if(!csrdNoteOpen){setCsrdNoteDraft(csrdNote);} setCsrdNoteOpen(!csrdNoteOpen);}}>
           {csrdNote&&!csrdNoteOpen&&<span className="csrdNoteDot"/>}
-          {isIt?"✏ Click per note o osservazioni · perimetro CSRD":"✏ Click for notes or observations · CSRD scope"}
+          {isIt?"✏ Seleziona per note o osservazioni · perimetro CSRD":"✏ Select for notes or observations · CSRD scope"}
         </button>
         {csrdNoteOpen&&(
           <div className="csrdNoteBox">

@@ -65,7 +65,7 @@ export function Compare({
       </header>
       <section className="compareBody">
         <h1>{isIt?"Scegli la strada":"Choose your path"}</h1>
-        <p className="compareHint">{isIt?"Clicca sull'immagine per selezionare la tua scelta e proseguire.":"Click an image to make your choice and continue."}</p>
+        <p className="compareHint">{isIt?"Seleziona un'immagine per fare la tua scelta e proseguire.":"Select an image to make your choice and continue."}</p>
         <div className="compareGrid">
           {options.map(opt=>(
             <div key={opt.key} className="compareCardWrap">
