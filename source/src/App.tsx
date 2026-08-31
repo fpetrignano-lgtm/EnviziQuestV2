@@ -523,6 +523,9 @@ export default function Home(){
               prioItems:includedPrios.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})),
               critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
               isIt,
+              geoDistrib,
+              workshopDate,
+              consultantName,
             }}
           />
         </section>

@@ -271,6 +271,10 @@ export interface SummaryPptxData {
   prioItems: { rank: number; name: string; detail: string; note?: string }[];
   critItems: { rank: number; label: string; priority: string; rel: number; crit: number; tier: string }[];
   isIt: boolean;
+  // extra fields used by template PPTX
+  geoDistrib?: Record<string, number>;
+  workshopDate?: string;
+  consultantName?: string;
 }
 
 export function generateSummaryPptx(data: SummaryPptxData) {
