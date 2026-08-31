@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { generateSummaryPptx } from "./generateSummaryPptx";
+import { SummarySlideViewer } from "./screens/SummarySlideViewer";
 import type { Language, Profile, Screen, Market, EsgReadiness, SectorKey, Priority, Outcome, DFRating } from "./types";
 import { copy } from "./copy";
 import { energyModule, supplyChainModule, reportingModule, planningModule, frameworkModule } from "./modules";
@@ -525,30 +526,30 @@ export default function Home(){
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
       <div className="c1sBody">
-        {/* ── SLIDE 1: Azienda ── */}
-        <section className="c1sSlide c1sSlideHero c1sSlideHeroDownload">
-          <div className="c1sSlideLabel">{isIt?"01 · Profilo azienda":"01 · Company profile"}</div>
-          <button className="c1sHeroDownloadBtn" onClick={()=>{
-            const pNames=t.priorityNames as Record<Priority,string>;
-            const pDetails=t.priorityDetails as Record<Priority,string>;
-            const marketLabelsLocal:Record<string,{it:string,en:string}>={italia:{it:"Solo Italia",en:"Italy only"},europa:{it:"Europa",en:"Europe"},mondo:{it:"Globale",en:"Global"}};
-            generateSummaryPptx({
-              companyName:displayCompanyName,sectorLabel,
-              marketLabel:isIt?marketLabelsLocal[companyMarket].it:marketLabelsLocal[companyMarket].en,
-              revenue:companyDims[0],dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
-              employees:companyDims[4],plants:companyDims[1],offices:companyDims[2],
-              maturityTitle:activeReadiness.label,maturityDesc:activeReadiness.desc,
+        {/* ── SLIDE 1: Viewer dinamico ── */}
+        <section className="c1sSlide c1sSlideHero c1sSlideHeroViewer">
+          <SummarySlideViewer
+            language={language}
+            data={{
+              companyName:displayCompanyName,
+              sectorLabel,
+              marketLabel:isIt?(companyMarket==="italia"?"Solo Italia":companyMarket==="europa"?"Europa":"Globale"):(companyMarket==="italia"?"Italy only":companyMarket==="europa"?"Europe":"Global"),
+              revenue:companyDims[0],
+              dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
+              employees:companyDims[4],
+              plants:companyDims[1],
+              offices:companyDims[2],
+              maturityTitle:activeReadiness.label,
+              maturityDesc:activeReadiness.desc,
               csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
               csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
-              csrdNote:csrdNote||"",prioIntroText:isIt?prioDescIt:prioDescEn,
-              prioItems:includedPrios.map((p,i)=>({rank:i+1,name:pNames[p],detail:pDetails[p],note:prioExperience[p]||undefined})),
-              critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:pNames[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
+              csrdNote:csrdNote||"",
+              prioIntroText:isIt?prioDescIt:prioDescEn,
+              prioItems:includedPrios.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})),
+              critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
               isIt,
-            });
-          }}>
-            <span className="c1sHeroDlIcon">↓</span>
-            <span>{isIt?"Scarica PowerPoint":"Download PowerPoint"}</span>
-          </button>
+            }}
+          />
         </section>
         {/* ── SLIDE 2: Obiettivi inclusi ── */}
         <section className="c1sSlide">

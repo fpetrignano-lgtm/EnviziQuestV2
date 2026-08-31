@@ -708,7 +708,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .c1sSlideSub{font-size:23px;color:#6a8e82;font-weight:400;margin:0 0 28px}
 /* ── slide 1 hero ── */
 .c1sSlideHero{justify-content:center;gap:40px}
-.c1sSlideHeroDownload{align-items:center;justify-content:center}
+.c1sSlideHeroViewer{padding:0!important;overflow:hidden}
 .c1sHeroDownloadBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:48px 64px;border-radius:24px;border:2px solid rgba(57,239,180,.5);background:rgba(57,239,180,.08);color:#f2fff9;cursor:pointer;transition:background .2s,border-color .2s,transform .15s;margin:auto}
 .c1sHeroDownloadBtn:hover{background:rgba(57,239,180,.18);border-color:#39efb4;transform:scale(1.03)}
 .c1sHeroDlIcon{font-size:clamp(72px,8vw,120px);line-height:1;color:#39efb4;font-weight:700}
