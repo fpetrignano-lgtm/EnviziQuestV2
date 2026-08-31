@@ -495,7 +495,7 @@ export default function Home(){
     return <main className="c1sScreen">
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
-        <div className="missionProgress"><span className="activeDot"/> {isIt?"RIEPILOGO CAPITOLO 1":"CHAPTER 1 SUMMARY"}</div>
+        <div className="missionProgress"><span className="activeDot"/> {isIt?"IL TUO REPORT INIZIALE":"YOUR INITIAL REPORT"}</div>
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
       <div className="c1sBody">
@@ -526,7 +526,7 @@ export default function Home(){
         </section>
         {/* ── SLIDE 2: Obiettivi inclusi ── */}
         <section className="c1sSlide">
-          <div className="c1sSlideLabel">{isIt?"02 · Obiettivi prioritari":"02 · Priority objectives"}</div>
+          <div className="c1sSlideLabel">{isIt?"Il tuo report iniziale":"Your initial report"}</div>
           <p className="c1sPrioIntro" dangerouslySetInnerHTML={{__html:isIt?prioDescIt:prioDescEn}}/>
           <div className="c1sPrioList">
             {includedPrios.map((p,i)=><div key={p} className="c1sPrioItem">
@@ -541,7 +541,7 @@ export default function Home(){
         </section>
         {/* ── SLIDE 3: Top 7 aree critiche ── */}
         <section className="c1sSlide">
-          <div className="c1sSlideLabel c1sSlideLabelLg">{isIt?"03 · Aree critiche principali":"03 · Top critical areas"}</div>
+          <div className="c1sSlideLabel c1sSlideLabelLg">{isIt?"Il tuo report iniziale":"Your initial report"}</div>
           <h2 className="c1sSlideSub">{isIt?"Ordinate per Rilevanza + Criticità":"Sorted by Relevance + Criticality"}</h2>
           <div className="c1sCritList">
             {top7.map((n,i)=>{
