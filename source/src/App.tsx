@@ -925,7 +925,7 @@ export default function Home(){
           </div>
           <div className="welcomeWipNote">
             <span className="welcomeWipIcon">⚠</span>
-            <p>{isIt?"Nota per l'utente: in base al browser in uso può essere necessario ingrandire o rimpicciolire lo schermo per visualizzare i tasti di pagina avanti / indietro (work in progress)":"User note: depending on the browser in use, it may be necessary to zoom in or out to view the next / back page buttons (work in progress)"}</p>
+            <p>{isIt?"Nota per l'utente: in base al browser in uso può essere necessario ingrandire o rimpicciolire lo schermo per visualizzare i tasti di pagina avanti / indietro — Mac: ⌘+/⌘− · Windows: Ctrl+/Ctrl− (work in progress)":"User note: depending on the browser in use, it may be necessary to zoom in or out to view the next / back page buttons — Mac: ⌘+/⌘− · Windows: Ctrl+/Ctrl− (work in progress)"}</p>
           </div>
         </div>
         {/* RIGHT: quest dell'utente corrente */}
