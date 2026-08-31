@@ -496,33 +496,6 @@ export default function Home(){
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> {isIt?"RIEPILOGO CAPITOLO 1":"CHAPTER 1 SUMMARY"}</div>
-        <div className="c1sNavRow c1sNavRowHeader">
-          <button className="c1sDownloadBtn" onClick={()=>{
-            const pNames=t.priorityNames as Record<Priority,string>;
-            const pDetails=t.priorityDetails as Record<Priority,string>;
-            const marketLabelsLocal:Record<string,{it:string,en:string}>={italia:{it:"Solo Italia",en:"Italy only"},europa:{it:"Europa",en:"Europe"},mondo:{it:"Globale",en:"Global"}};
-            generateSummaryPptx({
-              companyName:displayCompanyName,
-              sectorLabel,
-              marketLabel:isIt?marketLabelsLocal[companyMarket].it:marketLabelsLocal[companyMarket].en,
-              revenue:companyDims[0],
-              dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
-              employees:companyDims[4],
-              plants:companyDims[1],
-              offices:companyDims[2],
-              maturityTitle:activeReadiness.label,
-              maturityDesc:activeReadiness.desc,
-              csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
-              csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
-              csrdNote:csrdNote||"",
-              prioIntroText:isIt?prioDescIt:prioDescEn,
-              prioItems:includedPrios.map((p,i)=>({rank:i+1,name:pNames[p],detail:pDetails[p],note:prioExperience[p]||undefined})),
-              critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:pNames[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
-              isIt,
-            });
-          }}>↓ {isIt?"Scarica PowerPoint":"Download PowerPoint"}</button>
-          <button className="actionButton c1sNextBtn" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti →":"Next →"}</button>
-        </div>
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
       <div className="c1sBody">
@@ -593,6 +566,9 @@ export default function Home(){
             })}
           </div>
         </section>
+      </div>
+      <div style={{display:"flex",justifyContent:"flex-end",padding:"16px 32px 24px"}}>
+        <button className="actionButton c1sNextBtn" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti →":"Next →"}</button>
       </div>
     </main>;
   }
