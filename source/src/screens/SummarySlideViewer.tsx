@@ -42,7 +42,7 @@ export function SummarySlideViewer({ data, language, onClose }: Props) {
       </header>
 
       <section style={{ display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#07110e", padding: "16px" }}>
-        <div style={{ width: "100%", maxWidth: "1100px", aspectRatio: "16/9", background: "#07110e", borderRadius: "8px", overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,.7)", position: "relative" }}>
+        <div style={{ width: "100%", maxWidth: "1650px", aspectRatio: "16/9", background: "#07110e", borderRadius: "8px", overflow: "hidden", boxShadow: "0 4px 40px rgba(0,0,0,.7)", position: "relative" }}>
           {slides[idx]}
         </div>
       </section>
