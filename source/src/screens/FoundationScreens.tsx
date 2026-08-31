@@ -119,7 +119,7 @@ export function DFConclusionScreen({ language, profile, setLanguage, setScreen, 
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · DATA FOUNDATION":"CONCLUSIONS · DATA FOUNDATION"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per la gestione dei dati ESG":"Your ESG data management choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per la gestione dei dati ESG":"Your ESG data management choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={dfScore} max={100} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:dfHighVery?"#39efb4":dfHighMaybe?"#ffc07c":"#7a9a90"}}>{dfHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per la tua azienda.":"IBM Envizi is very likely the right solution for your organisation."):dfHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per la tua azienda.":"IBM Envizi is probably the right solution for your organisation."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
@@ -197,7 +197,7 @@ export function EnergyConclusionScreen({ language, setLanguage, setScreen, reset
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · ENERGIA E DECARBONIZZAZIONE":"CONCLUSIONS · ENERGY AND DECARBONISATION"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il controllo dell'energia":"Your energy management choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il controllo dell'energia":"Your energy management choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={efScore} max={60} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:accentColor}}>{efHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per le tue esigenze energetiche.":"IBM Envizi is very likely the right solution for your energy needs."):efHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per le tue esigenze energetiche.":"IBM Envizi is probably the right solution for your energy needs."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
@@ -269,7 +269,7 @@ export function SupplyConclusionScreen({ language, setLanguage, setScreen, reset
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · SUPPLY CHAIN ENGAGEMENT":"CONCLUSIONS · SUPPLY CHAIN ENGAGEMENT"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il coinvolgimento della supply chain":"Your supply chain engagement choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il coinvolgimento della supply chain":"Your supply chain engagement choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={scScore} max={60} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:accentColor}}>{scHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per le tue esigenze Scope 3 e supply chain.":"IBM Envizi is very likely the right solution for your Scope 3 and supply chain needs."):scHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per le tue esigenze Scope 3 e supply chain.":"IBM Envizi is probably the right solution for your Scope 3 and supply chain needs."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
@@ -341,7 +341,7 @@ export function ReportingConclusionScreen({ language, setLanguage, setScreen, re
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · REPORTING E PERFORMANCE":"CONCLUSIONS · REPORTING AND PERFORMANCE"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il reporting delle performance ESG":"Your ESG performance reporting choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il reporting delle performance ESG":"Your ESG performance reporting choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={rfScore} max={80} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:accentColor}}>{rfHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per le tue esigenze di reporting.":"IBM Envizi is very likely the right solution for your reporting needs."):rfHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per le tue esigenze di reporting.":"IBM Envizi is probably the right solution for your reporting needs."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
@@ -413,7 +413,7 @@ export function PlanningConclusionScreen({ language, setLanguage, setScreen, res
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · ROTTA VERSO NET ZERO":"CONCLUSIONS · NET ZERO PATHWAY"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il piano di decarbonizzazione":"Your decarbonisation planning choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per il piano di decarbonizzazione":"Your decarbonisation planning choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={plScore} max={60} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:accentColor}}>{plHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per la tua pianificazione della decarbonizzazione.":"IBM Envizi is very likely the right solution for your decarbonisation planning needs."):plHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per la tua pianificazione della decarbonizzazione.":"IBM Envizi is probably the right solution for your decarbonisation planning needs."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
@@ -485,7 +485,7 @@ export function FrameworkConclusionScreen({ language, setLanguage, setScreen, re
     <div className="dfConclusionBody">
       <div className="dfcLeft">
         <p className="eyebrow" style={{letterSpacing:".18em",fontSize:"22px"}}>{isIt?"CONCLUSIONI · FRAMEWORK ESG E DISCLOSURE":"CONCLUSIONS · ESG FRAMEWORKS AND DISCLOSURE"}</p>
-        <h1 className="dfcTitle" style={{fontSize:"clamp(44px,4.4vw,64px)",fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per la gestione dei framework ESG":"Your ESG framework management choice"}</h1>
+        <h1 className="dfcTitle" style={{fontWeight:800,lineHeight:1.1,marginBottom:4}}>{isIt?"La tua scelta per la gestione dei framework ESG":"Your ESG framework management choice"}</h1>
         <div className="dfcGaugeWrap">
           <ConclusionGauge score={frScore} max={60} accentColor={accentColor} isIt={isIt}/>
           <p className="dfcGaugeVerdict" style={{color:accentColor}}>{frHighVery?(isIt?"Molto probabilmente IBM Envizi è la soluzione per la tua gestione dei framework ESG.":"IBM Envizi is very likely the right solution for your ESG framework management needs."):frHighMaybe?(isIt?"Probabilmente IBM Envizi è la soluzione per la tua gestione dei framework ESG.":"IBM Envizi is probably the right solution for your ESG framework management needs."):(isIt?"Approfondisci con il tuo team IBM.":"Explore further with your IBM team.")}</p>
