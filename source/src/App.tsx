@@ -923,6 +923,10 @@ export default function Home(){
             <span className="welcomeNoteIcon">ℹ</span>
             <p>{isIt?"Per recuperare utenti e Quest precedentemente registrati, collegati dal medesimo browser utilizzato in precedenza.":"To retrieve previously registered users and Quests, connect from the same browser used before."}</p>
           </div>
+          <div className="welcomeWipNote">
+            <span className="welcomeWipIcon">⚠</span>
+            <p>{isIt?"Nota per l'utente: in base al browser in uso può essere necessario ingrandire o rimpicciolire lo schermo per visualizzare i tasti di pagina avanti / indietro (work in progress)":"User note: depending on the browser in use, it may be necessary to zoom in or out to view the next / back page buttons (work in progress)"}</p>
+          </div>
         </div>
         {/* RIGHT: quest dell'utente corrente */}
         <div className="welcomeRight">
