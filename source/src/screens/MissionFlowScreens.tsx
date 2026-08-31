@@ -59,7 +59,7 @@ interface MissionFlowProps extends CommonProps {
 }
 
 export function MissionFlowScreen({
-  language, profile, setLanguage, setScreen, reset,
+  language, profile, setLanguage, setScreen, reset, goBack,
   screen, selectedMission, missionOutcomes, active, asIsRatings, setAsIsRatings,
   negativeChoice, pendingOutcome, missionParameters, companyDims, displayCompanyName,
   activeTrustIntro, activeTrustSources, trustSteps, trustTotalW,
@@ -116,7 +116,10 @@ export function MissionFlowScreen({
           <p className="storyText asisIntroText">{(active.asIsIntro as string).replace("COMPANY_NAME",displayCompanyName)}</p>
           <div className="asIsRatingGrid">{active.asIsItems.map((item,i)=>{const r=currentRatings[i];return<article key={item.title} className={`asIsRatingCard asIsRating-${r}`}><div className="asIsRatingCardTop"><h2>{item.title}</h2><p>{item.detail}</p></div><div className="asIsRatingButtons"><button className={`asIsRatingBtn${r==="alto"?" asIsRatingBtnActive asIsRatingBtnAlto":""}`} onClick={()=>setRating(i,"alto")}>{language==="it"?"Alto":"High"}</button><button className={`asIsRatingBtn${r==="medio"?" asIsRatingBtnActive asIsRatingBtnMedio":""}`} onClick={()=>setRating(i,"medio")}>{language==="it"?"Medio":"Medium"}</button><button className={`asIsRatingBtn${r==="basso"?" asIsRatingBtnActive asIsRatingBtnBasso":""}`} onClick={()=>setRating(i,"basso")}>{language==="it"?"Basso":"Low"}</button></div></article>})}</div>
           <div className="asisTotal"><span className="asisTotalLabel">{language==="it"?"Criticità totale":"Total criticality"}</span><span className="asisTotalScore" style={{color:totalColor}}>{total}<span className="asisTotalMax">/100</span></span><span className="asisTotalBadge" style={{color:totalColor,borderColor:totalColor}}>{totalLabel}</span></div>
-          <button className="actionButton asisBottomBtn" onClick={()=>setScreen("compare")}>{t.proceedDecision}<b>→</b></button>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"8px"}}>
+            <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
+            <button className="actionButton asisBottomBtn" onClick={()=>setScreen("compare")}>{t.proceedDecision}<b>→</b></button>
+          </div>
         </>;
       })()}
 
