@@ -28,7 +28,7 @@ export function SummarySlideViewer({ data, language, onClose }: Props) {
         <span style={{ color: "#c9e8dc", fontSize: "13px", fontWeight: 700 }}>{idx + 1} / {total}</span>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
           <button
-            style={{ background: "rgba(57,239,180,.12)", border: "1px solid rgba(57,239,180,.5)", color: "#39efb4", borderRadius: "6px", padding: "6px 16px", fontWeight: 700, cursor: "pointer", fontSize: "13px" }}
+            style={{ background: "rgba(57,239,180,.12)", border: "1px solid rgba(57,239,180,.5)", color: "#39efb4", borderRadius: "6px", padding: "12px 32px", fontWeight: 700, cursor: "pointer", fontSize: "26px" }}
             onClick={() => generateSummaryPptx(data)}
           >
             ↓ {isIt ? "Scarica PowerPoint" : "Download PowerPoint"}
