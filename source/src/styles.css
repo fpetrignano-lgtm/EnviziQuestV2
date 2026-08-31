@@ -970,6 +970,8 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csTwoCol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .csDimsGrid{display:flex;flex-direction:column;gap:10px}
 .csDimRow{display:flex;align-items:center;gap:12px}
+.csDimTotalRow{display:flex;align-items:center;gap:12px;margin-top:6px;padding-top:10px;border-top:1px solid #1e3a2e}
+.csDimInputTotal{opacity:.7;cursor:not-allowed;border-color:rgba(57,239,180,.3)!important;color:var(--teal)!important}
 .csDimInput{width:110px;background:#0a1a14;border:1px solid #1e3a2e;border-radius:8px;color:#f2fff9;font:700 20px var(--font-geist-mono);padding:10px 12px;outline:none;transition:.18s;-moz-appearance:textfield;appearance:textfield;text-align:right}
 .csDimInput::-webkit-inner-spin-button,.csDimInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .csDimInput:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}

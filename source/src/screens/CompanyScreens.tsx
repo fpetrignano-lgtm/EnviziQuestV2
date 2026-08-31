@@ -70,6 +70,10 @@ export function CompanySetupScreen({
               <div className="csDimsGrid">
                 {companyDims.map((v,i)=><div key={i} className="csDimRow"><input className="csDimInput" type="number" min={0} value={v} onChange={e=>updateCompanyDim(i,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelsFull[i].it:dimLabelsFull[i].en}</span></div>)}
               </div>
+              <div className="csDimTotalRow">
+                <input className="csDimInput csDimInputTotal" type="number" readOnly value={companyDims[1]+companyDims[2]+companyDims[3]}/>
+                <span className="csDimUnit">{isIt?"sedi totali (calcolato)":"total locations (calculated)"}</span>
+              </div>
             </div>
             {(companyMarket==="europa"||companyMarket==="mondo")&&<div className="csField"><label>{isIt?"Distribuzione sedi (%, totale 100)":"Location distribution (%, total 100)"}</label>
               <div className="csGeoGrid">
