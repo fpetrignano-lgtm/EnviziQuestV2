@@ -524,48 +524,6 @@ export default function Home(){
             }}
           />
         </section>
-        {/* ── SLIDE 2: Obiettivi inclusi ── */}
-        <section className="c1sSlide">
-          <div className="c1sSlideLabel">{isIt?"Il tuo report iniziale":"Your initial report"}</div>
-          <p className="c1sPrioIntro" dangerouslySetInnerHTML={{__html:isIt?prioDescIt:prioDescEn}}/>
-          <div className="c1sPrioList">
-            {includedPrios.map((p,i)=><div key={p} className="c1sPrioItem">
-              <div className="c1sPrioRank">{String(i+1).padStart(2,"0")}</div>
-              <div className="c1sPrioContent">
-                <strong>{(t.priorityNames as Record<Priority,string>)[p]}</strong>
-                <span className="c1sPrioDetail">{(t.priorityDetails as Record<Priority,string>)[p]}</span>
-                {prioExperience[p]&&<p className="c1sPrioNote">✎ {prioExperience[p]}</p>}
-              </div>
-            </div>)}
-          </div>
-        </section>
-        {/* ── SLIDE 3: Top 7 aree critiche ── */}
-        <section className="c1sSlide">
-          <div className="c1sSlideLabel c1sSlideLabelLg">{isIt?"Il tuo report iniziale":"Your initial report"}</div>
-          <h2 className="c1sSlideSub">{isIt?"Ordinate per Rilevanza + Criticità":"Sorted by Relevance + Criticality"}</h2>
-          <div className="c1sCritList">
-            {top7.map((n,i)=>{
-              return <div key={n.id} className="c1sCritItem">
-                <div className="c1sCritRank">{String(i+1).padStart(2,"0")}</div>
-                <div className="c1sCritBody">
-                  <strong>{n.label}</strong>
-                  <div className="c1sCritBars">
-                    <div className="c1sCritBarRow">
-                      <div className="c1sCritBarTrack"><div className="c1sCritBarFill c1sCritBarRel" style={{width:`${n.rel*10}%`}}/></div>
-                    </div>
-                    <div className="c1sCritBarFooter">
-                      <span className="c1sCritBarFooterRel"><span className="c1sCritBarDot c1sCritBarDotRel"/>  {isIt?"Rilevanza":"Relevance"} <b>{n.rel}</b></span>
-                      <span className="c1sCritBarFooterCrit"><span className="c1sCritBarDot c1sCritBarDotCrit"/>  {isIt?"Criticità":"Criticality"} <b>{n.crit}</b></span>
-                    </div>
-                    <div className="c1sCritBarRow">
-                      <div className="c1sCritBarTrack"><div className="c1sCritBarFill c1sCritBarCrit" style={{width:`${n.crit*10}%`}}/></div>
-                    </div>
-                  </div>
-                </div>
-              </div>;
-            })}
-          </div>
-        </section>
       </div>
       <div style={{display:"flex",justifyContent:"flex-end",padding:"16px 32px 24px"}}>
         <button className="actionButton c1sNextBtn" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti →":"Next →"}</button>
