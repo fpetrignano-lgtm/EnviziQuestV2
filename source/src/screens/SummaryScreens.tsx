@@ -129,9 +129,9 @@ interface ThankYouProps extends CommonProps {
   t: Record<string, any>;
 }
 
-export function ThankYouScreen({ language, setLanguage, reset, renderTrustBar, t }: ThankYouProps) {
+export function ThankYouScreen({ language, setLanguage, reset, goBack, renderTrustBar, t }: ThankYouProps) {
   return <main className="thankYouScreen">
-    <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> FINAL</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
+    <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> FINAL</div><div className="introNavRight"><button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></div></header>
     <section className="thankYouBody"><h1>{t.thankYouTitle}</h1></section>
   </main>;
 }

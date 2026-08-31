@@ -86,6 +86,7 @@ export function DataFoundationScreen({ language, profile, setLanguage, setScreen
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={dfHighlight?"dfScoreHigh":""}>{dfScore}<em>/100</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${dfPct}%`,background:dfHighVery?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("dfConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>
@@ -165,6 +166,7 @@ export function EnergyFoundationScreen({ language, setLanguage, setScreen, reset
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={efHighlight?"dfScoreHigh":""}>{efScore}<em>/60</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${efPct}%`,background:efHighlight?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("energyConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>
@@ -237,6 +239,7 @@ export function SupplyFoundationScreen({ language, setLanguage, setScreen, reset
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={scHighlight?"dfScoreHigh":""}>{scScore}<em>/60</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${scPct}%`,background:scHighlight?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("supplyConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>
@@ -309,6 +312,7 @@ export function ReportingFoundationScreen({ language, setLanguage, setScreen, re
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={rfHighlight?"dfScoreHigh":""}>{rfScore}<em>/80</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${rfPct}%`,background:rfHighlight?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("reportingConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>
@@ -381,6 +385,7 @@ export function PlanningFoundationScreen({ language, setLanguage, setScreen, res
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={plHighlight?"dfScoreHigh":""}>{plScore}<em>/60</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${plPct}%`,background:plHighlight?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("planningConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>
@@ -453,6 +458,7 @@ export function FrameworkFoundationScreen({ language, setLanguage, setScreen, re
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={frHighlight?"dfScoreHigh":""}>{frScore}<em>/60</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${frPct}%`,background:frHighlight?"#39efb4":"#ffc07c"}}/></div></div>
+        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("frameworkConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>

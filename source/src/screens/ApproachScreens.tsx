@@ -4,7 +4,7 @@ interface Props extends CommonProps {
   t: Record<string, any>;
 }
 
-export function ApproachIntro({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachIntro({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen">
       <header className="missionNav">
@@ -14,6 +14,7 @@ export function ApproachIntro({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachIntroTitle}</h1>
           <div className="approachIntroText">{(t.approachIntroBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -27,7 +28,7 @@ export function ApproachIntro({language,setLanguage,setScreen,reset,t}:Props){
   );
 }
 
-export function ApproachSteps({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachSteps({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen" style={{position:"relative"}}>
       <header className="missionNav">
@@ -37,6 +38,7 @@ export function ApproachSteps({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachStepsTitle}</h1>
           <div className="approachIntroText">{(t.approachStepsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -51,7 +53,7 @@ export function ApproachSteps({language,setLanguage,setScreen,reset,t}:Props){
   );
 }
 
-export function ApproachData({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachData({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen" style={{position:"relative"}}>
       <header className="missionNav">
@@ -61,6 +63,7 @@ export function ApproachData({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachDataTitle}</h1>
           <div className="approachIntroText">{(t.approachDataBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -75,7 +78,7 @@ export function ApproachData({language,setLanguage,setScreen,reset,t}:Props){
   );
 }
 
-export function ApproachDecisions({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachDecisions({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen" style={{position:"relative"}}>
       <header className="missionNav">
@@ -85,6 +88,7 @@ export function ApproachDecisions({language,setLanguage,setScreen,reset,t}:Props
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachDecisionsTitle}</h1>
           <div className="approachIntroText">{(t.approachDecisionsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -99,7 +103,7 @@ export function ApproachDecisions({language,setLanguage,setScreen,reset,t}:Props
   );
 }
 
-export function ApproachRoadmap({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachRoadmap({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen">
       <header className="missionNav">
@@ -109,6 +113,7 @@ export function ApproachRoadmap({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachRoadmapTitle}</h1>
           <div className="approachIntroText">{(t.approachRoadmapBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -123,7 +128,7 @@ export function ApproachRoadmap({language,setLanguage,setScreen,reset,t}:Props){
   );
 }
 
-export function ApproachTrust({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachTrust({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen">
       <header className="missionNav">
@@ -133,6 +138,7 @@ export function ApproachTrust({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachTrustTitle}</h1>
           <div className="approachIntroText">{(t.approachTrustBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -147,7 +153,7 @@ export function ApproachTrust({language,setLanguage,setScreen,reset,t}:Props){
   );
 }
 
-export function ApproachReport({language,setLanguage,setScreen,reset,t}:Props){
+export function ApproachReport({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
     <main className="approachIntroScreen">
       <header className="missionNav">
@@ -157,6 +163,7 @@ export function ApproachReport({language,setLanguage,setScreen,reset,t}:Props){
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
+          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachReportTitle}</h1>
           <div className="approachIntroText">{(t.approachReportBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
