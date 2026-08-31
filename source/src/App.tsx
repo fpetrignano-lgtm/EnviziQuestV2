@@ -526,32 +526,29 @@ export default function Home(){
       </header>
       <div className="c1sBody">
         {/* ── SLIDE 1: Azienda ── */}
-        <section className="c1sSlide c1sSlideHero">
+        <section className="c1sSlide c1sSlideHero c1sSlideHeroDownload">
           <div className="c1sSlideLabel">{isIt?"01 · Profilo azienda":"01 · Company profile"}</div>
-          <div className="c1sHeroTop">
-            <div className="c1sHeroName">{displayCompanyName}</div>
-            <div className="c1sHeroTags">
-              <span className="c1sHeroTag">{sectorLabel}</span>
-              <span className="c1sHeroTag">{isIt?marketLabels[companyMarket].it:marketLabels[companyMarket].en}</span>
-              <span className="c1sHeroTag">{companyDims[0]} {isIt?sec.dimUnit.it:sec.dimUnit.en}</span>
-              <span className="c1sHeroTag">{companyDims[4].toLocaleString()} {isIt?"dipendenti":"employees"}</span>
-              {companyDims[1]>0&&<span className="c1sHeroTag">{companyDims[1]} {isIt?`stabiliment${companyDims[1]===1?"o":"i"}`:`plant${companyDims[1]===1?"":"s"}`}</span>}
-              {companyDims[2]>0&&<span className="c1sHeroTag">{companyDims[2]} {isIt?`uffic${companyDims[2]===1?"io":"i"}`:`office${companyDims[2]===1?"":"s"}`}</span>}
-            </div>
-          </div>
-          <div className="c1sMaturityBlock">
-            <div className="c1sMaturityLabel">{isIt?"Maturità ESG":"ESG Maturity"}</div>
-            <div className="c1sMaturityTitle">{activeReadiness.label}</div>
-            <p className="c1sMaturityDesc">{activeReadiness.desc}</p>
-          </div>
-          <div className={`c1sCsrdBadge${isCsrd?"":" c1sCsrdBadgeOut"}`}>
-            <span className="c1sCsrdIcon">{isCsrd?"⚑":"○"}</span>
-            <div>
-              <strong>{isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD")}</strong>
-              <span>{isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds")}</span>
-            </div>
-          </div>
-          {csrdNote&&<div className="c1sCsrdNote"><span>✎</span><p>{csrdNote}</p></div>}
+          <button className="c1sHeroDownloadBtn" onClick={()=>{
+            const pNames=t.priorityNames as Record<Priority,string>;
+            const pDetails=t.priorityDetails as Record<Priority,string>;
+            const marketLabelsLocal:Record<string,{it:string,en:string}>={italia:{it:"Solo Italia",en:"Italy only"},europa:{it:"Europa",en:"Europe"},mondo:{it:"Globale",en:"Global"}};
+            generateSummaryPptx({
+              companyName:displayCompanyName,sectorLabel,
+              marketLabel:isIt?marketLabelsLocal[companyMarket].it:marketLabelsLocal[companyMarket].en,
+              revenue:companyDims[0],dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
+              employees:companyDims[4],plants:companyDims[1],offices:companyDims[2],
+              maturityTitle:activeReadiness.label,maturityDesc:activeReadiness.desc,
+              csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
+              csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
+              csrdNote:csrdNote||"",prioIntroText:isIt?prioDescIt:prioDescEn,
+              prioItems:includedPrios.map((p,i)=>({rank:i+1,name:pNames[p],detail:pDetails[p],note:prioExperience[p]||undefined})),
+              critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:pNames[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
+              isIt,
+            });
+          }}>
+            <span className="c1sHeroDlIcon">↓</span>
+            <span>{isIt?"Scarica PowerPoint":"Download PowerPoint"}</span>
+          </button>
         </section>
         {/* ── SLIDE 2: Obiettivi inclusi ── */}
         <section className="c1sSlide">
