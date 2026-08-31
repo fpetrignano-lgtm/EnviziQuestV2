@@ -144,15 +144,15 @@ export function SectionIntroSlide({ language, setLanguage, setScreen, reset, goB
         <span style={{ fontSize: "clamp(52px,8vw,96px)", fontWeight: 800, color: "#39efb4", lineHeight: 1 }}>{num}</span>
       </div>
 
-      <p style={{ margin: "0 0 10px", fontSize: "clamp(11px,1.2vw,14px)", fontWeight: 700, letterSpacing: ".18em", color: "#39efb4", textTransform: "uppercase" }}>
+      <p style={{ margin: "0 0 10px", fontSize: "clamp(22px,2.4vw,28px)", fontWeight: 700, letterSpacing: ".18em", color: "#39efb4", textTransform: "uppercase" }}>
         {isIt ? labelIt : labelEn}
       </p>
 
-      <h1 style={{ fontSize: "clamp(28px,4vw,64px)", fontWeight: 800, color: "#f2fff9", margin: "0 0 12px", textAlign: "center", letterSpacing: "-.02em", lineHeight: 1.15, padding: "0 24px" }}>
+      <h1 style={{ fontSize: "clamp(56px,8vw,128px)", fontWeight: 800, color: "#f2fff9", margin: "0 0 12px", textAlign: "center", letterSpacing: "-.02em", lineHeight: 1.15, padding: "0 24px" }}>
         {isIt ? titleIt : titleEn}
       </h1>
 
-      <p style={{ margin: "0 0 48px", fontSize: "clamp(14px,1.6vw,20px)", color: "#7dcfad", textAlign: "center", padding: "0 32px" }}>
+      <p style={{ margin: "0 0 48px", fontSize: "clamp(28px,3.2vw,40px)", color: "#7dcfad", textAlign: "center", padding: "0 32px" }}>
         {isIt ? subIt : subEn}
       </p>
 
