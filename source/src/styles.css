@@ -903,11 +903,11 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .approachBottomAction .actionButton{align-self:flex-end;font-size:clamp(14px,1.1vw,17px)!important;padding:12px 28px!important}
 .approachQuestBox{display:flex;align-items:flex-start;gap:14px;width:100%;padding:20px 24px;border-radius:16px;background:rgba(57,239,180,.07);border:1px solid rgba(57,239,180,.28);box-shadow:0 0 0 1px rgba(57,239,180,.06)}
 .approachQuestIcon{font-size:22px;line-height:1;flex-shrink:0;margin-top:2px}
-.approachRoleTitle{margin:0;font-size:clamp(20px,1.8vw,28px);font-weight:700;color:#f2fff9;line-height:1.25;text-align:center;padding:6px 0 2px}
+.approachRoleTitle{margin:0;font-size:clamp(40px,3.6vw,56px);font-weight:700;color:#f2fff9;line-height:1.25;text-align:center;padding:6px 0 2px}
 .approachKeywordsRow{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%}
 .approachKwBox{padding:16px 20px;border-radius:14px;background:rgba(57,239,180,.06);border:1px solid rgba(57,239,180,.22);display:flex;flex-direction:column;gap:10px}
 .approachKwList{display:flex;flex-wrap:wrap;gap:8px}
-.approachKwList span{font-size:clamp(11px,0.9vw,13px);font-weight:600;letter-spacing:.04em;color:#39efb4;background:rgba(57,239,180,.12);border:1px solid rgba(57,239,180,.3);border-radius:20px;padding:4px 12px;white-space:nowrap}
+.approachKwList span{font-size:clamp(22px,1.8vw,26px);font-weight:600;letter-spacing:.04em;color:#39efb4;background:rgba(57,239,180,.12);border:1px solid rgba(57,239,180,.3);border-radius:20px;padding:6px 18px;white-space:normal}
 .approachQuestCalloutParagraphs{display:flex;flex-direction:column;gap:16px}
 .approachQuestBox p{margin:0;font-size:clamp(20px,1.9vw,30px);line-height:1.65;color:#d9f2e9}
 .approachUnifiedNote{width:100%;padding:18px 20px;border-radius:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
