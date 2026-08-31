@@ -1,15 +1,15 @@
 import type { Screen } from "../types";
 import type { CommonProps } from "./types";
 
-// ── Titoli missioni per i separatori ─────────────────────────────────────────
+// ── Titoli missioni per i separatori (indicizzati 0-5 come missionOrder) ────
 
 const MISSION_LABELS: Record<number, { it: string; en: string; sub: string; subEn: string }> = {
-  1: { it: "La fabbrica dei dati ESG",       en: "The ESG data factory",         sub: "Baseline ESG e qualità dei dati",                  subEn: "ESG baseline and data quality" },
-  2: { it: "Energia e decarbonizzazione",     en: "Energy and decarbonization",   sub: "Consumi, anomalie e costi operativi",              subEn: "Consumption, anomalies and operating cost" },
-  3: { it: "Supply chain engagement",         en: "Supply chain engagement",      sub: "Fornitori, acquisti e catena del valore",          subEn: "Suppliers, procurement and value chain" },
-  4: { it: "Reporting e performance",         en: "Reporting and performance",    sub: "GHG reporting, workflow e dashboard",              subEn: "GHG reporting, workflows and dashboards" },
-  5: { it: "La rotta verso Net Zero",         en: "The route to Net Zero",        sub: "Scenari, investimenti e decarbonizzazione",        subEn: "Scenarios, investment and decarbonisation" },
-  6: { it: "Framework ESG e disclosure",      en: "ESG frameworks and disclosure",sub: "CSRD, ESRS, GRI, SASB, CDP e requisiti",          subEn: "CSRD, ESRS, GRI, SASB, CDP and requirements" },
+  0: { it: "La fabbrica dei dati ESG",       en: "The ESG data factory",         sub: "Baseline ESG e qualità dei dati",                  subEn: "ESG baseline and data quality" },
+  1: { it: "Energia e decarbonizzazione",     en: "Energy and decarbonization",   sub: "Consumi, anomalie e costi operativi",              subEn: "Consumption, anomalies and operating cost" },
+  2: { it: "Supply chain engagement",         en: "Supply chain engagement",      sub: "Fornitori, acquisti e catena del valore",          subEn: "Suppliers, procurement and value chain" },
+  3: { it: "Reporting e performance",         en: "Reporting and performance",    sub: "GHG reporting, workflow e dashboard",              subEn: "GHG reporting, workflows and dashboards" },
+  4: { it: "La rotta verso Net Zero",         en: "The route to Net Zero",        sub: "Scenari, investimenti e decarbonizzazione",        subEn: "Scenarios, investment and decarbonisation" },
+  5: { it: "Framework ESG e disclosure",      en: "ESG frameworks and disclosure",sub: "CSRD, ESRS, GRI, SASB, CDP e requisiti",          subEn: "CSRD, ESRS, GRI, SASB, CDP and requirements" },
 };
 
 // ── Shared fullscreen slide style ─────────────────────────────────────────────
@@ -36,13 +36,14 @@ const headerStyle: React.CSSProperties = {
 // ── ChallengeSeparator ────────────────────────────────────────────────────────
 
 interface SeparatorProps extends CommonProps {
-  num: number;
+  num: number;       // posizione nella sequenza (1-6), mostrata nel cerchio
+  missionIndex: number; // indice reale della missione (0-5), per il titolo
   nextScreen: Screen;
 }
 
-function ChallengeSeparator({ language, setLanguage, setScreen, reset, goBack, renderTrustBar, num, nextScreen }: SeparatorProps) {
+function ChallengeSeparator({ language, setLanguage, setScreen, reset, goBack, renderTrustBar, num, missionIndex, nextScreen }: SeparatorProps) {
   const isIt = language === "it";
-  const m = MISSION_LABELS[num];
+  const m = MISSION_LABELS[missionIndex];
   return (
     <main style={slideStyle}>
       <header className="missionNav" style={headerStyle}>
@@ -172,6 +173,9 @@ export function ChallengeSeparator3(p: Omit<SeparatorProps, "num" | "nextScreen"
 export function ChallengeSeparator4(p: Omit<SeparatorProps, "num" | "nextScreen">) { return <ChallengeSeparator {...p} num={4} nextScreen="missionCard4"/>; }
 export function ChallengeSeparator5(p: Omit<SeparatorProps, "num" | "nextScreen">) { return <ChallengeSeparator {...p} num={5} nextScreen="missionCard5"/>; }
 export function ChallengeSeparator6(p: Omit<SeparatorProps, "num" | "nextScreen">) { return <ChallengeSeparator {...p} num={6} nextScreen="missionCard6"/>; }
+
+// Tipi aggiornati per i named exports
+export type ChallengeSeparatorProps = Omit<SeparatorProps, "num" | "nextScreen">;
 
 export function ChallengeComplete1(p: Omit<CompleteProps, "num" | "nextScreen">) { return <ChallengeComplete {...p} num={1} nextScreen="challengeSeparator2"/>; }
 export function ChallengeComplete2(p: Omit<CompleteProps, "num" | "nextScreen">) { return <ChallengeComplete {...p} num={2} nextScreen="challengeSeparator3"/>; }
