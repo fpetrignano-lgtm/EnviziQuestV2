@@ -71,8 +71,8 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
           </div>
 
           <div style={{ display: "flex", gap: "10px", paddingBottom: "4px", flexShrink: 0 }}>
-            <button className="introBackBtn" onClick={() => setScreen("blank1")}>← {isIt ? "Indietro" : "Back"}</button>
-            <button className="actionButton approachIntroCta" onClick={() => setScreen("sectionIntro1")}>{isIt ? "Inizia dall'inizio" : "Start from the beginning"} <b>→</b></button>
+            <button className="introBackBtn" onClick={() => setScreen("onboarding")}>← {isIt ? "Indietro" : "Back"}</button>
+            <button className="actionButton approachIntroCta" onClick={() => setScreen("blank1")}>{isIt ? "Presentazione Envizi" : "Envizi Presentation"} <b>→</b></button>
           </div>
         </div>
       </section>
