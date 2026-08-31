@@ -41,13 +41,13 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
         {/* colonna destra: titolo + griglia sezioni */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px", minWidth: 0, overflow: "hidden" }}>
           <div>
-            <small style={{ letterSpacing: ".14em", fontSize: "12px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 700 }}>
+            <small style={{ letterSpacing: ".14em", fontSize: "24px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 700 }}>
               {isIt ? "ENVIZI QUEST · INDICE" : "ENVIZI QUEST · INDEX"}
             </small>
-            <h1 style={{ fontSize: "clamp(28px,3vw,52px)", fontWeight: 800, margin: "4px 0 2px", lineHeight: 1.1 }}>
+            <h1 style={{ fontSize: "clamp(56px,6vw,104px)", fontWeight: 800, margin: "4px 0 2px", lineHeight: 1.1 }}>
               {isIt ? "La tua esperienza Envizi Quest" : "Your Envizi Quest experience"}
             </h1>
-            <p style={{ color: "var(--muted)", fontSize: "15px", lineHeight: 1.5, margin: 0 }}>
+            <p style={{ color: "var(--muted)", fontSize: "30px", lineHeight: 1.5, margin: 0 }}>
               {isIt ? "Salta direttamente alla sezione che ti interessa." : "Jump directly to the section you want."}
             </p>
           </div>
@@ -62,12 +62,12 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
                 onMouseEnter={e => (e.currentTarget.style.borderColor = "#39efb4")}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = s.accent ? "#39efb4" : "rgba(255,255,255,.1)")}
               >
-                <span style={{ minWidth: "36px", height: "36px", borderRadius: "50%", border: "2px solid #39efb4", background: s.accent ? "#39efb4" : "transparent", color: s.accent ? "#000" : "#39efb4", fontWeight: 800, fontSize: "13px", display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: ".02em", flexShrink: 0 }}>
+                <span style={{ minWidth: "52px", height: "52px", borderRadius: "50%", border: "2px solid #39efb4", background: s.accent ? "#39efb4" : "transparent", color: s.accent ? "#000" : "#39efb4", fontWeight: 800, fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: ".02em", flexShrink: 0 }}>
                   {s.num}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
-                  <span style={{ fontWeight: 700, fontSize: "15px", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.labelIt : s.labelEn}</span>
-                  <span style={{ fontSize: "12px", color: "var(--muted)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.subIt : s.subEn}</span>
+                  <span style={{ fontWeight: 700, fontSize: "30px", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.labelIt : s.labelEn}</span>
+                  <span style={{ fontSize: "24px", color: "var(--muted)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.subIt : s.subEn}</span>
                 </div>
               </button>
             ))}
