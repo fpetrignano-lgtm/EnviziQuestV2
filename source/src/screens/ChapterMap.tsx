@@ -41,9 +41,6 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
         {/* colonna destra: titolo + griglia sezioni */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px", minWidth: 0, overflow: "hidden" }}>
           <div>
-            <small style={{ letterSpacing: ".14em", fontSize: "24px", color: "var(--muted)", textTransform: "uppercase", fontWeight: 700 }}>
-              {isIt ? "ENVIZI QUEST · INDICE" : "ENVIZI QUEST · INDEX"}
-            </small>
             <h1 style={{ fontSize: "clamp(56px,6vw,104px)", fontWeight: 800, margin: "4px 0 2px", lineHeight: 1.1 }}>
               {isIt ? "La tua esperienza Envizi Quest" : "Your Envizi Quest experience"}
             </h1>
