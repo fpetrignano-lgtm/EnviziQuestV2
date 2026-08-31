@@ -17,6 +17,10 @@ interface CompanySetupProps extends CommonProps {
   geoDistrib: Record<string,number>;
   setGeoDistrib: (v: Record<string,number>) => void;
   name: string;
+  workshopDate: string;
+  setWorkshopDate: (v: string) => void;
+  consultantName: string;
+  setConsultantName: (v: string) => void;
 }
 
 export function CompanySetupScreen({
@@ -24,6 +28,7 @@ export function CompanySetupScreen({
   companyName, setCompanyName, companySector, setCompanySector,
   companyMarket, setCompanyMarket, esgReadiness, setEsgReadiness,
   companyDims, updateCompanyDim, setCompanyDims, geoDistrib, setGeoDistrib, name,
+  workshopDate, setWorkshopDate, consultantName, setConsultantName,
 }: CompanySetupProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -90,6 +95,10 @@ export function CompanySetupScreen({
                 {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
               </select>
               <p className="csReadinessDesc">{activeReadiness.desc}</p>
+            </div>
+            <div className="csTwoCol">
+              <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
+              <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
             </div>
             <button className="actionButton csConfirmBtn" disabled={geoError} onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
           </div>
