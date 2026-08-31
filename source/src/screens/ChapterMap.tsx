@@ -12,7 +12,6 @@ const SECTIONS: { num: string; labelIt: string; labelEn: string; subIt: string; 
   { num: "M4", labelIt: "Sfida 4 · Reporting",            labelEn: "Challenge 4 · Reporting",   subIt: "GHG reporting, workflow e dashboard",           subEn: "GHG reporting, workflows and dashboards",     screen: "challengeSeparator4" },
   { num: "M5", labelIt: "Sfida 5 · Net Zero",             labelEn: "Challenge 5 · Net Zero",    subIt: "Scenari, investimenti e decarbonizzazione",     subEn: "Scenarios, investment and decarbonisation",   screen: "challengeSeparator5" },
   { num: "M6", labelIt: "Sfida 6 · Framework ESG",        labelEn: "Challenge 6 · ESG Frameworks",subIt: "CSRD, ESRS, GRI, SASB, CDP",                subEn: "CSRD, ESRS, GRI, SASB, CDP",                  screen: "challengeSeparator6" },
-  { num: "✓",  labelIt: "Prossimi passi",                 labelEn: "Next steps",                subIt: "Demo, PoC e Business Value Assessment",         subEn: "Demo, PoC and Business Value Assessment",     screen: "sectionOutro", accent: true },
 ];
 
 interface Props extends CommonProps {
