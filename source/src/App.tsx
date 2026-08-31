@@ -414,7 +414,7 @@ export default function Home(){
     {labelIt:"✓ Prossimi passi",labelEn:"✓ Next steps",screen:"sectionOutro",icon:"✓"},
     {labelIt:"Riepilogo finale",labelEn:"Final summary",screen:"summary",icon:"≡"},
   ];
-  if(screen==="chapterMap")return <ChapterMap language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} name={name}/>;
+  if(screen==="chapterMap")return <ChapterMap language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} name={name} missionOrder={missionOrder}/>;
 
   // ── SLIDE DI TRANSIZIONE SEZIONI ──────────────────────────────────────────
   if(screen==="sectionIntro1"&&profile)return <SectionIntroSlide language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} num={1} labelIt="Introduzione" labelEn="Introduction" titleIt="Il percorso Envizi Quest" titleEn="The Envizi Quest journey" subIt="Come funziona, cosa scoprirai e come costruire la tua roadmap ESG" subEn="How it works, what you'll discover and how to build your ESG roadmap" nextScreen="questIntro"/>;

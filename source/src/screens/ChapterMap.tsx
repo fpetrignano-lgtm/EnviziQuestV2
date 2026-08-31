@@ -1,26 +1,47 @@
 import type { Screen } from "../types";
 import type { CommonProps } from "./types";
 
-// Sezioni principali — una per ogni area del Quest
-const SECTIONS: { num: string; labelIt: string; labelEn: string; subIt: string; subEn: string; screen: Screen; accent?: boolean }[] = [
-  { num: "①", labelIt: "Introduzione",                    labelEn: "Introduction",             subIt: "Come funziona il Quest",                        subEn: "How the Quest works",                         screen: "sectionIntro1" },
-  { num: "②", labelIt: "Obiettivi della tua azienda",     labelEn: "Your company's objectives", subIt: "Profilo azienda e priorità ESG",                subEn: "Company profile and ESG priorities",          screen: "sectionIntro2" },
-  { num: "③", labelIt: "Sfide di dati",                   labelEn: "Data challenges",           subIt: "Esigenze, criticità e matrice di priorità",     subEn: "Needs, criticalities and priority matrix",    screen: "sectionIntro3" },
-  { num: "M1", labelIt: "Sfida 1 · Fabbrica dati ESG",    labelEn: "Challenge 1 · ESG data",    subIt: "Baseline ESG e qualità dei dati",               subEn: "ESG baseline and data quality",               screen: "challengeSeparator1" },
-  { num: "M2", labelIt: "Sfida 2 · Energia",              labelEn: "Challenge 2 · Energy",      subIt: "Consumi, anomalie e costi operativi",           subEn: "Consumption, anomalies and operating cost",   screen: "challengeSeparator2" },
-  { num: "M3", labelIt: "Sfida 3 · Supply Chain",         labelEn: "Challenge 3 · Supply Chain",subIt: "Fornitori, acquisti e catena del valore",       subEn: "Suppliers, procurement and value chain",      screen: "challengeSeparator3" },
-  { num: "M4", labelIt: "Sfida 4 · Reporting",            labelEn: "Challenge 4 · Reporting",   subIt: "GHG reporting, workflow e dashboard",           subEn: "GHG reporting, workflows and dashboards",     screen: "challengeSeparator4" },
-  { num: "M5", labelIt: "Sfida 5 · Net Zero",             labelEn: "Challenge 5 · Net Zero",    subIt: "Scenari, investimenti e decarbonizzazione",     subEn: "Scenarios, investment and decarbonisation",   screen: "challengeSeparator5" },
-  { num: "M6", labelIt: "Sfida 6 · Framework ESG",        labelEn: "Challenge 6 · ESG Frameworks",subIt: "CSRD, ESRS, GRI, SASB, CDP",                subEn: "CSRD, ESRS, GRI, SASB, CDP",                  screen: "challengeSeparator6" },
-  { num: "✓",  labelIt: "Prossimi passi",                 labelEn: "Next steps",                subIt: "Demo, PoC e Business Value Assessment",         subEn: "Demo, PoC and Business Value Assessment",     screen: "sectionOutro" },
+// Dati fissi per ogni missione (indice 0–5)
+const MISSION_DATA: { labelIt: string; labelEn: string; subIt: string; subEn: string; screen: Screen }[] = [
+  { labelIt: "Fabbrica dati ESG",      labelEn: "ESG data factory",       subIt: "Baseline ESG e qualità dei dati",            subEn: "ESG baseline and data quality",              screen: "challengeSeparator1" },
+  { labelIt: "Energia",                labelEn: "Energy",                 subIt: "Consumi, anomalie e costi operativi",        subEn: "Consumption, anomalies and operating cost",  screen: "challengeSeparator2" },
+  { labelIt: "Supply Chain",           labelEn: "Supply Chain",           subIt: "Fornitori, acquisti e catena del valore",    subEn: "Suppliers, procurement and value chain",     screen: "challengeSeparator3" },
+  { labelIt: "Reporting e Scope 1-2-3",labelEn: "Reporting & Scope 1-2-3",subIt: "GHG reporting, workflow e dashboard",       subEn: "GHG reporting, workflows and dashboards",    screen: "challengeSeparator4" },
+  { labelIt: "Pianificazione Net Zero", labelEn: "Net Zero Planning",      subIt: "Scenari, investimenti e decarbonizzazione",  subEn: "Scenarios, investment and decarbonisation",  screen: "challengeSeparator5" },
+  { labelIt: "Framework ESG",          labelEn: "ESG Frameworks",         subIt: "CSRD, ESRS, GRI, SASB, CDP",                subEn: "CSRD, ESRS, GRI, SASB, CDP",                 screen: "challengeSeparator6" },
+];
+
+// Sezioni fisse (intro + outro)
+const FIXED_TOP: { num: string; labelIt: string; labelEn: string; subIt: string; subEn: string; screen: Screen }[] = [
+  { num: "①", labelIt: "Introduzione",               labelEn: "Introduction",              subIt: "Come funziona il Quest",                    subEn: "How the Quest works",                      screen: "sectionIntro1" },
+  { num: "②", labelIt: "Obiettivi della tua azienda", labelEn: "Your company's objectives", subIt: "Profilo azienda e priorità ESG",             subEn: "Company profile and ESG priorities",       screen: "sectionIntro2" },
+  { num: "③", labelIt: "Sfide di dati",               labelEn: "Data challenges",           subIt: "Esigenze, criticità e matrice di priorità",  subEn: "Needs, criticalities and priority matrix", screen: "sectionIntro3" },
+];
+
+const FIXED_BOTTOM: { num: string; labelIt: string; labelEn: string; subIt: string; subEn: string; screen: Screen }[] = [
+  { num: "✓", labelIt: "Prossimi passi", labelEn: "Next steps", subIt: "Demo, PoC e Business Value Assessment", subEn: "Demo, PoC and Business Value Assessment", screen: "sectionOutro" },
 ];
 
 interface Props extends CommonProps {
   name: string;
+  missionOrder: number[];
 }
 
-export function ChapterMap({ language, profile, setLanguage, setScreen, reset, renderTrustBar, name }: Props) {
+export function ChapterMap({ language, profile, setLanguage, setScreen, reset, renderTrustBar, name, missionOrder }: Props) {
   const isIt = language === "it";
+
+  // Sfide nell'ordine corretto
+  const missionSections = missionOrder.map((mi, pos) => ({
+    num: `M${pos + 1}`,
+    labelIt: MISSION_DATA[mi].labelIt,
+    labelEn: MISSION_DATA[mi].labelEn,
+    subIt: MISSION_DATA[mi].subIt,
+    subEn: MISSION_DATA[mi].subEn,
+    screen: MISSION_DATA[mi].screen,
+  }));
+
+  const allSections = [...FIXED_TOP, ...missionSections, ...FIXED_BOTTOM];
+
   return (
     <main style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--bg)", overflow: "hidden" }}>
       <header className="missionNav missionNavTrust">
@@ -51,15 +72,15 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
 
           {/* griglia sezioni */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", flex: 1, alignContent: "start", overflowY: "auto" }}>
-            {SECTIONS.map((s) => (
+            {allSections.map((s) => (
               <button
                 key={s.screen}
                 onClick={() => setScreen(s.screen)}
-                style={{ display: "flex", alignItems: "center", gap: "12px", background: s.accent ? "rgba(57,239,180,.08)" : "var(--surface,#1a1a2e)", border: `1px solid ${s.accent ? "#39efb4" : "rgba(255,255,255,.1)"}`, borderRadius: "10px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "border-color .15s", color: "inherit" }}
+                style={{ display: "flex", alignItems: "center", gap: "12px", background: "var(--surface,#1a1a2e)", border: "1px solid rgba(255,255,255,.1)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "border-color .15s", color: "inherit" }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = "#39efb4")}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = s.accent ? "#39efb4" : "rgba(255,255,255,.1)")}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,.1)")}
               >
-                <span style={{ minWidth: "52px", height: "52px", borderRadius: "50%", border: "2px solid #39efb4", background: s.accent ? "#39efb4" : "transparent", color: s.accent ? "#000" : "#39efb4", fontWeight: 800, fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: ".02em", flexShrink: 0 }}>
+                <span style={{ minWidth: "52px", height: "52px", borderRadius: "50%", border: "2px solid #39efb4", background: "transparent", color: "#39efb4", fontWeight: 800, fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: ".02em", flexShrink: 0 }}>
                   {s.num}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
