@@ -21,6 +21,8 @@ interface CompanySetupProps extends CommonProps {
   setWorkshopDate: (v: string) => void;
   consultantName: string;
   setConsultantName: (v: string) => void;
+  companyLogo: string;
+  setCompanyLogo: (v: string) => void;
 }
 
 export function CompanySetupScreen({
@@ -29,6 +31,7 @@ export function CompanySetupScreen({
   companyMarket, setCompanyMarket, esgReadiness, setEsgReadiness,
   companyDims, updateCompanyDim, setCompanyDims, geoDistrib, setGeoDistrib, name,
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
+  companyLogo, setCompanyLogo,
 }: CompanySetupProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -58,6 +61,16 @@ export function CompanySetupScreen({
         <div className="csFormTwoCol">
           <div className="csFormLeft">
             <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName} onChange={e=>setCompanyName(e.target.value)}/></div>
+            <div className="csField">
+              <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
+              <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
+                <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"13px",padding:"6px 12px",border:"1px solid #3a6a50",borderRadius:"6px",background:"#f7faf8",color:"#0d3a2a"}}>
+                  📎 {isIt?"Carica immagine":"Upload image"}
+                  <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{if(ev.target?.result)setCompanyLogo(ev.target.result as string);};reader.readAsDataURL(file);}}/>
+                </label>
+                {companyLogo&&(<><img src={companyLogo} alt="logo" style={{height:"36px",maxWidth:"120px",objectFit:"contain",borderRadius:"4px",border:"1px solid #d0e8d8"}}/><button onClick={()=>setCompanyLogo("")} style={{fontSize:"11px",padding:"3px 8px",border:"1px solid #c0d0c8",borderRadius:"4px",background:"#fff",cursor:"pointer",color:"#666"}}>✕ {isIt?"Rimuovi":"Remove"}</button></>)}
+              </div>
+            </div>
             <div className="csTwoCol">
               <div className="csField"><label>{isIt?"Presenza mercati":"Market presence"}</label>
                 <select className="csSelect" value={companyMarket} onChange={e=>setCompanyMarket(e.target.value as Market)}>
@@ -130,6 +143,7 @@ interface CompanyScreenProps extends CommonProps {
   renderTrustBar: () => JSX.Element;
   t: Record<string,any>;
   name: string;
+  companyLogo?: string;
 }
 
 export function CompanyScreen({
@@ -138,7 +152,7 @@ export function CompanyScreen({
   geoDistrib, displayCompanyName,
   csrdConfirmStep, setCsrdConfirmStep, csrdPendingChoice, setCsrdPendingChoice,
   csrdNote, setCsrdNote, csrdNoteOpen, setCsrdNoteOpen, csrdNoteDraft, setCsrdNoteDraft,
-  t, name,
+  t, name, companyLogo,
 }: CompanyScreenProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -163,7 +177,10 @@ export function CompanyScreen({
     <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <section className="companyCopy">
       <p className="eyebrow">{t.companyIntro}</p>
-      <h1>{displayCompanyName}</h1>
+      <div style={{display:"flex",alignItems:"center",gap:"14px"}}>
+        <h1 style={{margin:0}}>{displayCompanyName}</h1>
+        {companyLogo && <img src={companyLogo} alt="logo" style={{height:"48px",maxWidth:"140px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"4px"}}/>}
+      </div>
       <p className="companySubtitle">{isIt?"Edita con i tuoi valori o prosegui con i default mostrati":"Edit with your values or continue with the defaults shown"}</p>
       <p className="companyLead">{companyStoryGen}</p>
       <div className="companyStats">

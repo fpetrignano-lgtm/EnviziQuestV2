@@ -262,6 +262,7 @@ export interface SummaryPptxData {
   employees: number;
   plants: number;
   offices: number;
+  dataCenters?: number;
   maturityTitle: string;
   maturityDesc: string;
   csrdLabel: string;
@@ -275,6 +276,7 @@ export interface SummaryPptxData {
   geoDistrib?: Record<string, number>;
   workshopDate?: string;
   consultantName?: string;
+  companyLogo?: string;
 }
 
 export function generateSummaryPptx(data: SummaryPptxData) {

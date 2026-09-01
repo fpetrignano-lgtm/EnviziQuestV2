@@ -49,6 +49,8 @@ interface PrioritiesProps extends CommonProps {
   renderTrustBar: () => JSX.Element;
   t: Record<string, any>;
   name: string;
+  onSave?: (name: string) => void;
+  defaultSaveName?: string;
 }
 
 export function PrioritiesScreen({
@@ -56,10 +58,12 @@ export function PrioritiesScreen({
   priorities, priorityIncluded, togglePriorityIncluded, rankPriority,
   prioExperience, setPrioExpModal, prioExpModal, prioExpMode, setPrioExpMode,
   prioExpSelected, setPrioExpSelected, setPrioExperience, prioDefaultExp,
-  displayCompanyName, t, name,
+  displayCompanyName, t, name, onSave, defaultSaveName,
 }: PrioritiesProps) {
   const isIt = language === "it";
   const prioImg: Record<Priority, string> = {credit:"./obj-credit.png",compliance:"./obj-compliance.png",customers:"./obj-customers.png",efficiency:"./obj-efficiency.png",supply:"./obj-supply.png",reputation:"./obj-reputation.png"};
+  const [saveName, setSaveName] = React.useState(defaultSaveName || "");
+  const [saved, setSaved] = React.useState(false);
   return <main className="priorityScreen priorityScreenCards">
     <header className="missionNav missionNavTrust">
       <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
@@ -102,6 +106,23 @@ export function PrioritiesScreen({
             </div>
           ))}
         </div>
+        {onSave && (
+          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}}>
+            <input
+              value={saveName}
+              onChange={e=>{setSaveName(e.target.value);setSaved(false);}}
+              placeholder={isIt?"Nome quest…":"Quest name…"}
+              style={{fontSize:"14px",padding:"6px 10px",borderRadius:"6px",border:"1px solid #3a6a50",background:"#fff",color:"#0d3a2a",outline:"none",flex:1}}
+            />
+            <button
+              disabled={!saveName.trim()}
+              onClick={()=>{if(saveName.trim()){onSave(saveName.trim());setSaved(true);}}}
+              style={{fontSize:"14px",padding:"6px 14px",borderRadius:"6px",border:"none",background:saved?"#3a9a60":"#0d3a2a",color:"#fff",cursor:saveName.trim()?"pointer":"not-allowed",opacity:saveName.trim()?1:0.5,fontWeight:700,whiteSpace:"nowrap"}}
+            >
+              {saved?(isIt?"✓ Salvata":"✓ Saved"):(isIt?"💾 Salva quest":"💾 Save quest")}
+            </button>
+          </div>
+        )}
         <button className="actionButton prioCardsConfirmBtn" onClick={()=>{localStorage.setItem("envizi-quest-priorities",JSON.stringify(priorities));setScreen("approachDataCopy")}}>{t.confirm}<b>→</b></button>
       </div>
     </div>
