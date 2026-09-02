@@ -443,13 +443,54 @@ rre
 .asisTotalScore{font:700 clamp(28px,3vw,42px) var(--font-geist-mono);line-height:1;transition:color .3s}
 .asisTotalMax{font-size:.55em;color:#3d6052;margin-left:2px}
 .asisTotalBadge{font:700 11px var(--font-geist-mono);letter-spacing:.16em;padding:5px 12px;border-radius:999px;border:1px solid;transition:color .3s,border-color .3s}
+.asisMainLayout{display:block;flex:1;min-height:0;overflow:hidden}
+.asisMainLayoutWithPanel{display:flex;gap:20px;align-items:stretch;flex:1;min-height:0;overflow:hidden}
+.asisLeftCol{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.asisLeftCol .asIsRatingGrid{flex:1;max-width:100%;min-height:0}
+.asisLeftCol .asisTotal{max-width:100%;flex-shrink:0}
+.asIsRatingGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.asIsRatingCard{flex:1}
+.asIsRatingCardTop h2{font-size:clamp(20px,1.9vw,27px)}
+.asIsRatingCardTop p{font-size:clamp(17px,1.4vw,20px)}
+.asIsRatingBtn{font-size:clamp(11px,1vw,14px)!important;padding:6px 0}
+.asisInsightPanel{flex-shrink:0;width:clamp(300px,30vw,420px);padding:20px 22px;border:1px solid #1e3a30;border-radius:16px;background:linear-gradient(160deg,#071510,#040e0b);display:flex;flex-direction:column;gap:14px;overflow-y:auto}
+.asisInsightHeader{display:flex;flex-direction:column;gap:8px}
+.asisInsightKicker{font:700 11px var(--font-geist-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffffff}
+.asisInsightTitle{font-size:clamp(22px,2vw,28px);font-weight:700;color:#ffffff;margin:0;line-height:1.3;text-transform:capitalize}
+.asisInsightFitBadge{align-self:flex-start;font:700 12px var(--font-geist-mono);letter-spacing:.14em;padding:5px 12px;border-radius:999px;border:1px solid;transition:color .3s,border-color .3s}
+.asisInsightCopy{font-size:clamp(17px,1.5vw,22px);line-height:1.6;color:#809a90;margin:0}
+.asisInsightRec{padding:14px 16px;border-radius:10px;background:rgba(57,239,180,.05);border:1px solid rgba(57,239,180,.15);display:flex;flex-direction:column;gap:6px}
+.asisInsightRecLabel{font:700 10px var(--font-geist-mono);letter-spacing:.18em;text-transform:uppercase;color:#ffffff}
+.asisInsightRecText{font-size:clamp(17px,1.5vw,22px);line-height:1.55;color:#ffffff;margin:0}
+.asisInsightEmpty{font-size:clamp(13px,1.1vw,16px);color:#3d6052;line-height:1.6;margin:0}
+@media(max-width:900px){.asisMainLayoutWithPanel{flex-direction:column;overflow-y:auto}.asisInsightPanel{width:100%;overflow-y:visible}}
 .asIsGrid article>div b small{display:block;font:7px var(--font-geist-mono);letter-spacing:.08em;color:#9db1aa;margin-bottom:3px}.clientMetric{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-top:15px;padding-top:13px;border-top:1px solid #213a31}.clientMetric>span:first-child{font:9px var(--font-geist-mono);letter-spacing:.08em;text-transform:uppercase;color:#9db1aa}.clientMetric>span:last-child{display:flex;align-items:center;gap:7px}.clientMetric input{width:78px;height:38px;border:1px solid #3d6557;border-radius:8px;background:#06120e;color:#f1fff9;font:18px var(--font-geist-mono);padding:0 9px;outline:none}.clientMetric input:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}.clientMetric em{font:9px var(--font-geist-mono);font-style:normal;color:#7f9b90;max-width:58px}.benchmarkNote{max-width:760px;font-size:11px;line-height:1.5;color:#789188;margin:-8px 0 10px}.benchmarkNote a{color:var(--teal);text-decoration:underline;text-underline-offset:3px}.asis .asIsGrid article{min-height:215px}
 @media(max-width:650px){.asIsGrid{grid-template-columns:1fr}.asIsGrid article{min-height:125px}.asis .missionContent h1{font-size:38px}}
 
 /* Presentation readability: larger type, more content space, smaller protagonist */
 body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.missionProgress{font-size:12px}.intro{font-size:clamp(28px,2.2vw,34px)}.thread{font-size:22px}.choicePanel h2{font-size:28px}.languageSwitch button{font-size:24px}.profileCard img,.malePortrait{height:280px;object-fit:cover;object-position:center 15%}.profileInfo strong{font-size:28px}.profileInfo small{font-size:20px}.startButton,.actionButton{font-size:28px}.hint{font-size:22px}.profileChooseBtn{font-size:20px}.bobCredit{margin-top:18px;font:10px var(--font-geist-mono);letter-spacing:.14em;text-transform:uppercase;color:#4a6d60}
-.missionScreen{grid-template-columns:minmax(300px,34vw) 1fr}.characterStage{height:calc(100vh - 76px);min-height:0}.missionContent{padding:3vw 5vw;max-width:1100px;height:calc(100vh - 76px);overflow-y:auto;align-self:stretch;position:relative}.missionContent h1{font-size:clamp(48px,5.4vw,82px);max-width:880px}.missionLabel span,.missionLabel i,.resultEyebrow{font-size:22px}.companyChip strong{font-size:28px}.companyChip span{font-size:24px}.storyText{font-size:clamp(24px,1.8vw,30px);max-width:850px}.objectiveBox{max-width:850px}.objectiveBox small{font-size:20px}.objectiveBox p{font-size:28px}.decisionList{max-width:900px}.decisionList strong{font-size:28px}.decisionList small{font-size:24px}.decisionList button>span{font-size:24px}.decisionPrereqNote{display:flex;align-items:center;gap:5px;margin-top:7px;font:18px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:rgba(57,239,180,.55)}.decisionPrereqNote b{font-size:20px;color:rgba(57,239,180,.45)}.metrics{max-width:850px}.metrics span{font-size:22px}.metrics strong{font-size:36px}.characterTag small{font-size:18px}.characterTag strong{font-size:28px}
+.missionScreen{grid-template-columns:minmax(300px,34vw) 1fr}.characterStage{height:calc(100vh - 76px);min-height:0}.missionContent{padding:3vw 5vw;max-width:none;width:100%;height:calc(100vh - 76px);overflow-y:auto;align-self:stretch;position:relative}.missionContent h1{font-size:clamp(48px,5.4vw,82px);max-width:880px}.missionLabel span,.missionLabel i,.resultEyebrow{font-size:22px}.companyChip strong{font-size:28px}.companyChip span{font-size:24px}.storyText{font-size:clamp(24px,1.8vw,30px);max-width:850px}.objectiveBox{max-width:850px}.objectiveBox small{font-size:20px}.objectiveBox p{font-size:28px}.decisionList{max-width:900px}.decisionList strong{font-size:28px}.decisionList small{font-size:24px}.decisionList button>span{font-size:24px}.decisionPrereqNote{display:flex;align-items:center;gap:5px;margin-top:7px;font:18px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:rgba(57,239,180,.55)}.decisionPrereqNote b{font-size:20px;color:rgba(57,239,180,.45)}.metrics{max-width:850px}.metrics span{font-size:22px}.metrics strong{font-size:36px}.characterTag small{font-size:18px}.characterTag strong{font-size:28px}
+.asis .missionContent{overflow-y:hidden;height:calc(100vh - 76px);display:flex;flex-direction:column;padding-top:1.5vw;padding-bottom:1.5vw}
+.asis .missionContent .asisHeader{flex-shrink:0}
+.asis .missionContent .asisIntroText{flex-shrink:0}
+.asis .missionContent .missionLabel{flex-shrink:0}
 .companyLead{font-size:28px}.companyStats span{font-size:20px}.companyCopy blockquote{font-size:28px}.mapPoint span{font-size:14px}.mapLegend b{font-size:14px}.priorityIntro>p:not(.eyebrow){font-size:28px}.priorityPersona span{font-size:28px}.priorityPersona small{font-size:18px}.priorityItem b{font-size:39px}.priorityItem small{font-size:30px}.priorityItem>strong{font-size:28px}.missionMenuIntro>div:first-child>p:last-child{font-size:36px}.missionCard h2{font-size:clamp(23px,1.9vw,31px)}.missionCard p{font-size:22px}.missionCardBottom small{font-size:16px}.missionCardBottom b{font-size:20px}.missionCardNeedsLabel{font-size:18px!important}.missionCardNeed{font-size:20px}.missionCardNeedName{font-size:20px}.missionCardNeedRC{font-size:16px!important}.missionCardNeedCap{font-size:17px}.asIsGrid h2{font-size:28px}.asIsGrid p{font-size:22px}.asIsGrid article>div span{font-size:22px}.asIsGrid article>div b{font-size:18px}
+/* Foundation "PERCHÉ SELEZIONARE" font overrides ×1.8 */
+.dfStickyLeft h1{font-size:clamp(40px,4.3vw,58px)}
+.dfSubtitle{font-size:36px}
+.dfScoreBoxLabel{font-size:36px!important}
+.dfScoreBox strong{font-size:76px}
+.dfScoreBox strong em{font-size:76px}
+.dfContinueBtn{font-size:36px!important}
+.dfHint{font-size:36px}
+.dfColH{font-size:36px!important}
+.dfItemNum{font-size:36px!important}
+.dfItemQ{font-size:36px!important}
+.dfRatingBtn{font-size:36px!important;padding:12px 20px!important}
+.dfRowPts{font-size:36px!important}
+.dfRowCap p,.dfRowBen p{font-size:36px!important}
+.dfRowColLabel{font-size:36px!important}
+.dfRowColEmpty{font-size:36px}
 /* Welcome screen font overrides */
 .welcomeLabel{font-size:16px!important}.welcomeEmpty{font-size:18px}.welcomeSavedTitle{font-size:16px!important}.welcomeSavedInfo strong{font-size:20px}.welcomeSavedInfo small{font-size:16px}.welcomeLoadBtn{font-size:16px}.welcomeDeleteBtn{font-size:16px}
 /* Bridge screen font overrides */

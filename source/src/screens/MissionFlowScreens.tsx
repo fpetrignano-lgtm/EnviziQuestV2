@@ -1,6 +1,7 @@
 import type { Outcome, Profile } from "../types";
 import type { CommonProps } from "./types";
 import { missionCatalog, imageFor } from "../constants";
+import { lookup4x4 } from "../4x4Matrix";
 
 interface ActiveScenario {
   briefing: string;
@@ -87,7 +88,7 @@ export function MissionFlowScreen({
     <section className="characterStage">
       <img src={imageFor(profile,screen)} alt={`${name} · ${screen}`}/>
       <div className="characterTag"><span className="statusDot"/><div><small>ESG MANAGER</small><strong>{name}</strong></div></div>
-      {screen==="trust"&&<button className="actionButton trustStageCta" onClick={()=>setScreen(selectedMission===0?"milestone":selectedMission===1?"energyFoundation":selectedMission===2?"supplyFoundation":selectedMission===3?"reportingFoundation":selectedMission===4?"planningFoundation":selectedMission===5?"frameworkFoundation":"missions")}>{t.trustContinue}<b>→</b></button>}
+      {screen==="trust"&&<button className="actionButton trustStageCta" onClick={()=>setScreen(selectedMission===0?"milestone":"asis")}>{t.trustContinue}<b>→</b></button>}
     </section>
     <section className="missionContent">
       <div className="missionLabel"><span>{t.mission} {String(selectedMission+1).padStart(2,"0")}</span><i>90 DAYS</i></div>
@@ -100,25 +101,47 @@ export function MissionFlowScreen({
           {effects.length>0&&<div className="crossEffectBanners">{effects.map((e:any)=>{const o=missionOutcomes[e.from] as Outcome;const msg=e[o as keyof typeof e] as string;return<div key={e.from} className={`crossEffectBanner ${o}`}><span className="crossEffectIcon">{o==="positive"?"✓":"!"}</span><p><strong>{t.crossEffectLabel} · {language==="it"?missionCatalog[e.from].it:missionCatalog[e.from].en}:</strong> {msg}</p></div>})}</div>}
           <p className="storyText">{(active.briefing as string).replace("COMPANY_NAME",displayCompanyName).replace("PLANTS_COUNT",String(companyDims[1]))}</p>
           <div className="objectiveBox"><small>{t.objective}</small><p>{active.objectiveText}</p></div>
-          <button className="actionButton" onClick={()=>{if(selectedMission===0){setPmMissionFilter(0);setPmFromBriefing(true);setScreen("asis");}else{setScreen("missionIntro");}}}>{t.analyse}<b>→</b></button>
+          <button className="actionButton" onClick={()=>{if(selectedMission===0){setPmMissionFilter(0);setPmFromBriefing(true);setScreen("compare");}else{setScreen("missionIntro");}}}>{t.analyse}<b>→</b></button>
         </>;
       })()}
 
       {screen==="asis"&&(()=>{
         const ratingVal = {"alto":25,"medio":12,"basso":0};
-        const currentRatings = asIsRatings[selectedMission]||(active.asIsItems.map(()=>"alto" as "alto"|"medio"|"basso"));
-        const total = currentRatings.reduce((s,r)=>s+ratingVal[r],0);
-        const totalColor = total<=25?"#39efb4":total<=50?"#f5c542":"#ff6b6b";
-        const totalLabel = language==="it"?(total<=25?"BASSA":total<=50?"MEDIA":"ALTA"):(total<=25?"LOW":total<=50?"MEDIUM":"HIGH");
-        const setRating = (i:number,v:"alto"|"medio"|"basso")=>{const next=[...currentRatings];next[i]=v;setAsIsRatings({...asIsRatings,[selectedMission]:next});};
+        const savedRatings = asIsRatings[selectedMission];
+        const currentRatings: ("alto"|"medio"|"basso"|null)[] = savedRatings ?? active.asIsItems.map(()=>null);
+        const allSelected = currentRatings.every(r=>r!==null);
+        const total = allSelected ? (currentRatings as ("alto"|"medio"|"basso")[]).reduce((s,r)=>s+ratingVal[r],0) : null;
+        const totalColor = total===null?"#5a7a70":total<=25?"#39efb4":total<=50?"#f5c542":"#ff6b6b";
+        const totalLabel = total===null?"—":language==="it"?(total<=25?"BASSA":total<=50?"MEDIA":"ALTA"):(total<=25?"LOW":total<=50?"MEDIUM":"HIGH");
+        const setRating = (i:number,v:"alto"|"medio"|"basso")=>{const next=[...currentRatings] as ("alto"|"medio"|"basso"|null)[];next[i]=v;setAsIsRatings({...asIsRatings,[selectedMission]:next as ("alto"|"medio"|"basso")[]});};
+        const matrixEntry = (selectedMission===0 && allSelected) ? lookup4x4(currentRatings as ("alto"|"medio"|"basso")[]) : null;
+        const fitColor = matrixEntry ? (matrixEntry.fitEnvizi==="strategico"?"#ff6b6b":matrixEntry.fitEnvizi==="strutturale"?"#f5c542":matrixEntry.fitEnvizi==="evolutivo"?"#ffab77":"#7a9a90") : "#7a9a90";
         return <>
           <div className="asisHeader"><div><p className="resultEyebrow">{t.asIsKicker}</p><h1>{active.asIsTitle}</h1></div></div>
           <p className="storyText asisIntroText">{(active.asIsIntro as string).replace("COMPANY_NAME",displayCompanyName)}</p>
-          <div className="asIsRatingGrid">{active.asIsItems.map((item,i)=>{const r=currentRatings[i];return<article key={item.title} className={`asIsRatingCard asIsRating-${r}`}><div className="asIsRatingCardTop"><h2>{item.title}</h2><p>{item.detail}</p></div><div className="asIsRatingButtons"><button className={`asIsRatingBtn${r==="alto"?" asIsRatingBtnActive asIsRatingBtnAlto":""}`} onClick={()=>setRating(i,"alto")}>{language==="it"?"Alto":"High"}</button><button className={`asIsRatingBtn${r==="medio"?" asIsRatingBtnActive asIsRatingBtnMedio":""}`} onClick={()=>setRating(i,"medio")}>{language==="it"?"Medio":"Medium"}</button><button className={`asIsRatingBtn${r==="basso"?" asIsRatingBtnActive asIsRatingBtnBasso":""}`} onClick={()=>setRating(i,"basso")}>{language==="it"?"Basso":"Low"}</button></div></article>})}</div>
-          <div className="asisTotal"><span className="asisTotalLabel">{language==="it"?"Criticità totale":"Total criticality"}</span><span className="asisTotalScore" style={{color:totalColor}}>{total}<span className="asisTotalMax">/100</span></span><span className="asisTotalBadge" style={{color:totalColor,borderColor:totalColor}}>{totalLabel}</span></div>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"8px"}}>
-            <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
-            <button className="actionButton asisBottomBtn" onClick={()=>setScreen("compare")}>{t.proceedDecision}<b>→</b></button>
+          <div className="asisMainLayoutWithPanel">
+            <div className="asisLeftCol">
+              <div className="asIsRatingGrid">{active.asIsItems.map((item,i)=>{const r=currentRatings[i];return<article key={item.title} className={`asIsRatingCard${r?" asIsRating-"+r:""}`}><div className="asIsRatingCardTop"><h2>{item.title}</h2><p>{item.detail}</p></div><div className="asIsRatingButtons"><button className={`asIsRatingBtn${r==="alto"?" asIsRatingBtnActive asIsRatingBtnAlto":""}`} onClick={()=>setRating(i,"alto")}>{language==="it"?"Alto":"High"}</button><button className={`asIsRatingBtn${r==="medio"?" asIsRatingBtnActive asIsRatingBtnMedio":""}`} onClick={()=>setRating(i,"medio")}>{language==="it"?"Medio":"Medium"}</button><button className={`asIsRatingBtn${r==="basso"?" asIsRatingBtnActive asIsRatingBtnBasso":""}`} onClick={()=>setRating(i,"basso")}>{language==="it"?"Basso":"Low"}</button></div></article>})}</div>
+              {allSelected&&<div className="asisTotal"><span className="asisTotalLabel">{language==="it"?"Criticità totale":"Total criticality"}</span><span className="asisTotalScore" style={{color:totalColor}}>{total}<span className="asisTotalMax">/100</span></span><span className="asisTotalBadge" style={{color:totalColor,borderColor:totalColor}}>{totalLabel}</span></div>}
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginTop:"8px"}}>
+                <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
+                <button className="actionButton asisBottomBtn" onClick={()=>setScreen(selectedMission===0?"dataFoundation":selectedMission===1?"energyFoundation":selectedMission===2?"supplyFoundation":selectedMission===3?"reportingFoundation":selectedMission===4?"planningFoundation":selectedMission===5?"frameworkFoundation":"missions")}>{language==="it"?"Continua →":"Continue →"}<b>→</b></button>
+              </div>
+            </div>
+            {selectedMission===0&&<aside className="asisInsightPanel">
+              {matrixEntry ? <>
+                <div className="asisInsightHeader">
+                  <small className="asisInsightKicker">{language==="it"?"DIAGNOSI 4×4":"4×4 DIAGNOSIS"}</small>
+                  <h3 className="asisInsightTitle">{matrixEntry.diagnosi}</h3>
+                  <span className="asisInsightFitBadge" style={{borderColor:fitColor,color:fitColor}}>{language==="it"?"FIT ENVIZI":"ENVIZI FIT"} · {matrixEntry.fitEnvizi.toUpperCase()}</span>
+                </div>
+                <p className="asisInsightCopy">{matrixEntry.copyApp}</p>
+                <div className="asisInsightRec">
+                  <small className="asisInsightRecLabel">{language==="it"?"RACCOMANDAZIONE":"RECOMMENDATION"}</small>
+                  <p className="asisInsightRecText">{matrixEntry.raccomandazione}</p>
+                </div>
+              </> : <p className="asisInsightEmpty">{language==="it"?"Seleziona tutti i valori per vedere la diagnosi.":"Select all values to see the diagnosis."}</p>}
+            </aside>}
           </div>
         </>;
       })()}

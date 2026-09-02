@@ -86,7 +86,6 @@ export function DataFoundationScreen({ language, profile, setLanguage, setScreen
       </div>
       <div className="dfStickyRight">
         <div className="dfScoreBox"><span className="dfScoreBoxLabel">{isIt?"Punteggio rilevanza":"Relevance score"}</span><strong className={dfHighlight?"dfScoreHigh":""}>{dfScore}<em>/100</em></strong><div className="dfScoreTrack"><span className="dfScoreFill" style={{width:`${dfPct}%`,background:dfHighVery?"#39efb4":"#ffc07c"}}/></div></div>
-        <button className="introBackBtn" onClick={()=>goBack()}>← {isIt?"Indietro":"Back"}</button>
         <button className="actionButton dfContinueBtn" disabled={!allRated} onClick={()=>setScreen("dfConclusion")}>{isIt?"Continua →":"Continue →"}</button>
         {!allRated&&<p className="dfHint">{isIt?"Valuta tutti i requisiti per continuare.":"Rate all requirements to continue."}</p>}
       </div>

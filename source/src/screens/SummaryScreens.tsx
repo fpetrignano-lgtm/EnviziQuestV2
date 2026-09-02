@@ -165,7 +165,7 @@ export function MilestoneScreen({ language, profile, setLanguage, setScreen, res
           </h1>
           <div style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
             <button className="secondaryAction" onClick={()=>goBack()}>{isIt?"\u2190 Indietro":"\u2190 Back"}</button>
-            <button className="actionButton" style={{width:"auto",marginTop:0,padding:"12px 16px"}} onClick={()=>setScreen("dataFoundation")}>{isIt?"Approfondiamo perch\u00e9 Envizi \u2192":"Let\u2019s explore why Envizi \u2192"}</button>
+            <button className="actionButton" style={{width:"auto",marginTop:0,padding:"12px 16px"}} onClick={()=>setScreen("asis")}>{isIt?"Approfondiamo perch\u00e9 Envizi \u2192":"Let\u2019s explore why Envizi \u2192"}</button>
           </div>
           {renderSaveBtn(isIt)}
         </div>

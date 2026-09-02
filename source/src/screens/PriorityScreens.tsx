@@ -503,7 +503,7 @@ export function PriorityMatrixScreen({
         <h2 className="pmMatrixTitle">{isIt?"Esigenze di gestione dei dati ESG: Priorità di intervento":"ESG data management needs: Intervention priorities"}</h2>
         <div className="pmMatrixSpacer"><div className="pmMatrixSpacerLine"/><div className="pmMatrixSpacerLine"/><div className="pmMatrixSpacerLine"/></div>
         {pmFromBriefing
-          ? <button className="actionButton pmCta" onClick={()=>{setPmFromBriefing(false);setScreen("asis");}}>{isIt?"Continua verso l'AS-IS →":"Continue to AS-IS →"}</button>
+          ? <button className="actionButton pmCta" onClick={()=>{setPmFromBriefing(false);setScreen("compare");}}>{isIt?"Continua verso l'AS-IS →":"Continue to AS-IS →"}</button>
           : <button className="actionButton pmCta" onClick={()=>setScreen("chapterOneSummary")}>{isIt?"Inizia le sfide →":"Start challenges →"}<b>→</b></button>
         }
         <svg className="pmSvg" viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`} preserveAspectRatio="xMidYMid meet" style={{transition:"viewBox .35s"}}>
