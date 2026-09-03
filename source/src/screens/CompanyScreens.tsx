@@ -271,8 +271,6 @@ export function CompanySetupScreen({
               <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
             </div>
             <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
-            {/* Mappa sedi */}
-            <CsSiteMap siteTable={siteTable} siteRowDefs={siteRowDefs} isIt={isIt}/>
           </div>
         </div>
       </div>
