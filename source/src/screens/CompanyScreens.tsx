@@ -5,6 +5,7 @@ import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../con
 interface CompanySetupProps extends CommonProps {
   companyName: string;
   setCompanyName: (v: string) => void;
+  questName: string;
   companySector: SectorKey;
   setCompanySector: (v: SectorKey) => void;
   companyMarket: Market;
@@ -27,7 +28,7 @@ interface CompanySetupProps extends CommonProps {
 
 export function CompanySetupScreen({
   language, profile, setLanguage, setScreen, reset,
-  companyName, setCompanyName, companySector, setCompanySector,
+  companyName, setCompanyName, questName, companySector, setCompanySector,
   companyMarket, setCompanyMarket, esgReadiness, setEsgReadiness,
   companyDims, updateCompanyDim, setCompanyDims, geoDistrib, setGeoDistrib, name,
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
@@ -60,7 +61,7 @@ export function CompanySetupScreen({
         <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
         <div className="csFormTwoCol">
           <div className="csFormLeft">
-            <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName} onChange={e=>setCompanyName(e.target.value)}/></div>
+            <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
             <div className="csField">
               <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
               <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
