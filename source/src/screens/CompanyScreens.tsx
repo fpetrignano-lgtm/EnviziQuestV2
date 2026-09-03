@@ -357,7 +357,6 @@ export function CompanyScreen({
         <h1 style={{margin:0}}>{displayCompanyName}</h1>
         {companyLogo && <img src={companyLogo} alt="logo" style={{height:"48px",maxWidth:"140px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"4px"}}/>}
       </div>
-      <p className="companySubtitle">{isIt?"Edita con i tuoi valori o prosegui con i default mostrati":"Edit with your values or continue with the defaults shown"}</p>
       <p className="companyLead">{companyStoryGen}</p>
       <div className="companyStats">
         <div><strong>{dimVal}</strong><span>{dimUnit}</span></div>
