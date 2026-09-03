@@ -138,11 +138,18 @@ Quando l'utente scrive **SCONG** seguito dal nome della slide, la slide torna mo
 - `App.tsx` → schermata welcome — "Benvenuto alla Envizi Quest" — **NON TOCCARE JSX NÉ CSS** (`.welcomeScreen`, `.welcomeTitle`, `.welcomePanel`, `.welcomeSubtitle`, `.welcomeBlueBar`) senza SCONG esplicito 🔒
 - `Blank1.tsx` — `08 · blank1` — "La presentazione Envizi" 🔒
 - `App.tsx` → `4 · approach` — "People & Data" 🔒
+
 - `ApproachScreens.tsx` — tutte le slide approach (`10·approachIntro`, `11·approachSteps`, `12·approachData`, `13·approachDecisions`, `14·approachRoadmap`, `15·approachTrust`, `16·approachReport`) 🔒
 - `App.tsx` → `17 · intro` — "Guadagna la fiducia" 🔒
 - `App.tsx` → `18 · separatorNext` — "Partiamo dagli obiettivi" 🔒
 - `App.tsx` → `19 · approachStepsCopy` — "Il percorso" (step 1 obiettivi) 🔒
-- `CompanyScreens.tsx` → `20 · companySetup` — "La tua azienda" 🔒
+- `CompanyScreens.tsx` → `20 · companySetup` — "La tua azienda" 🔒 *(congelata dall'utente)*
+- `CompanyScreens.tsx` → `21 · company` — "Company Profile" 🔒
+- `PriorityScreens.tsx` → `22 · priorities` — "Business Priorities" 🔒
+- `PriorityScreens.tsx` → `23 · approachDataCopy` — "I dati al centro" 🔒
+- `PriorityScreens.tsx` → `24 · priorityData` — "Data Needs" 🔒 *(ricongelata)*
+- `PriorityScreens.tsx` → `25 · priorityMatrix` — "Priority Matrix" 🔒
+- `App.tsx` → `26 · chapterOneSummary` — "Il tuo report iniziale" 🔒 *(schema Blank1: SummarySlide in flex:1, nav+download fuori)*
 
 ---
 

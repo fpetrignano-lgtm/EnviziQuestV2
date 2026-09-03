@@ -274,9 +274,13 @@ export interface SummaryPptxData {
   isIt: boolean;
   // extra fields used by template PPTX
   geoDistrib?: Record<string, number>;
+  siteTable?: Record<string, Record<string, number>>;
   workshopDate?: string;
   consultantName?: string;
   companyLogo?: string;
+  participantRole?: string;
+  participantCompany?: string;
+  reportingPath?: 0|1|2|3|4|5;
 }
 
 export function generateSummaryPptx(data: SummaryPptxData) {

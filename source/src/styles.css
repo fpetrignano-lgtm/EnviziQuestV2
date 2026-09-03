@@ -109,13 +109,13 @@ rre
 .priorityRankInputTop{}
 .priorityRankInputTop:focus{color:#fff;box-shadow:0 0 0 4px rgba(57,239,180,.18)}
 /* ── priorities cards layout ── */
-.priorityScreenCards{grid-template-columns:1fr!important;grid-template-rows:76px 1fr}
-.prioCardsLayout{display:grid;grid-template-columns:minmax(280px,.3fr) 1fr;gap:0;height:calc(100vh - 76px);overflow:hidden}
+.priorityScreenCards{grid-template-columns:1fr!important;height:1080px;grid-template-rows:76px 1fr}
+.prioCardsLayout{display:grid;grid-template-columns:minmax(280px,.3fr) 1fr;gap:0;height:calc(1080px - 76px);overflow:hidden}
 .prioCardsIntro{align-self:center;padding:4vw 2vw 4vw 5vw}
 .prioCardsIntro h1{font-size:clamp(28px,3vw,44px);line-height:1;letter-spacing:-.05em;margin:0 0 14px}
 .prioCardsIntro>p{font-size:28px;color:#c9e8dc;line-height:1.6;max-width:380px;margin:0}
-.prioCardsArea{display:flex;flex-direction:column;padding:16px 3vw 16px 1.5vw;height:100%;box-sizing:border-box}
-.prioCardGrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-auto-rows:1fr;gap:10px;flex:1;min-height:0;margin-bottom:14px}
+.prioCardsArea{display:flex;flex-direction:column;padding:16px 3vw 16px 1.5vw;height:100%;box-sizing:border-box;overflow:hidden}
+.prioCardGrid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-auto-rows:1fr;gap:10px;flex:1;min-height:0;overflow-y:auto;margin-bottom:10px}
 .prioCard{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;border:1px solid #3b6556;border-radius:14px;background:rgba(10,27,21,.87);transition:.2s;overflow:hidden;position:relative}
 .prioCard:hover{border-color:#3b6556}
 .prioCardTop{border-color:rgba(57,239,180,.28);background:rgba(10,30,22,.95)}
@@ -123,8 +123,8 @@ rre
 .prioCardRank{position:absolute;top:10px;left:12px;font:700 72px var(--font-geist-mono);color:var(--teal);line-height:1;z-index:2;background:rgba(7,17,14,.7);border-radius:6px;padding:6px 12px}
 .prioCardImg{width:100%;aspect-ratio:16/7;object-fit:cover;display:block;border-bottom:1px solid #1e3a2e}
 .prioCardBody{display:flex;flex-direction:column;gap:5px;padding:12px 14px;flex:1}
-.prioCardName{font-size:28px;font-weight:700;color:#e8f5ef;line-height:1.3}
-.prioCardDetail{font-size:24px;color:#b8d8cc;line-height:1.45;flex:1}
+.prioCardName{font-size:clamp(24px,2.175vw,31.5px);font-weight:700;color:#b5c9c1;line-height:1.55}
+.prioCardDetail{font-size:clamp(17.3px,1.566vw,22.7px);color:#b5c9c1;line-height:1.55;flex:1}
 .prioCardMove{display:flex;gap:6px;padding:8px 14px 10px;border-top:1px solid #1a2e26}
 .prioMoveBtn{flex:1;height:26px;border:1px solid #3b6556;border-radius:5px;background:#0c1e18;color:#7ab8a0;font-size:22px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;padding:0}
 .prioMoveBtn:hover:not(:disabled){border-color:var(--teal);color:var(--teal);background:#0e2a20}
@@ -167,15 +167,15 @@ rre
 @media(max-width:1100px){.prioCardGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:750px){.prioCardsLayout{grid-template-columns:1fr;height:auto}.prioCardsIntro{padding:32px 20px 12px}.prioCardsArea{padding:12px 20px 40px;height:auto}.prioCardGrid{grid-template-columns:1fr 1fr}}
 /* ── Page 7: priorityData — SLIDE layout ── */
-.pdSlideScreen{height:100vh;background:#07110e;display:grid;grid-template-rows:76px auto 1fr;overflow:hidden}
+.pdSlideScreen{height:1080px;background:#07110e;display:grid;grid-template-rows:76px auto 1fr;overflow:hidden;position:relative}
 /* Top bar */
 .pdSlideTopBar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:24px;padding:20px 28px 20px;border-bottom:2px solid #152920;background:rgba(5,12,10,.85);flex-shrink:0}
 .pdSlideTopLeft{display:flex;flex-direction:column;gap:12px}
-.pdSlideTitleLabel{font:600 22px var(--font-geist-mono);letter-spacing:.14em;text-transform:uppercase;color:#39efb4;margin:0}
+.pdSlideTitleLabel{font:clamp(24px,2.175vw,31.5px)/1.55 var(--font-geist-mono);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#b5c9c1;margin:0}
 .pdSlideObjHeader{display:flex;align-items:baseline;gap:18px;margin-top:4px}
 .pdSlideObjNum{font:700 clamp(52px,5vw,80px) var(--font-geist-mono);color:#39efb4;line-height:1;flex-shrink:0}
 .pdSlideObjMeta{font:600 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#7ecfb8;margin-right:8px}
-.pdSlideObjName{font-size:clamp(28px,3vw,48px);font-weight:700;color:#f2fff9;line-height:1.2}
+.pdSlideObjName{font-size:clamp(28px,3vw,44px);font-weight:520;letter-spacing:-.05em;color:#b5c9c1;line-height:1}
 /* Nav row */
 .pdSlideNavRow{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
 .pdSlideDots{display:flex;gap:8px;align-items:center}
@@ -194,7 +194,7 @@ rre
 .pdSlideColHeader{display:grid;grid-template-columns:1fr 64px 240px 240px;align-items:center;padding:10px 24px;background:rgba(6,14,11,.98);border-bottom:2px solid #1a3328;position:sticky;top:0;z-index:3}
 .pdSlideColHLabel{font:700 20px var(--font-geist-mono);letter-spacing:.14em;text-transform:uppercase;color:#7ecfb8}
 .pdSlideColHIncl{font:700 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#39efb4;text-align:center}
-.pdSlideColHScore{font:700 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#4a7a6a;text-align:center;border-left:1px solid #0f2a1f;padding:0 14px}
+.pdSlideColHScore{font:700 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#b5c9c1;text-align:center;border-left:1px solid #0f2a1f;padding:0 14px}
 /* Each need row */
 .pdSlideRow{display:grid;grid-template-columns:1fr 64px 240px 240px;align-items:center;border-bottom:1px solid #0f1f19;min-height:88px;transition:.12s}
 .pdSlideRow:hover{background:rgba(57,239,180,.025)}
@@ -202,7 +202,7 @@ rre
 .pdSlideRowDimmed .pdSlideRowScore{opacity:.2;pointer-events:none}
 .pdSlideRowLabel{display:flex;align-items:baseline;gap:14px;padding:16px 20px 16px 24px}
 .pdSlideRowCode{font:700 24px var(--font-geist-mono);white-space:nowrap;flex-shrink:0;letter-spacing:.1em;color:inherit}
-.pdSlideRowText{font-size:clamp(22px,2vw,32px);line-height:1.4;font-style:italic;color:inherit}
+.pdSlideRowText{font-size:clamp(17.3px,1.566vw,22.7px);line-height:1.55;font-style:italic;color:inherit}
 .pdSlideRowIncl{display:flex;align-items:center;justify-content:center;height:100%;border-left:1px solid #0f2a1f}
 .pdSlideRowScore{display:flex;align-items:center;gap:10px;padding:0 16px;height:100%;border-left:1px solid #0f2a1f}
 .pdSlideRowScore .pdScoreSlider{flex:1;min-width:0}
@@ -1380,26 +1380,66 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .pdSlideRowSelected .pdSlideRowLabelClickable{background:rgba(57,239,180,.1)}
 .pdSlideRowSelectHint{font-size:14px;margin-left:8px;opacity:.6;flex-shrink:0;align-self:center}
 
-.pdUseCaseBox{margin:0;padding:16px 24px;border-top:2px solid #1a3328;background:#06100d;transition:background .2s}
-.pdUseCaseBoxActive{background:#071a12;border-top-color:#39efb4}
+/* ── priorityData need detail modal ── */
+.pdNeedModalOverlay{position:absolute;inset:0;z-index:200;background:rgba(3,12,9,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:40px}
+.pdNeedModal{background:#071913;border:1px solid rgba(57,239,180,.25);border-radius:18px;box-shadow:0 32px 80px rgba(0,0,0,.6);max-width:720px;width:100%;max-height:calc(1080px - 120px);display:flex;flex-direction:column;overflow:hidden}
+.pdNeedModalHead{display:flex;align-items:flex-start;gap:14px;padding:24px 28px 18px;border-bottom:1px solid #1a3328;flex-shrink:0}
+.pdNeedModalIcon{font-size:26px;flex-shrink:0;line-height:1.2;margin-top:2px}
+.pdNeedModalLabel{font-size:clamp(18px,1.7vw,26px);font-weight:700;color:#d9f2e9;line-height:1.35;flex:1}
+.pdNeedModalClose{flex-shrink:0;background:none;border:1px solid #2a4a3a;border-radius:8px;color:#7ecfb8;font-size:16px;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s;padding:0;margin-top:2px}
+.pdNeedModalClose:hover{background:rgba(57,239,180,.12);border-color:#39efb4;color:#39efb4}
+.pdNeedModalBody{padding:24px 28px 28px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+/* vote section inside modal */
+.pdNeedModalVote{margin-top:18px;padding-top:18px;border-top:1px solid #1a3328;display:flex;flex-direction:column;gap:14px}
+.pdNeedModalVoteQ{margin:0;font-size:clamp(16px,1.45vw,21px);color:#c2d8cc;line-height:1.5;font-style:italic}
+.pdNeedModalScores{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.pdNeedModalScoreCol{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:80px}
+.pdNeedModalScoreLabel{font:700 11px var(--font-geist-mono,monospace);letter-spacing:.14em;text-transform:uppercase;color:#7ecfb8}
+.pdNeedModalScoreLabelRel{color:#7dd3fc}
+.pdNeedModalScoreLabelCrit{color:#ff8080}
+.pdNeedModalStepper{display:flex;flex-direction:column;align-items:center;gap:4px}
+.pdNeedModalStep{width:36px;height:36px;border-radius:8px;border:1px solid #2a4a3a;background:#0a1f18;color:#39efb4;font-size:16px;cursor:pointer;transition:.12s;display:flex;align-items:center;justify-content:center;padding:0;line-height:1}
+.pdNeedModalStep:hover:not(:disabled){background:rgba(57,239,180,.15);border-color:#39efb4}
+.pdNeedModalStep:disabled{opacity:.25;cursor:default}
+.pdNeedModalVal{font:700 32px var(--font-geist-mono,monospace);color:#b5c9c1;line-height:1;min-width:60px;text-align:center}
+.pdNeedModalValHigh{color:#39efb4}
+.pdNeedModalValMax{font-size:14px;color:#4a7a68;font-weight:400;margin-left:1px}
+.pdNeedModalScoreHint{font-size:11px;color:#4a7a68;text-align:center;line-height:1.4;max-width:90px}
+.pdNeedModalInclCol{justify-content:center;gap:8px}
+.pdInclBtnLg{width:36px!important;height:36px!important;border-radius:50%!important}
 
-.pdUseCaseBoxHint{margin:0;display:flex;align-items:center;gap:10px;font-size:clamp(17px,1.5vw,22px);color:#4a7a6a;font-style:italic}
-.pdUseCaseBoxHintIcon{color:#39efb4;font-size:18px;flex-shrink:0}
-
-.pdUseCaseBoxHeader{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
-.pdUseCaseBoxIcon{font-size:22px;flex-shrink:0;line-height:1.2}
-.pdUseCaseBoxLabel{font-size:clamp(18px,1.6vw,24px);font-weight:700;color:#d9f2e9;line-height:1.35;flex:1}
-.pdUseCaseBoxClose{flex-shrink:0;background:none;border:1px solid #2a4a3a;border-radius:6px;color:#7ecfb8;font-size:14px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.12s;padding:0}
-.pdUseCaseBoxClose:hover{background:rgba(57,239,180,.12);border-color:#39efb4;color:#39efb4}
+/* custom row */
+.pdSlideRowCustom{border-top:1px dashed #1e3a2e}
+/* custom modal inputs */
+.pdCustomTitleWrap{display:flex;flex-direction:column;gap:6px}
+.pdCustomTitleLabel{font:700 11px var(--font-geist-mono,monospace);letter-spacing:.14em;text-transform:uppercase;color:#7ecfb8}
+.pdCustomTitleInput{background:#fff;border:1.5px solid #b0d0c0;border-radius:8px;padding:10px 14px;font:inherit;font-size:clamp(15px,1.3vw,18px);color:#0d2a1e;outline:none;transition:.15s;width:100%;box-sizing:border-box}
+.pdCustomTitleInput:focus{border-color:#39efb4;box-shadow:0 0 0 2px rgba(57,239,180,.18)}
+.pdCustomMemoArea{background:#f7fcfa;border:1.5px solid #b0d0c0;border-radius:8px;padding:10px 14px;font:inherit;font-size:clamp(14px,1.2vw,17px);color:#0d2a1e;outline:none;resize:vertical;transition:.15s;width:100%;box-sizing:border-box;line-height:1.55}
+.pdCustomMemoArea:focus{border-color:#39efb4;box-shadow:0 0 0 2px rgba(57,239,180,.18)}
+.pdCustomMemoArea::placeholder,.pdCustomTitleInput::placeholder{color:#8ab8a8}
 
 .pdUseCaseBoxContent{display:flex;flex-direction:column;gap:8px}
 .pdUseCaseLine{margin:0;font-size:clamp(16px,1.45vw,22px);line-height:1.55;color:#b8d8cc}
 .pdUseCaseLine strong{color:#39efb4;font-weight:700}
 .pdUseCaseExample{margin-top:12px;padding-top:12px;border-top:1px solid #1e3d2e}
-.pdUseCaseExampleLabel{margin:0 0 6px;font-size:clamp(26px,2.2vw,34px);text-transform:uppercase;letter-spacing:.06em;color:#39efb4}
-.pdUseCaseExampleText{margin:0;font-size:clamp(30px,2.7vw,40px);line-height:1.6;color:#d0ede3;font-style:italic}
+.pdUseCaseExampleLabel{margin:0 0 6px;font-size:clamp(18.2px,1.54vw,23.8px);text-transform:uppercase;letter-spacing:.06em;color:#39efb4}
+.pdUseCaseExampleText{margin:0;font-size:clamp(21px,1.89vw,28px);line-height:1.6;color:#d0ede3;font-style:italic}
 
 /* SectionIntroSlide — CS1 blue bars */
 .sectionIntroSlide>.welcomeBlueBar:first-child{position:absolute;top:0;left:0;right:0;z-index:100;width:100%}
 .sectionIntroSlide>.welcomeBlueBar:last-child{position:absolute;bottom:0;left:0;right:0;z-index:100;width:100%}
 .sectionIntroSlide .welcomeBlueBar{flex-shrink:0}
+
+/* ── geoMapsSection — geographic distribution cards on CompanyScreen ── */
+.geoMapsSection{grid-column:1/-1;background:#07110e;padding:28px 3vw 24px;display:flex;flex-direction:column;gap:16px;overflow:hidden;border-top:1px solid #1e3a2e}
+.geoMapsGrid{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
+.geoMapCard{display:flex;flex-direction:column;gap:8px;padding:14px 16px;border:1px solid #2a4a3c;border-radius:12px;background:rgba(8,20,15,.7);min-width:130px;max-width:180px;flex-shrink:0}
+.geoMapImgWrap{width:100%;aspect-ratio:4/3;overflow:hidden;border-radius:7px;background:#0c2218;display:flex;align-items:center;justify-content:center}
+.geoMapSvg{width:100%;height:100%;object-fit:contain;opacity:.85;filter:saturate(.7) brightness(.9)}
+.geoMapLabel{font:700 clamp(13px,1.2vw,17px) var(--font-geist-mono);letter-spacing:.08em;text-transform:uppercase;color:#7ecfb8}
+.geoMapIcons{display:flex;flex-direction:column;gap:5px}
+.geoMapIconChip{font-size:clamp(11px,1vw,14px);font-weight:600;padding:3px 8px;border:1px solid;border-radius:6px;background:rgba(255,255,255,.04);white-space:nowrap;letter-spacing:.03em}
+.geoMapLegend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding-top:4px;border-top:1px solid #1e3a2e}
+.geoMapLegendItem{display:inline-flex;align-items:center;gap:5px;font-size:clamp(12px,1.1vw,15px);font-weight:600;font-family:var(--font-geist-mono,monospace);letter-spacing:.08em;text-transform:uppercase}
+.geoMapsEmpty{margin:0;font-size:clamp(16px,1.45vw,22px);color:#4a7a68;font-style:italic;padding:16px 0}

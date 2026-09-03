@@ -22,7 +22,8 @@ async function generateMapPng(
   market: string,
   geoDistrib: GeoDistrib,
   totalSites: number,
-  companyName: string
+  companyName: string,
+  siteTableCounts: Record<string, number>
 ): Promise<string | null> {
   const W = 840, H = 420;
 
@@ -53,18 +54,18 @@ async function generateMapPng(
       const hqY = GEO_PIN_PCT["italia"][1] / 100 * H;
       drawOfficePin(ctx, hqX, hqY, `HQ · ${companyName}`, "MILAN");
 
-      // Draw pins for other active geos
+      // Draw pins for other active geos — show absolute site counts
       for (const key of geoKeys.filter(k => k !== "italia")) {
-        const count = geoDistrib[key] ?? 0;
+        const count = siteTableCounts[key] ?? geoDistrib[key] ?? 0;
         if (count <= 0) continue;
         const [px, py] = GEO_PIN_PCT[key];
         const x = px / 100 * W;
         const y = py / 100 * H;
         const label = key === "europa" ? "EUROPA"
-          : key === "nordamerica" ? "N. AMERICA"
-          : key === "sudamerica" ? "S. AMERICA"
+          : key === "nordamerica" ? "NORD AMERICA"
+          : key === "sudamerica" ? "SUD AMERICA"
           : key.toUpperCase();
-        drawOfficePin(ctx, x, y, `${label} · ${count}%`);
+        drawOfficePin(ctx, x, y, `${label} · ${count}`);
       }
 
       resolve(canvas.toDataURL("image/png"));
@@ -488,52 +489,111 @@ function replaceSlide2Body(xml: string, lines: string[]): string {
   );
 }
 
+// ── Slide 2 right block replacement ──────────────────────────────────────────
+// Replaces the entire txBody of shape id=3 in slide 2 with the CSRD/reporting
+// decision text lines.
+function replaceSlide2RightBlock(xml: string, lines: string[]): string {
+  const RPR = `<a:rPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+  const PPR = `<a:pPr><a:defRPr sz="1125" b="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill></a:defRPr></a:pPr>`;
+
+  const paras = lines.map(line => {
+    if (line === "") {
+      return `<a:p>${PPR}<a:endParaRPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:endParaRPr></a:p>`;
+    }
+    return `<a:p>${PPR}<a:r>${RPR}<a:t>${escapeXml(line)}</a:t></a:r></a:p>`;
+  }).join("");
+
+  const newTxBody = `<p:txBody><a:bodyPr/><a:lstStyle/>${paras}</p:txBody>`;
+
+  return xml.replace(
+    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="3"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
+    `$1${newTxBody}$2`
+  );
+}
+
+// ── CSRD / reporting path lookup ──────────────────────────────────────────────
+const REPORTING_PATHS: Record<number, { status: { it: string; en: string }; decision: { it: string; en: string } }> = {
+  0: { status: { it: "Percorso di rendicontazione non selezionato", en: "Reporting path not selected" }, decision: { it: "", en: "" } },
+  1: { status: { it: "Standard VSME (rendicontazione volontaria semplificata)", en: "VSME Standard (simplified voluntary reporting)" }, decision: { it: "L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.", en: "The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain." } },
+  2: { status: { it: 'Report volontario "CSRD-aligned"', en: '"CSRD-aligned" voluntary report' }, decision: { it: "L'azienda è un'impresa medio-grande, un fornitore strategico, un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.", en: "The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements." } },
+  3: { status: { it: "Adozione integrale volontaria degli ESRS", en: "Full voluntary adoption of ESRS" }, decision: { it: "L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.", en: "The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders." } },
+  4: { status: { it: "CSRD obbligatoria", en: "Mandatory CSRD" }, decision: { it: "L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.", en: "The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations." } },
+  5: { status: { it: "Rendicontazione libera", en: "Free-form reporting" }, decision: { it: "L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.", en: "The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance." } },
+};
+
 // ── Main export ────────────────────────────────────────────────────────────────
 export async function generateTemplatePptx(data: SummaryPptxData): Promise<void> {
   const isIt = data.isIt;
 
-  // Geo distribution text
-  const geo = (data as any).geoDistrib as Record<string, number> | undefined;
-  const geoItalia      = geo?.italia      ?? 0;
-  const geoEuropa      = geo?.europa      ?? 0;
-  const geoAsia        = geo?.asia        ?? 0;
-  const geoNordAmerica = geo?.nordamerica ?? 0;
-  const geoAfrica      = geo?.africa      ?? 0;
-  const geoDistribText = `Italia ${geoItalia} · Europa ${geoEuropa} · N. America ${geoNordAmerica} · Asia ${geoAsia} · Africa ${geoAfrica}`;
+  // Resolve company name — prefer participantCompany over displayCompanyName placeholder
+  const participantCompany = data.participantCompany?.trim() || "";
+  const participantRole    = data.participantRole?.trim() || "";
+  const resolvedCompanyName = participantCompany || data.companyName;
+
+  // siteTable — absolute counts per geo
+  const siteTable = data.siteTable as Record<string, Record<string, number>> | undefined;
+  const siteRows = ["uffici", "ops", "datacenter", "altro"] as const;
+  const geoKeys2 = ["italia", "europa", "nordamerica", "sudamerica", "asia", "africa", "australia"] as const;
+
+  // siteColSum — total sites per geo (all types)
+  const siteColSum = (geo: string): number =>
+    siteRows.reduce((s, r) => s + ((siteTable?.[r]?.[geo]) ?? 0), 0);
+
+  // siteRowSum — total sites per row type (all geos)
+  const siteRowSum = (row: string): number =>
+    geoKeys2.reduce((s, g) => s + ((siteTable?.[row]?.[g]) ?? 0), 0);
+
+  // siteTableCountsForMap — per-geo totals (all types)
+  const siteTableCountsForMap: Record<string, number> = {};
+  for (const g of geoKeys2) siteTableCountsForMap[g] = siteColSum(g);
+
+  // Geo distribution
+  const geo = data.geoDistrib as Record<string, number> | undefined;
 
   // Workshop date / consultant
-  const wDate       = (data as any).workshopDate as string | undefined;
-  const wConsultant = (data as any).consultantName as string | undefined;
+  const wDate       = data.workshopDate;
+  const wConsultant = data.consultantName?.trim() || "";
   const dateStr     = wDate
     ? new Date(wDate).toLocaleDateString(isIt ? "it-IT" : "en-GB", { day: "2-digit", month: "long", year: "numeric" })
     : isIt ? "data da definire" : "date TBD";
-  const consultantStr = wConsultant || "IBM Envizi Team";
+  // Consultant string: one line per element (name, role, company)
+  const consultantStr = (() => {
+    const parts: string[] = [];
+    if (wConsultant) parts.push(wConsultant);
+    if (participantRole) parts.push(participantRole);
+    if (participantCompany) parts.push(participantCompany);
+    return parts.join("\n") || "IBM Envizi Team";
+  })();
 
-  // CSRD status text
-  const isCsrdIn   = data.csrdLabel.startsWith("Soggett") || data.csrdLabel.startsWith("Subject");
-  const csrdStatus = isCsrdIn
-    ? (isIt ? "Indicativamente DENTRO il perimetro CSRD" : "Indicatively WITHIN the CSRD scope")
-    : (isIt ? "Indicativamente FUORI dal perimetro CSRD" : "Indicatively OUTSIDE the CSRD scope");
+  // CSRD status / reporting path decision
+  const rPath = data.reportingPath ?? 0;
+  const pathEntry = REPORTING_PATHS[rPath] ?? REPORTING_PATHS[0];
+  const csrdStatus   = isIt ? pathEntry.status.it   : pathEntry.status.en;
+  const csrdDecision = isIt ? pathEntry.decision.it : pathEntry.decision.en;
+  const line7 = csrdDecision ? `${csrdStatus}\n${csrdDecision}` : csrdStatus;
 
-  // Slide 2 body — one entry per paragraph, matching the template's 16-paragraph structure.
-  // Empty strings produce empty <a:p> spacer paragraphs.
-  const dc = (data as any).dataCenters as number | undefined ?? 0;
-  const totalSedi = data.plants + data.offices + dc;
+  // Slide 2 body
+  const dc = data.dataCenters ?? 0;
   const year = new Date().getFullYear();
 
-  // Build geo line only with non-zero values
+  // Build geo line from siteTable absolute counts, including sudamerica + australia
   const geoEntries: string[] = [];
-  if ((geo?.italia ?? 0) > 0)      geoEntries.push(`Italia ${geo!.italia}%`);
-  if ((geo?.europa ?? 0) > 0)      geoEntries.push(`Europa ${geo!.europa}%`);
-  if ((geo?.nordamerica ?? 0) > 0) geoEntries.push(`N. America ${geo!.nordamerica}%`);
-  if ((geo?.asia ?? 0) > 0)        geoEntries.push(`Asia ${geo!.asia}%`);
-  if ((geo?.africa ?? 0) > 0)      geoEntries.push(`Africa ${geo!.africa}%`);
+  const geoColLabels: Record<string, string> = {
+    italia: "Italia", europa: "Europa",
+    nordamerica: "Nord America", sudamerica: "Sud America",
+    asia: "Asia", africa: "Africa", australia: "Australia",
+  };
+  for (const g of geoKeys2) {
+    const cnt = siteColSum(g);
+    if (cnt > 0) geoEntries.push(`${geoColLabels[g]} ${cnt}`);
+  }
+  const lineGeoHeader = isIt ? "distribuite nelle seguenti regioni" : "distributed across the following regions";
   const geoLine = geoEntries.length > 0 ? geoEntries.join(" · ") : "";
 
   // Line 1: company intro
   const line1 = isIt
-    ? `${data.companyName} è un ${data.sectorLabel} presente a livello ${data.marketLabel}.`
-    : `${data.companyName} is a ${data.sectorLabel} operating at ${data.marketLabel} level.`;
+    ? `${resolvedCompanyName} è un ${data.sectorLabel} presente a livello ${data.marketLabel}.`
+    : `${resolvedCompanyName} is a ${data.sectorLabel} operating at ${data.marketLabel} level.`;
 
   // Line 3: revenue
   const line3 = isIt
@@ -545,34 +605,45 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
     ? `L'organizzazione occupa ${data.employees.toLocaleString()} dipendenti.`
     : `The organisation employs ${data.employees.toLocaleString()} people.`;
 
-  // Line 7: CSRD
-  const line7 = `${csrdStatus}.`;
+  // Lines 10+: sites breakdown using siteTable row sums
+  const totalSedi = siteRows.reduce((s, r) => s + siteRowSum(r), 0) || (data.plants + data.offices + dc);
+  const ufficiCount     = siteRowSum("uffici")     || data.offices;
+  const opsCount        = siteRowSum("ops")        || data.plants;
+  const datacenterCount = siteRowSum("datacenter") || dc;
+  const altroCount      = siteRowSum("altro");
 
-  // Lines 10-14: sites breakdown (maps to template paragraphs 10–14)
-  const line10 = isIt ? `${totalSedi} sedi totali` : `${totalSedi} total sites`;
-  const line11 = isIt ? "di cui:" : "of which:";
-  const line12 = isIt
-    ? `${data.offices} ${data.offices === 1 ? "ufficio" : "uffici"}`
-    : `${data.offices} ${data.offices === 1 ? "office" : "offices"}`;
-  const line13 = isIt
-    ? `${data.plants} ${data.plants === 1 ? "sede operativa" : "sedi operative"}`
-      + (dc > 0 ? ` · ${dc} data center` : "")
-    : `${data.plants} ${data.plants === 1 ? "operational site" : "operational sites"}`
-      + (dc > 0 ? ` · ${dc} data centre${dc > 1 ? "s" : ""}` : "");
-  const line14 = data.csrdNote ? (isIt ? `Note: ${data.csrdNote}` : `Note: ${data.csrdNote}`) : "";
+  const line10 = isIt
+    ? `${resolvedCompanyName} ha ${totalSedi} sedi totali di cui`
+    : `${resolvedCompanyName} has ${totalSedi} total sites of which`;
+  const line12 = ufficiCount > 0
+    ? (isIt ? `${ufficiCount} ${ufficiCount === 1 ? "sede ufficio" : "sedi ufficio"}` : `${ufficiCount} ${ufficiCount === 1 ? "office" : "offices"}`)
+    : "";
+  const line13 = opsCount > 0
+    ? (isIt ? `${opsCount} ${opsCount === 1 ? "sede operativa" : "sedi operative"}` : `${opsCount} ${opsCount === 1 ? "operational site" : "operational sites"}`)
+    : "";
+  const line14dc = datacenterCount > 0
+    ? (isIt ? `${datacenterCount} data center` : `${datacenterCount} data centre${datacenterCount > 1 ? "s" : ""}`)
+    : "";
+  const line14altro = altroCount > 0
+    ? (isIt ? `${altroCount} altro` : `${altroCount} other`)
+    : "";
+  const csrdNoteLine = data.csrdNote ? (isIt ? `Note: ${data.csrdNote}` : `Note: ${data.csrdNote}`) : "";
 
-  // Line 16: geo distribution
-  const line16 = geoLine;
-
-  // Build array: indices match the 16 template paragraphs (0-based)
-  // para[0]=line1, para[1]=empty, para[2]=line3, para[3]=empty, para[4]=line5,
-  // para[5]=empty, para[6]=line7, para[7]=empty, para[8]=empty,
-  // para[9]=line10, para[10]=line11, para[11]=line12, para[12]=line13,
-  // para[13]=line14, para[14]=empty, para[15]=line16
+  // Build slide2Lines (left block, shape id=2)
   const slide2Lines: string[] = [
-    line1, "", line3, "", line5, "", line7, "", "",
-    line10, line11, line12, line13, line14, "", line16,
+    line1, "", line3, "", line5, "", "", "", "",
+    line10, "",
+    ...(line12 ? [line12] : []),
+    ...(line13 ? [line13] : []),
+    ...(line14dc ? [line14dc] : []),
+    ...(line14altro ? [line14altro] : []),
+    "",
+    ...(geoLine ? [lineGeoHeader, geoLine] : []),
+    ...(csrdNoteLine ? ["", csrdNoteLine] : []),
   ];
+
+  // slide2RightLines (right block, shape id=3): CSRD/reporting decision
+  const slide2RightLines: string[] = line7.split("\n").filter(Boolean);
 
   // Maturity text for slide 2
   const maturityText = `${data.maturityTitle} — ${data.maturityDesc}`;
@@ -593,10 +664,10 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const top1 = prioAtRank(data.prioItems, 1);
   const top2 = prioAtRank(data.prioItems, 2);
   const slide3Intro = isIt
-    ? `La priorità principale di ${data.companyName} è ${top1?.name ?? "–"}`
+    ? `La priorità principale di ${resolvedCompanyName} è ${top1?.name ?? "–"}`
       + (top2 ? ` seguita da ${top2.name}` : "")
       + `, evidenziando il valore di ESG per il business.`
-    : `The main priority of ${data.companyName} is ${top1?.name ?? "–"}`
+    : `The main priority of ${resolvedCompanyName} is ${top1?.name ?? "–"}`
       + (top2 ? ` followed by ${top2.name}` : "")
       + `, highlighting the value of ESG for the business.`;
 
@@ -610,25 +681,26 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
     ? (isIt ? `${titleNeed1} e ${titleNeed2}` : `${titleNeed1} and ${titleNeed2}`)
     : titleNeed1;
   const slide4Title = isIt
-    ? `${data.companyName} mostra le principali esigenze a supporto degli obiettivi di business nelle aree ${titleAreas}`
-    : `${data.companyName} shows the main data needs supporting business objectives in the areas of ${titleAreas}`;
+    ? `${resolvedCompanyName} mostra le principali esigenze a supporto degli obiettivi di business nelle aree ${titleAreas}`
+    : `${resolvedCompanyName} shows the main data needs supporting business objectives in the areas of ${titleAreas}`;
 
 
   const replacements: Record<string, string> = {
     // ── Slide 1 ──
     "Il percorso ESG  di Erica":
-      isIt ? `Il percorso ESG di ${data.companyName}` : `The ESG journey of ${data.companyName}`,
+      isIt ? `Il percorso ESG di ${resolvedCompanyName}` : `The ESG journey of ${resolvedCompanyName}`,
     "Sintesi workshop Envizi Quest data da definire WorkshopIBM Envizi Team IBM Envizi":
-      `${isIt ? "Sintesi workshop Envizi Quest" : "Envizi Quest workshop summary"}\n${dateStr}\n${consultantStr}\nIBM Envizi`,
+      `${isIt ? "Sintesi workshop Envizi Quest" : "Envizi Quest workshop summary"}\n${dateStr}\n${consultantStr}`,
     "Incontro di lavoro · 2026":
       `${isIt ? "Incontro di lavoro" : "Working session"} · ${new Date().getFullYear()}`,
 
     // ── Slide 2 ──
     // (shape id=2 body is handled separately via replaceSlide2Body — see below)
+    // (shape id=3 right block is handled via replaceSlide2RightBlock — see below)
     "(Nome Azienda) ha avviato il percorso ESG ":
-      isIt ? `${data.companyName} ha avviato il percorso ESG` : `${data.companyName} has started the ESG journey`,
+      isIt ? `${resolvedCompanyName} ha avviato il percorso ESG` : `${resolvedCompanyName} has started the ESG journey`,
     "(qui inserisci frase e commenti su livello maturità esg)": maturityText,
-    "(qui inserisci Immagine mondo o italia o europa cona la distribuzione sedi come Nella visualizzazione in applicazione)": geoDistribText,
+    "(qui inserisci Immagine mondo o italia o europa cona la distribuzione sedi come Nella visualizzazione in applicazione)": geoLine,
 
     // ── Slide 3 ──
     "La priorità di principale di (Nome Azienda) è (nome obiettivo priorità 1) seguita da (nome obiettivo priorità 2) evidenziando il valore di ESG per il business.":
@@ -742,10 +814,9 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
     if (data.marketLabel === "Europa" || data.marketLabel === "Europe") return "europa";
     return "mondo";
   })();
-  const dc2 = (data as any).dataCenters as number | undefined ?? 0;
-  const totalSitesForMap = data.plants + data.offices + dc2;
-  const geoDistribForMap = (data as any).geoDistrib as GeoDistrib | undefined ?? {};
-  const mapPng = await generateMapPng(market, geoDistribForMap, totalSitesForMap, data.companyName);
+  const totalSitesForMap = totalSedi;
+  const geoDistribForMap = geo ?? {};
+  const mapPng = await generateMapPng(market, geoDistribForMap, totalSitesForMap, resolvedCompanyName, siteTableCountsForMap);
 
   // Fetch the new template (cache-bust to avoid stale file)
   const res = await fetch(`./Envizi-Report-template.pptx?v=${Date.now()}`);
@@ -913,9 +984,12 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
     const file = zip.file(path);
     if (!file) continue;
     let xmlStr = await file.async("string");
-    // Slide 2: replace shape id=2 body directly (per-paragraph, bypasses pass-1 join)
+    // Slide 2: replace shape id=2 body (left block) and id=3 (right block)
     if (i === 2) {
       xmlStr = replaceSlide2Body(xmlStr, slide2Lines);
+      if (slide2RightLines.length > 0) {
+        xmlStr = replaceSlide2RightBlock(xmlStr, slide2RightLines);
+      }
     }
     // Slide 4: reduce title font + replace left-column needs list + inject matrix PNG
     if (i === 4) {

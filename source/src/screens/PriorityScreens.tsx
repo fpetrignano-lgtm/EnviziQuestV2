@@ -211,18 +211,42 @@ export function PriorityDataScreen({
   const isIt = language === "it";
   const [slideIdx, setSlideIdx] = React.useState(0);
   const [selectedNeedId, setSelectedNeedId] = React.useState<string|null>(null);
+  const [customLabels, setCustomLabels] = React.useState<Record<string,string>>({});
+  const [customMemos, setCustomMemos] = React.useState<Record<string,string>>({});
+  const [customModalOpen, setCustomModalOpen] = React.useState<string|null>(null); // priority key
+  const [customLabelDraft, setCustomLabelDraft] = React.useState("");
+  const [customMemoDraft, setCustomMemoDraft] = React.useState("");
   const totalSlides = priorities.length;
   const p = priorities[slideIdx];
   const colItems = dataNeeds.filter(n => n.priority === p);
+
+  // id sintetico per la riga custom di questa priority
+  const customId = `custom-${p}`;
 
   // Quando cambia slide, azzera la selezione
   React.useEffect(()=>{ setSelectedNeedId(null); }, [slideIdx]);
 
   const useCases = (t.needUseCases ?? {}) as Record<string,string>;
   const examples = (t.needExamples ?? {}) as Record<string,string>;
-  const selectedItem = selectedNeedId ? colItems.find(n => n.id === selectedNeedId) ?? null : null;
+  const selectedItem = selectedNeedId && selectedNeedId !== customId
+    ? colItems.find(n => n.id === selectedNeedId) ?? null
+    : null;
   const selectedUseCase = selectedItem ? (useCases[selectedItem.label] ?? null) : null;
   const selectedExample = selectedItem ? (examples[selectedItem.label] ?? null) : null;
+
+  const openCustomModal = (prioKey: string) => {
+    setCustomLabelDraft(customLabels[prioKey] ?? "");
+    setCustomMemoDraft(customMemos[prioKey] ?? "");
+    setCustomModalOpen(prioKey);
+  };
+  const closeCustomModal = () => setCustomModalOpen(null);
+  const saveCustomModal = () => {
+    if(customModalOpen) {
+      if(customLabelDraft.trim()) setCustomLabels(prev=>({...prev,[customModalOpen]:customLabelDraft.trim()}));
+      setCustomMemos(prev=>({...prev,[customModalOpen]:customMemoDraft}));
+    }
+    setCustomModalOpen(null);
+  };
 
   const exportDataNeedsCsv = () => {
     const missionNames: {[k:number]:{it:string,en:string}} = {0:{it:"M1 · Fabbrica dei dati ESG",en:"M1 · ESG data factory"},1:{it:"M2 · Energia e decarbonizzazione",en:"M2 · Energy and decarbonisation"},2:{it:"M3 · Coinvolgimento supply chain",en:"M3 · Supply chain engagement"},3:{it:"M4 · Reporting e performance",en:"M4 · Reporting and performance"},4:{it:"M5 · Rotta verso Net Zero",en:"M5 · Net Zero pathway"},5:{it:"M6 · Framework ESG e disclosure",en:"M6 · ESG frameworks and disclosure"}};
@@ -339,46 +363,224 @@ export function PriorityDataScreen({
           </div>;
         })}
 
-        {/* ── Riquadro use case ── */}
-        <div className={`pdUseCaseBox${selectedUseCase ? " pdUseCaseBoxActive" : ""}`}>
-          {selectedUseCase ? (
-            <>
-              <div className="pdUseCaseBoxHeader">
-                <span className="pdUseCaseBoxIcon">💡</span>
-                <span className="pdUseCaseBoxLabel">{selectedItem?.label}</span>
-                <button className="pdUseCaseBoxClose" onClick={()=>setSelectedNeedId(null)}>✕</button>
+        {/* ── Riga custom "Altro" ── */}
+        {(()=>{
+          const cRel  = Math.min(needRelevance[customId]??5, 10);
+          const cCrit = needCriticality[customId]??5;
+          const cIncl = isNeedIncluded(customId);
+          const cLabel = customLabels[p] || (isIt?"Altro":"Other");
+          const tier = cRel>7&&cCrit>7?"high":cRel>4||cCrit>4?"mid":"low";
+          const tierColor = tier==="high"?"#ff4d4d":tier==="mid"?"#7dd3fc":"#9ca3af";
+          const rankLabel = `${slideIdx+1}.${colItems.length+1}`;
+          return (
+            <div className={`pdSlideRow pdSlideRowCustom${cIncl?"":" pdSlideRowDimmed"}`}>
+              <div className="pdSlideRowLabel pdSlideRowLabelClickable" style={{color:cIncl?tierColor:"#c5d8d2"}}
+                onClick={()=>openCustomModal(p)}
+                title={isIt?"Clicca per modificare":"Click to edit"}>
+                <span className="pdSlideRowCode">{rankLabel}</span>
+                <span className="pdSlideRowText">{cLabel}</span>
+                <span className="pdSlideRowSelectHint">✏</span>
               </div>
-              <div className="pdUseCaseBoxContent">
-                {selectedUseCase.split("\n").map((line, i) => {
-                  const colonIdx = line.indexOf(" — ");
-                  if (colonIdx > -1) {
-                    return <p key={i} className="pdUseCaseLine">
-                      <strong>{line.slice(0, colonIdx)}</strong>
-                      <span>{line.slice(colonIdx)}</span>
-                    </p>;
-                  }
-                  return <p key={i} className="pdUseCaseLine">{line}</p>;
-                })}
+              <div className="pdSlideRowIncl">
+                <button
+                  className={`pdInclBtn${cIncl?" pdInclBtnOn":""}`}
+                  style={{"--incl-color":tierColor} as React.CSSProperties}
+                  onClick={()=>toggleNeedIncluded(customId)}
+                  aria-label={cIncl?(isIt?"Escludi":"Exclude"):(isIt?"Includi":"Include")}
+                />
+              </div>
+              <div className="pdSlideRowScore">
+                <input type="range" min={1} max={10} value={cRel}
+                  style={{"--v":cRel,"--vmax":9} as React.CSSProperties}
+                  onChange={e=>setNeedRelevance(v=>({...v,[customId]:Number(e.target.value)}))}
+                  className="pdScoreSlider pdSliderRel" disabled={!cIncl}/>
+                <span className="pdBandVal pdBandValRel" style={{opacity:cIncl?1:0.35}}>{cRel}<span className="pdBandMax">/10</span></span>
+              </div>
+              <div className="pdSlideRowScore">
+                <input type="range" min={1} max={10} value={cCrit}
+                  style={{"--v":cCrit} as React.CSSProperties}
+                  onChange={e=>setNeedCriticality(v=>({...v,[customId]:Number(e.target.value)}))}
+                  className="pdScoreSlider pdSliderCrit" disabled={!cIncl}/>
+                <span className="pdBandVal pdBandValCrit" style={{opacity:cIncl?1:0.35}}>{cCrit}</span>
+              </div>
+            </div>
+          );
+        })()}
+
+      </div>
+
+      {/* ── Modale use case ── */}
+      {selectedNeedId && selectedItem && (()=>{
+        const mRel  = Math.min(needRelevance[selectedNeedId]??5, 10);
+        const mCrit = needCriticality[selectedNeedId]??5;
+        const mIncluded = isNeedIncluded(selectedNeedId);
+        const setRel  = (v:number) => {
+          setNeedRelevance(prev=>({...prev,[selectedNeedId]:v}));
+          if(!mIncluded) toggleNeedIncluded(selectedNeedId);
+        };
+        const setCrit = (v:number) => {
+          setNeedCriticality(prev=>({...prev,[selectedNeedId]:v}));
+          if(!mIncluded) toggleNeedIncluded(selectedNeedId);
+        };
+        return (
+          <div className="pdNeedModalOverlay" onClick={()=>setSelectedNeedId(null)}>
+            <div className="pdNeedModal" onClick={e=>e.stopPropagation()}>
+              <div className="pdNeedModalHead">
+                <span className="pdNeedModalIcon">💡</span>
+                <span className="pdNeedModalLabel">{selectedItem.label}</span>
+                <button className="pdNeedModalClose" onClick={()=>setSelectedNeedId(null)}>✕</button>
+              </div>
+              <div className="pdNeedModalBody">
+                {selectedUseCase
+                  ? selectedUseCase.split("\n").map((line,i)=>{
+                      const idx = line.indexOf(" — ");
+                      if(idx > -1) return <p key={i} className="pdUseCaseLine"><strong>{line.slice(0,idx)}</strong><span>{line.slice(idx)}</span></p>;
+                      return <p key={i} className="pdUseCaseLine">{line}</p>;
+                    })
+                  : <p className="pdUseCaseLine" style={{color:"#4a7a68",fontStyle:"italic"}}>{isIt?"Nessun use case disponibile per questa esigenza.":"No use case available for this need."}</p>
+                }
                 {selectedExample && (
                   <div className="pdUseCaseExample">
-                    <p className="pdUseCaseExampleLabel">
-                      <strong>{isIt ? "Scenario" : "Scenario"}</strong>
-                    </p>
+                    <p className="pdUseCaseExampleLabel"><strong>{isIt?"Scenario":"Scenario"}</strong></p>
                     <p className="pdUseCaseExampleText">{selectedExample}</p>
                   </div>
                 )}
+
+                {/* ── Vota ── */}
+                <div className="pdNeedModalVote">
+                  <p className="pdNeedModalVoteQ">
+                    {isIt
+                      ? "Quanto è rilevante questo use case nella tua realtà, e quanto è problematico / critico?"
+                      : "How relevant is this use case in your context, and how critical / problematic?"}
+                  </p>
+                  <div className="pdNeedModalScores">
+                    {/* Rilevanza */}
+                    <div className="pdNeedModalScoreCol">
+                      <span className="pdNeedModalScoreLabel pdNeedModalScoreLabelRel">{isIt?"Rilevanza":"Relevance"}</span>
+                      <div className="pdNeedModalStepper">
+                        <button className="pdNeedModalStep" onClick={()=>setRel(Math.min(10,mRel+1))} disabled={mRel>=10}>▲</button>
+                        <span className={`pdNeedModalVal${mRel>5?" pdNeedModalValHigh":""}`}>{mRel}<span className="pdNeedModalValMax">/10</span></span>
+                        <button className="pdNeedModalStep" onClick={()=>setRel(Math.max(1,mRel-1))} disabled={mRel<=1}>▼</button>
+                      </div>
+                      <span className="pdNeedModalScoreHint">{isIt?"1 = poco rilevante · 10 = molto":"1 = low · 10 = very relevant"}</span>
+                    </div>
+                    {/* Criticità */}
+                    <div className="pdNeedModalScoreCol">
+                      <span className="pdNeedModalScoreLabel pdNeedModalScoreLabelCrit">{isIt?"Criticità":"Criticality"}</span>
+                      <div className="pdNeedModalStepper">
+                        <button className="pdNeedModalStep" onClick={()=>setCrit(Math.min(10,mCrit+1))} disabled={mCrit>=10}>▲</button>
+                        <span className={`pdNeedModalVal${mCrit>5?" pdNeedModalValHigh":""}`}>{mCrit}<span className="pdNeedModalValMax">/10</span></span>
+                        <button className="pdNeedModalStep" onClick={()=>setCrit(Math.max(1,mCrit-1))} disabled={mCrit<=1}>▼</button>
+                      </div>
+                      <span className="pdNeedModalScoreHint">{isIt?"1 = poco critico · 10 = molto":"1 = low · 10 = very critical"}</span>
+                    </div>
+                    {/* Includi pill */}
+                    <div className="pdNeedModalScoreCol pdNeedModalInclCol">
+                      <span className="pdNeedModalScoreLabel">{isIt?"Includi":"Include"}</span>
+                      <button
+                        className={`pdInclBtn pdInclBtnLg${mIncluded?" pdInclBtnOn":""}`}
+                        onClick={()=>toggleNeedIncluded(selectedNeedId)}
+                        aria-label={mIncluded?(isIt?"Escludi":"Exclude"):(isIt?"Includi":"Include")}
+                      />
+                      <span className="pdNeedModalScoreHint">{mIncluded?(isIt?"In analisi":"In analysis"):(isIt?"Esclusa":"Excluded")}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </>
-          ) : (
-            <p className="pdUseCaseBoxHint">
-              <span className="pdUseCaseBoxHintIcon">▸</span>
-              {isIt
-                ? "Seleziona una esigenza per mostrare lo use case di esempio"
-                : "Select a need to show a sample use case"}
-            </p>
-          )}
-        </div>
-      </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── Modale custom "Altro" ── */}
+      {customModalOpen && (()=>{
+        const ck = customModalOpen;
+        const ckId = `custom-${ck}`;
+        const mRel  = Math.min(needRelevance[ckId]??5, 10);
+        const mCrit = needCriticality[ckId]??5;
+        const mIncl = isNeedIncluded(ckId);
+        const setRel = (v:number)=>{ setNeedRelevance(prev=>({...prev,[ckId]:v})); if(!mIncl) toggleNeedIncluded(ckId); };
+        const setCrit= (v:number)=>{ setNeedCriticality(prev=>({...prev,[ckId]:v})); if(!mIncl) toggleNeedIncluded(ckId); };
+        return (
+          <div className="pdNeedModalOverlay" onClick={closeCustomModal}>
+            <div className="pdNeedModal" onClick={e=>e.stopPropagation()}>
+              <div className="pdNeedModalHead">
+                <span className="pdNeedModalIcon">✏</span>
+                <span className="pdNeedModalLabel">{isIt?"Esigenza personalizzata":"Custom need"}</span>
+                <button className="pdNeedModalClose" onClick={closeCustomModal}>✕</button>
+              </div>
+              <div className="pdNeedModalBody">
+                {/* Titolo editabile — max 1 riga */}
+                <div className="pdCustomTitleWrap">
+                  <label className="pdCustomTitleLabel">{isIt?"Nome esigenza (max 1 riga)":"Need name (single line)"}</label>
+                  <input
+                    className="pdCustomTitleInput"
+                    type="text"
+                    maxLength={120}
+                    placeholder={isIt?"Altro…":"Other…"}
+                    value={customLabelDraft}
+                    onChange={e=>setCustomLabelDraft(e.target.value)}
+                  />
+                </div>
+                {/* Memo — 4 righe */}
+                <div className="pdCustomTitleWrap">
+                  <label className="pdCustomTitleLabel">{isIt?"Note / memo":"Notes / memo"}</label>
+                  <textarea
+                    className="pdCustomMemoArea"
+                    rows={4}
+                    placeholder={isIt?"Descrivi il contesto, la situazione attuale, eventuali vincoli…":"Describe the context, current situation, constraints…"}
+                    value={customMemoDraft}
+                    onChange={e=>setCustomMemoDraft(e.target.value)}
+                  />
+                </div>
+                {/* Vota */}
+                <div className="pdNeedModalVote">
+                  <p className="pdNeedModalVoteQ">
+                    {isIt
+                      ? "Quanto è rilevante questa esigenza nella tua realtà, e quanto è problematica / critica?"
+                      : "How relevant is this need in your context, and how critical / problematic?"}
+                  </p>
+                  <div className="pdNeedModalScores">
+                    <div className="pdNeedModalScoreCol">
+                      <span className="pdNeedModalScoreLabel pdNeedModalScoreLabelRel">{isIt?"Rilevanza":"Relevance"}</span>
+                      <div className="pdNeedModalStepper">
+                        <button className="pdNeedModalStep" onClick={()=>setRel(Math.min(10,mRel+1))} disabled={mRel>=10}>▲</button>
+                        <span className={`pdNeedModalVal${mRel>5?" pdNeedModalValHigh":""}`}>{mRel}<span className="pdNeedModalValMax">/10</span></span>
+                        <button className="pdNeedModalStep" onClick={()=>setRel(Math.max(1,mRel-1))} disabled={mRel<=1}>▼</button>
+                      </div>
+                      <span className="pdNeedModalScoreHint">{isIt?"1 = poco · 10 = molto":"1 = low · 10 = high"}</span>
+                    </div>
+                    <div className="pdNeedModalScoreCol">
+                      <span className="pdNeedModalScoreLabel pdNeedModalScoreLabelCrit">{isIt?"Criticità":"Criticality"}</span>
+                      <div className="pdNeedModalStepper">
+                        <button className="pdNeedModalStep" onClick={()=>setCrit(Math.min(10,mCrit+1))} disabled={mCrit>=10}>▲</button>
+                        <span className={`pdNeedModalVal${mCrit>5?" pdNeedModalValHigh":""}`}>{mCrit}<span className="pdNeedModalValMax">/10</span></span>
+                        <button className="pdNeedModalStep" onClick={()=>setCrit(Math.max(1,mCrit-1))} disabled={mCrit<=1}>▼</button>
+                      </div>
+                      <span className="pdNeedModalScoreHint">{isIt?"1 = poco · 10 = molto":"1 = low · 10 = high"}</span>
+                    </div>
+                    <div className="pdNeedModalScoreCol pdNeedModalInclCol">
+                      <span className="pdNeedModalScoreLabel">{isIt?"Includi":"Include"}</span>
+                      <button
+                        className={`pdInclBtn pdInclBtnLg${mIncl?" pdInclBtnOn":""}`}
+                        onClick={()=>toggleNeedIncluded(ckId)}
+                        aria-label={mIncl?(isIt?"Escludi":"Exclude"):(isIt?"Includi":"Include")}
+                      />
+                      <span className="pdNeedModalScoreHint">{mIncl?(isIt?"In analisi":"In analysis"):(isIt?"Esclusa":"Excluded")}</span>
+                    </div>
+                  </div>
+                </div>
+                {/* Salva */}
+                <div style={{display:"flex",justifyContent:"flex-end",marginTop:"8px"}}>
+                  <button className="actionButton" style={{minWidth:"140px"}} onClick={saveCustomModal}>
+                    {isIt?"Salva →":"Save →"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Colonna destra fissa */}
       <div className="pdSlideRight">

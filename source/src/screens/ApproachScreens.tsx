@@ -64,7 +64,7 @@ export function ApproachData({language,setLanguage,setScreen,reset,goBack,t}:Pro
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
           <h1 className="approachIntroTitle">{t.approachDataTitle}</h1>
-          <div className="approachIntroText">{(t.approachDataBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
+          <div className="approachIntroText approachIntroTextSm">{(t.approachDataBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
         <div className="approachIntroRight approachIntroRightWithCta">
           <img src="./step-2.svg" className="approachIntroStepBadge" alt="Step 2"/>
@@ -89,7 +89,7 @@ export function ApproachDecisions({language,setLanguage,setScreen,reset,goBack,t
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
           <h1 className="approachIntroTitle">{t.approachDecisionsTitle}</h1>
-          <div className="approachIntroText">{(t.approachDecisionsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
+          <div className="approachIntroText approachIntroTextSm">{(t.approachDecisionsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
         <div className="approachIntroRight approachIntroRightWithCta">
           <img src="./step-3.svg" className="approachIntroStepBadge" alt="Step 3"/>

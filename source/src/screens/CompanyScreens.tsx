@@ -311,6 +311,9 @@ interface CompanyScreenProps extends CommonProps {
   companyLogo?: string;
   reportingPath: 0|1|2|3|4|5;
   setReportingPath: (v: 0|1|2|3|4|5) => void;
+  questName: string;
+  onSave: (name: string) => void;
+  renderSaveBtn: (isIt: boolean) => JSX.Element;
 }
 
 export function CompanyScreen({
@@ -320,6 +323,7 @@ export function CompanyScreen({
   csrdConfirmStep, setCsrdConfirmStep, csrdPendingChoice, setCsrdPendingChoice,
   csrdNote, setCsrdNote, csrdNoteOpen, setCsrdNoteOpen, csrdNoteDraft, setCsrdNoteDraft,
   t, name, companyLogo, reportingPath, setReportingPath,
+  questName, onSave, renderSaveBtn,
 }: CompanyScreenProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -383,7 +387,7 @@ export function CompanyScreen({
       {(()=>{
         const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
           {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
-          {num:2,label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico o un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
+          {num:2,label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico, un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
           {num:3,label:{it:"Adozione integrale volontaria",en:"Full voluntary adoption"},desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
           {num:4,label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},for:{it:"L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
           {num:5,label:{it:"Rendicontazione libera",en:"Free-form reporting"},desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},for:{it:"L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
@@ -423,40 +427,65 @@ export function CompanyScreen({
       })()}
       <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
     </section>
-    <section className="worldMap" aria-label={`${displayCompanyName} footprint`}>
-      <div className="mapGrid"/>
-      {(Object.keys(GEO_POS) as MapGeoKey[]).map(geo=>{
-        const rows=SITE_ROWS.filter(r=>(siteTable[r][geo]??0)>0);
-        if(rows.length===0)return null;
-        const {left,top}=GEO_POS[geo];
-        const iconSize=18;
-        const gap=4;
-        const totalW=rows.length*(iconSize+gap)-gap;
-        return <div key={geo} style={{position:"absolute",left,top,transform:"translate(-50%,-50%)",display:"flex",gap:`${gap}px`,alignItems:"center"}}>
-          {rows.map(r=>{
-            const n=siteTable[r][geo]??0;
-            const ic=SITE_ICONS[r];
-            return <div key={r} style={{position:"relative",width:`${iconSize}px`,height:`${iconSize}px`}} title={`${r}: ${n}`}>
-              <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d={ic.path} stroke={ic.color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span style={{position:"absolute",bottom:"-14px",left:"50%",transform:"translateX(-50%)",fontSize:"8px",fontFamily:"var(--font-geist-mono)",color:ic.color,fontWeight:700,whiteSpace:"nowrap"}}>{n}</span>
-            </div>;
-          })}
-          <div style={{width:`${totalW}px`}}/>
-        </div>;
-      })}
-      <div className="mapLegend" style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
-        {SITE_ROWS.filter(r=>SITE_ROWS.some(()=>(Object.keys(GEO_POS) as MapGeoKey[]).some(g=>(siteTable[r][g]??0)>0))).map(r=>{
-          const hasAny=(Object.keys(GEO_POS) as MapGeoKey[]).some(g=>(siteTable[r][g]??0)>0);
-          if(!hasAny)return null;
-          const ic=SITE_ICONS[r];
-          const label=r==="uffici"?(isIt?"Uffici":"Offices"):r==="ops"?(isIt?"Operativo":"Operational"):r==="datacenter"?"Data center":(isIt?"Altro":"Other");
-          return <b key={r} style={{display:"flex",alignItems:"center",gap:"5px",fontSize:"9px",fontFamily:"var(--font-geist-mono)",color:ic.color,letterSpacing:".1em",textTransform:"uppercase"}}>
-            <svg width={12} height={12} viewBox="0 0 20 20" fill="none"><path d={ic.path} stroke={ic.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            {label}
-          </b>;
-        })}
+    <section className="geoMapsSection" aria-label={`${displayCompanyName} footprint`}>
+      {(()=>{
+        const GEO_KEYS: SiteGeoKey[] = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
+        const GEO_LABELS: Record<SiteGeoKey,{it:string,en:string}> = {
+          italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},
+          nordamerica:{it:"Nord America",en:"North America"},sudamerica:{it:"Sud America",en:"South America"},
+          asia:{it:"Asia",en:"Asia"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"},
+        };
+        const GEO_IMGS: Record<SiteGeoKey,string> = {
+          italia:"./mappe/italia.png",europa:"./mappe/europa.png",
+          nordamerica:"./mappe/nordamerica.png",sudamerica:"./mappe/sudamerica.png",
+          asia:"./mappe/asia.png",africa:"./mappe/africa.png",australia:"./mappe/australia.png",
+        };
+        const siteRowDefs2:{key:SiteRowKey,label:{it:string,en:string},color:string}[] = [
+          {key:"uffici",   label:{it:"Uffici",en:"Offices"},       color:"#7ab8d8"},
+          {key:"ops",      label:{it:"Operativo",en:"Operational"},color:"#72c4a0"},
+          {key:"datacenter",label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
+          {key:"altro",    label:{it:"Altro",en:"Other"},          color:"#e8a84a"},
+        ];
+        const activeGeos = GEO_KEYS.filter(g=>
+          (["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0)
+        );
+        if(activeGeos.length===0) return <p className="geoMapsEmpty">{isIt?"Inserisci sedi nella tabella di setup per visualizzare la distribuzione geografica.":"Enter locations in the setup table to display the geographic distribution."}</p>;
+        return (
+          <div className="geoMapsGrid">
+            {activeGeos.map(g=>{
+              const chips = siteRowDefs2.filter(d=>(siteTable[d.key][g]??0)>0);
+              return (
+                <div key={g} className="geoMapCard">
+                  <div className="geoMapImgWrap">
+                    <img className="geoMapSvg" src={GEO_IMGS[g]} alt={GEO_LABELS[g].it}/>
+                  </div>
+                  <div className="geoMapLabel">{isIt?GEO_LABELS[g].it:GEO_LABELS[g].en}</div>
+                  <div className="geoMapIcons">
+                    {chips.map(d=>(
+                      <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color}}>
+                        {isIt?d.label.it:d.label.en} · {siteTable[d.key][g]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
+      <div className="geoMapLegend">
+        {[
+          {key:"uffici"   as SiteRowKey,label:{it:"Uffici",en:"Offices"},       color:"#7ab8d8"},
+          {key:"ops"      as SiteRowKey,label:{it:"Operativo",en:"Operational"},color:"#72c4a0"},
+          {key:"datacenter" as SiteRowKey,label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
+          {key:"altro"    as SiteRowKey,label:{it:"Altro",en:"Other"},          color:"#e8a84a"},
+        ].filter(d=>(["italia","europa","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).some(g=>(siteTable[d.key][g]??0)>0))
+        .map(d=>(
+          <span key={d.key} className="geoMapLegendItem" style={{color:d.color}}>
+            <svg width={10} height={10} viewBox="0 0 10 10"><circle cx={5} cy={5} r={4} fill={d.color}/></svg>
+            {isIt?d.label.it:d.label.en}
+          </span>
+        ))}
       </div>
     </section>
   </main>;

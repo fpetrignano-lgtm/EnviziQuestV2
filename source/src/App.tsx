@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { SummarySlideViewer } from "./screens/SummarySlideViewer";
+import { generateTemplatePptx } from "./generateTemplatePptx";
 import type { Language, Profile, Screen, Market, EsgReadiness, SectorKey, Priority, Outcome, DFRating } from "./types";
 import { copy } from "./copy";
 import { energyModule, supplyChainModule, reportingModule, planningModule, frameworkModule } from "./modules";
@@ -469,24 +470,17 @@ export default function Home(){
     const readinessList=isIt?ESG_READINESS_IT:ESG_READINESS_EN;
     const activeReadiness=readinessList.find(r=>r.key===esgReadiness)!;
     const isCsrd=companyDims[4]>=1000&&companyDims[0]>=450;
-    const marketLabels:Record<string,{it:string,en:string}>={italia:{it:"Solo Italia",en:"Italy only"},europa:{it:"Europa",en:"Europe"},mondo:{it:"Globale",en:"Global"}};
     const includedPrios=priorities.filter(p=>priorityIncluded[p]);
-    const excludedPrios=priorities.filter(p=>!priorityIncluded[p]);
-    // top 7 critical needs sorted by R+C desc
-    const priorityColors:Record<Priority,string>={credit:"#39efb4",compliance:"#7c86ff",customers:"#f5c542",efficiency:"#ff8c5a",supply:"#a78bfa",reputation:"#f472b6"};
     const top7=dataNeeds.filter(n=>isNeedIncluded(n.id)).map(n=>{
       const rel=needRelevance[n.id]??5;
       const crit=needCriticality[n.id]??5;
       const tier=rel>7&&crit>7?"high":rel>4||crit>4?"medium":"low";
       return{...n,rel,crit,score:rel+crit,tier};
     }).sort((a,b)=>b.score-a.score).slice(0,7);
-    // ── testo descrittivo slide 2 ──
     const prioDescIt=(()=>{
       const names=includedPrios.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
       if(names.length===0)return"Non sono stati selezionati obiettivi per l'analisi.";
-      const topName=names[0];
-      const restNames=names.slice(1);
-      const company=displayCompanyName;
+      const topName=names[0];const restNames=names.slice(1);const company=companyName.trim()||questName.trim()||displayCompanyName;
       const matLabel=activeReadiness.label.split("—")[0].trim();
       let txt=`${company} ha definito ${names.length} obiettiv${names.length>1?"i":"o"} prioritari${names.length>1?"":"o"} per la propria strategia ESG. `;
       txt+=`In particolare, la priorità principale è <strong>${topName}</strong>`;
@@ -497,9 +491,7 @@ export default function Home(){
     const prioDescEn=(()=>{
       const names=includedPrios.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
       if(names.length===0)return"No objectives were selected for the analysis.";
-      const topName=names[0];
-      const restNames=names.slice(1);
-      const company=displayCompanyName;
+      const topName=names[0];const restNames=names.slice(1);const company=companyName.trim()||questName.trim()||displayCompanyName;
       const matLabel=activeReadiness.label.split("—")[0].trim().replace("–","—").split("—")[0].trim();
       let txt=`${company} has defined ${names.length} priority objective${names.length>1?"s":""} for its ESG strategy. `;
       txt+=`The main priority is <strong>${topName}</strong>`;
@@ -507,49 +499,38 @@ export default function Home(){
       txt+=`. The current maturity level — <em>${matLabel}</em> — means that ${activeReadiness.desc.charAt(0).toLowerCase()+activeReadiness.desc.slice(1)}`;
       return txt;
     })();
-    return <main className="c1sScreen">
+    const pptxData={
+      companyName:companyName.trim()||questName.trim()||displayCompanyName,
+      sectorLabel,
+      marketLabel:isIt?(companyMarket==="italia"?"Solo Italia":companyMarket==="europa"?"Europa":"Globale"):(companyMarket==="italia"?"Italy only":companyMarket==="europa"?"Europe":"Global"),
+      revenue:companyDims[0],dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
+      employees:companyDims[4],plants:companyDims[1],offices:companyDims[2],dataCenters:companyDims[3],
+      maturityTitle:activeReadiness.label,maturityDesc:activeReadiness.desc,
+      csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
+      csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
+      csrdNote:csrdNote||"",
+      prioIntroText:isIt?prioDescIt:prioDescEn,
+      prioItems:includedPrios.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})).sort((a,b)=>a.rank-b.rank),
+      critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
+      isIt,geoDistrib,siteTable,workshopDate,consultantName,companyLogo,participantRole,participantCompany,reportingPath,
+    };
+    return <main style={{display:"flex",flexDirection:"column",height:"1080px",background:"var(--bg)",overflow:"hidden",position:"relative"}}>
+      <div style={{position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> {isIt?"IL TUO REPORT INIZIALE":"YOUR INITIAL REPORT"}</div>
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
-      <div className="c1sBody">
-        {/* ── SLIDE 1: Viewer dinamico ── */}
-        <section className="c1sSlide c1sSlideHero c1sSlideHeroViewer">
-          <SummarySlideViewer
-            language={language}
-            onSave={(name) => { saveQuest(name); setQuestName(name); }}
-            defaultSaveName={questName}
-            data={{
-              companyName:displayCompanyName,
-              sectorLabel,
-              marketLabel:isIt?(companyMarket==="italia"?"Solo Italia":companyMarket==="europa"?"Europa":"Globale"):(companyMarket==="italia"?"Italy only":companyMarket==="europa"?"Europe":"Global"),
-              revenue:companyDims[0],
-              dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
-              employees:companyDims[4],
-              plants:companyDims[1],
-              offices:companyDims[2],
-              dataCenters:companyDims[3],
-              maturityTitle:activeReadiness.label,
-              maturityDesc:activeReadiness.desc,
-              csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
-              csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
-              csrdNote:csrdNote||"",
-              prioIntroText:isIt?prioDescIt:prioDescEn,
-              prioItems:includedPrios.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})).sort((a,b)=>a.rank-b.rank),
-              critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
-              isIt,
-              geoDistrib,
-              workshopDate,
-              consultantName,
-              companyLogo,
-            }}
-          />
-        </section>
-      </div>
-      <div style={{display:"flex",justifyContent:"flex-end",padding:"16px 32px 24px"}}>
-        <button className="actionButton c1sNextBtn" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti →":"Next →"}</button>
-      </div>
+      <section style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px",padding:"12px 0 20px",width:"100%",flex:1,minHeight:0}}>
+        <div style={{position:"relative",width:"100%",flex:1,minHeight:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <img src="./logica-report-finale.png" alt={isIt?"Anteprima report":"Report preview"} style={{width:"100%",height:"100%",objectFit:"contain",display:"block"}}/>
+        </div>
+        <div style={{display:"flex",alignItems:"center",gap:"16px",marginTop:"4px",flexShrink:0}}>
+          <button className="actionButton" onClick={()=>generateTemplatePptx(pptxData)}>↓ {isIt?"Scarica Report":"Download Report"}</button>
+          <button className="actionButton" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti →":"Next →"}</button>
+        </div>
+      </section>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
     </main>;
   }
 
@@ -722,7 +703,7 @@ export default function Home(){
   if(screen==="companySetup"&&profile)return <CompanySetupScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companyName={companyName} setCompanyName={setCompanyName} questName={questName} companySector={companySector} setCompanySector={setCompanySector} companyMarket={companyMarket} setCompanyMarket={setCompanyMarket} esgReadiness={esgReadiness} setEsgReadiness={setEsgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} siteTable={siteTable} updateSiteCell={updateSiteCell} siteTotalAll={siteTotalAll} name={name} workshopDate={workshopDate} setWorkshopDate={setWorkshopDate} consultantName={consultantName} setConsultantName={setConsultantName} companyLogo={companyLogo} setCompanyLogo={setCompanyLogo} participantRole={participantRole} setParticipantRole={setParticipantRole} participantCompany={participantCompany} setParticipantCompany={setParticipantCompany} reportingPath={reportingPath} setReportingPath={setReportingPath}/>;
 
 
-  if(screen==="company"&&profile)return <CompanyScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companySector={companySector} companyMarket={companyMarket} esgReadiness={esgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} geoDistrib={geoDistrib} siteTable={siteTable} displayCompanyName={displayCompanyName} csrdConfirmStep={csrdConfirmStep} setCsrdConfirmStep={setCsrdConfirmStep} csrdPendingChoice={csrdPendingChoice} setCsrdPendingChoice={setCsrdPendingChoice} csrdNote={csrdNote} setCsrdNote={setCsrdNote} csrdNoteOpen={csrdNoteOpen} setCsrdNoteOpen={setCsrdNoteOpen} csrdNoteDraft={csrdNoteDraft} setCsrdNoteDraft={setCsrdNoteDraft} t={t} name={name} companyName={companyName} companyLogo={companyLogo} reportingPath={reportingPath} setReportingPath={setReportingPath}/>;
+  if(screen==="company"&&profile)return <CompanyScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companySector={companySector} companyMarket={companyMarket} esgReadiness={esgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} geoDistrib={geoDistrib} siteTable={siteTable} displayCompanyName={displayCompanyName} csrdConfirmStep={csrdConfirmStep} setCsrdConfirmStep={setCsrdConfirmStep} csrdPendingChoice={csrdPendingChoice} setCsrdPendingChoice={setCsrdPendingChoice} csrdNote={csrdNote} setCsrdNote={setCsrdNote} csrdNoteOpen={csrdNoteOpen} setCsrdNoteOpen={setCsrdNoteOpen} csrdNoteDraft={csrdNoteDraft} setCsrdNoteDraft={setCsrdNoteDraft} t={t} name={name} companyName={companyName} companyLogo={companyLogo} reportingPath={reportingPath} setReportingPath={setReportingPath} questName={questName} onSave={(n)=>{saveQuest(n);setQuestName(n);}} renderSaveBtn={renderSaveBtn}/>;
 
   if(screen==="priorities"&&profile)return <PrioritiesScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} priorities={priorities} priorityIncluded={priorityIncluded} togglePriorityIncluded={togglePriorityIncluded} rankPriority={rankPriority} prioExperience={prioExperience} setPrioExpModal={setPrioExpModal} prioExpModal={prioExpModal} prioExpMode={prioExpMode} setPrioExpMode={setPrioExpMode} prioExpSelected={prioExpSelected} setPrioExpSelected={setPrioExpSelected} setPrioExperience={setPrioExperience} prioDefaultExp={prioDefaultExp} displayCompanyName={displayCompanyName} t={t} name={name} onSave={(n)=>{saveQuest(n);setQuestName(n);}} defaultSaveName={questName}/>;
 
