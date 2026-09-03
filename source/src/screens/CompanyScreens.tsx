@@ -157,6 +157,10 @@ interface CompanySetupProps extends CommonProps {
   setConsultantName: (v: string) => void;
   companyLogo: string;
   setCompanyLogo: (v: string) => void;
+  participantRole: string;
+  setParticipantRole: (v: string) => void;
+  participantCompany: string;
+  setParticipantCompany: (v: string) => void;
 }
 
 export function CompanySetupScreen({
@@ -166,6 +170,7 @@ export function CompanySetupScreen({
   companyDims, updateCompanyDim, siteTable, updateSiteCell, siteTotalAll, name,
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
   companyLogo, setCompanyLogo,
+  participantRole, setParticipantRole, participantCompany, setParticipantCompany,
 }: CompanySetupProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -266,6 +271,10 @@ export function CompanySetupScreen({
           <div className="csTwoCol">
             <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
             <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
+          </div>
+          <div className="csTwoCol">
+            <div className="csField"><label>{isIt?"Ruolo partecipante":"Participant role"}</label><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Società partecipante":"Participant company"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={participantCompany} onChange={e=>setParticipantCompany(e.target.value)}/></div>
           </div>
           <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
         </div>
