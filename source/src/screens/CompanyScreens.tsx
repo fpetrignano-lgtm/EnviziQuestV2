@@ -319,15 +319,15 @@ export function CompanyScreen({
   const readinessList = isIt ? ESG_READINESS_IT : ESG_READINESS_EN;
   const activeReadiness = readinessList.find(r => r.key === esgReadiness)!;
   const sectorLabel = isIt ? sec.label.it : sec.label.en;
-  const dimVal = companyDims[0]; const opsVal = companyDims[1]; const officesVal = companyDims[2]; const peopleVal = companyDims[4];
+  const dimVal = companyDims[0]; const peopleVal = companyDims[4];
   const dimUnit = isIt ? sec.dimUnit.it : sec.dimUnit.en;
   const isMld = sec.dimUnit.it.includes("mld");
   const revenueM = isMld ? dimVal * 1000 : dimVal;
   const csrdAlert = revenueM >= 450 && peopleVal >= 1000;
-  const opsUnit = isIt ? sec.opsUnit.it : sec.opsUnit.en;
-  const offUnit = isIt ? "sedi uffici" : "office locations";
+  const totalSedi = Object.values(geoDistrib).reduce((s,v)=>s+v,0);
+  const sediUnit = isIt ? "sedi totali" : "total locations";
   const pepUnit = isIt ? "dipendenti" : "employees";
-  const companyStoryGen = isIt ? `Un ${sectorLabel.toLowerCase()} da ${dimVal} ${dimUnit}, con ${opsVal} ${opsUnit} e ${officesVal} sedi operative.` : `A ${sectorLabel.toLowerCase()} with ${dimVal} ${dimUnit}, ${opsVal} ${opsUnit} and ${officesVal} operational locations.`;
+  const companyStoryGen = isIt ? `Un ${sectorLabel.toLowerCase()} da ${dimVal} ${dimUnit}, con ${totalSedi} sedi nel mondo.` : `A ${sectorLabel.toLowerCase()} with ${dimVal} ${dimUnit} and ${totalSedi} locations worldwide.`;
   const evolvingGen = `${displayCompanyName} — ${activeReadiness.desc}`;
   const geoKeys = ["italia","europa","asia","nordamerica","sudamerica","africa","australia"];
   const geoLabelsShort: Record<string,{it:string,en:string}> = {italia:{it:"ITALIA",en:"ITALY"},europa:{it:"EUROPA",en:"EUROPE"},asia:{it:"ASIA",en:"ASIA"},nordamerica:{it:"N. AMERICA",en:"N. AMERICA"},sudamerica:{it:"S. AMERICA",en:"S. AMERICA"},africa:{it:"AFRICA",en:"AFRICA"},australia:{it:"AUSTRALIA",en:"AUSTRALIA"}};
@@ -345,8 +345,7 @@ export function CompanyScreen({
       <p className="companyLead">{companyStoryGen}</p>
       <div className="companyStats">
         <div><strong>{dimVal}</strong><span>{dimUnit}</span></div>
-        <div><strong>{opsVal}</strong><span>{opsUnit}</span></div>
-        <div><strong>{officesVal}</strong><span>{offUnit}</span></div>
+        <div><strong>{totalSedi}</strong><span>{sediUnit}</span></div>
         <div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div>
       </div>
       {(()=>{
