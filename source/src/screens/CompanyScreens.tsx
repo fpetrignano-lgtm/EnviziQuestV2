@@ -270,7 +270,7 @@ export function CompanySetupScreen({
           </div>
           <div className="csTwoCol">
             <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
-            <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
           </div>
           <div className="csTwoCol">
             <div className="csField"><label>{isIt?"Ruolo partecipante":"Participant role"}</label><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></div>
