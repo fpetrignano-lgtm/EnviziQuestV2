@@ -42,15 +42,11 @@ export function CompanySetupScreen({
   const geoLabels: Record<string,{it:string,en:string}> = {italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},asia:{it:"Asia",en:"Asia"},nordamerica:{it:"Nord America",en:"N. America"},sudamerica:{it:"Sud America",en:"S. America"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"}};
   const dimLabelsFull: [{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string}] = [sec.dimUnit, sec.opsUnit, {it:"sedi uffici",en:"Office locations"}, {it:"data center",en:"Data centres"}, {it:"dipendenti",en:"Employees"}];
   const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); setCompanyDims([0,0,0,0,0]); };
-  const totalSedi = companyDims[1] + companyDims[2] + companyDims[3];
-  const nonItalyKeys = (companyMarket === "mondo" ? geoKeys : ["europa"]).filter(k => k !== "italia");
-  const otherSum = nonItalyKeys.reduce((s,k) => s + (geoDistrib[k] ?? 0), 0);
-  const italyVal = totalSedi - otherSum;
-  const geoError = (companyMarket === "europa" || companyMarket === "mondo") && italyVal < 0;
+  const geoDisplayKeys = companyMarket === "mondo" ? geoKeys : ["italia","europa"];
+  const geoTotal = geoDisplayKeys.reduce((s,k) => s + (geoDistrib[k] ?? 0), 0);
   const handleGeoChange = (key: string, val: number) => {
-    if (key === "italia") return;
     const v = isNaN(val) ? 0 : Math.max(0, val);
-    setGeoDistrib((prev: Record<string,number>) => { const next = {...prev,[key]:v}; return next; });
+    setGeoDistrib((prev: Record<string,number>) => ({ ...prev, [key]: v }));
   };
   return <main className="csScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
     <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> {isIt?"LA TUA AZIENDA":"YOUR COMPANY"}</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
@@ -97,10 +93,9 @@ export function CompanySetupScreen({
             </div>
             {(companyMarket==="europa"||companyMarket==="mondo")&&<div className="csField"><label>{isIt?"Distribuzione sedi per paese (n. sedi)":"Location distribution by country (no. of sites)"}</label>
               <div className="csGeoGrid">
-                <div className={`csGeoRow${geoError?" csGeoRowError":" csGeoRowItalia"}`}><span>{isIt?"Italia":"Italy"}</span><input className="csDimInput csGeoItalyInput" type="number" readOnly value={italyVal} title={isIt?"Calcolato: sedi totali meno la somma degli altri paesi":"Calculated: total sites minus sum of other countries"}/><span className="csGeoItalyHint">{isIt?"← calcolato":"← auto"}</span></div>
-                {nonItalyKeys.map(k=><div key={k} className="csGeoRow"><span>{isIt?geoLabels[k].it:geoLabels[k].en}</span><input className="csDimInput" type="number" min={0} value={(geoDistrib[k]??0)===0?"":(geoDistrib[k]??0)} onChange={e=>handleGeoChange(k,parseInt(e.target.value))}/></div>)}
+                {geoDisplayKeys.map(k=><div key={k} className="csGeoRow"><span>{isIt?geoLabels[k].it:geoLabels[k].en}</span><input className="csDimInput" type="number" min={0} value={(geoDistrib[k]??0)===0?"":(geoDistrib[k]??0)} onChange={e=>handleGeoChange(k,parseInt(e.target.value))}/></div>)}
+                <div className="csDimTotalRow"><input className="csDimInput csDimInputTotal" type="number" readOnly value={geoTotal===0?"":geoTotal}/><span className="csDimUnit">{isIt?"sedi totali (calcolato)":"total locations (calculated)"}</span></div>
               </div>
-              {geoError&&<p className="csGeoErrorMsg">{isIt?"⚠ Il numero di sedi negli altri paesi supera il totale sedi. Riduci i valori.":"⚠ Sites in other countries exceed total sites. Please reduce the values."}</p>}
             </div>}
           </div>
           <div className="csFormRight">
