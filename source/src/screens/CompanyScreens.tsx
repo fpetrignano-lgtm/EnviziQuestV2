@@ -161,6 +161,8 @@ interface CompanySetupProps extends CommonProps {
   setParticipantRole: (v: string) => void;
   participantCompany: string;
   setParticipantCompany: (v: string) => void;
+  reportingPath: 0|1|2|3|4|5;
+  setReportingPath: (v: 0|1|2|3|4|5) => void;
 }
 
 export function CompanySetupScreen({
@@ -171,6 +173,7 @@ export function CompanySetupScreen({
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
   companyLogo, setCompanyLogo,
   participantRole, setParticipantRole, participantCompany, setParticipantCompany,
+  reportingPath, setReportingPath,
 }: CompanySetupProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -200,6 +203,48 @@ export function CompanySetupScreen({
       <div className="csRight">
         <p className="eyebrow">{isIt?"RACCONTACI LA TUA AZIENDA":"TELL US ABOUT YOUR COMPANY"}</p>
         <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
+        {/* Blocco percorso di rendicontazione */}
+        {(()=>{
+          const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
+            {num:1,
+              label:{it:"Standard VSME",en:"VSME Standard"},
+              desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},
+              for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
+            {num:2,
+              label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},
+              desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},
+              for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico o un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
+            {num:3,
+              label:{it:"Adozione integrale volontaria",en:"Full voluntary adoption"},
+              desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},
+              for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
+            {num:4,
+              label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},
+              desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},
+              for:{it:"L'azienda o il gruppo supera le soglie previste dalla normativa ed è pertanto soggetto agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
+            {num:5,
+              label:{it:"Rendicontazione libera",en:"Free-form reporting"},
+              desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},
+              for:{it:"L'azienda non rientra nelle opzioni precedenti e intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
+          ];
+          return (
+            <div className="csReportingBlock">
+              <p className="csReportingIntro">{isIt?"Seleziona il percorso di rendicontazione ESG più adatto:":"Select the most appropriate ESG reporting path:"}</p>
+              <div className="csReportingCards">
+                {paths.map(p=>(
+                  <button key={p.num} className={`csReportingCard${reportingPath===p.num?" csReportingCardActive":""}`} onClick={()=>setReportingPath(reportingPath===p.num?0:p.num)}>
+                    <div className="csReportingCardNum">{p.num}</div>
+                    <div className="csReportingCardBody">
+                      <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
+                      <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
+                      <p className="csReportingCardFor"><span>{isIt?"Indicata per: ":"Indicated for: "}</span>{isIt?p.for.it:p.for.en}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
         <div className="csFormOneCol">
           <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
           <div className="csField">
