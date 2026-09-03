@@ -363,54 +363,8 @@ export function CompanyScreen({
         <div><strong>{totalSedi}</strong><span>{sediUnit}</span></div>
         <div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div>
       </div>
-      {(()=>{
-        if(csrdConfirmStep===2){
-          return csrdPendingChoice?(
-            <div className="csrdAlert csrdAlertDone"><span className="csrdAlertIcon">⚠</span><div className="csrdAlertBody"><strong>{isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered."}</strong><span>{isIt?"La valutazione deve essere verificata considerando perimetro societario, consolidamento, fatturato netto e specificità dell'organizzazione.":"This assessment should be verified considering corporate perimeter, consolidation, net revenue and organisational specifics."}</span></div></div>
-          ):(
-            <div className="csrdAlert csrdAlertOk csrdAlertDone"><span className="csrdAlertIcon">ℹ</span><div className="csrdAlertBody"><strong>{isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered."}</strong><span>{isIt?"La valutazione deve essere verificata considerando perimetro societario, consolidamento, fatturato netto e specificità dell'organizzazione.":"This assessment should be verified considering corporate perimeter, consolidation, net revenue and organisational specifics."}</span></div></div>
-          );
-        }
-        if(csrdConfirmStep===1){
-          return (
-            <div className={`csrdAlert${csrdPendingChoice?"":" csrdAlertOk"}`}>
-              <span className="csrdAlertIcon">{csrdPendingChoice?"⚠":"ℹ"}</span>
-              <div className="csrdAlertBody">
-                <strong>{csrdPendingChoice?(isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered."):(isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered.")}</strong>
-                <span>{isIt?"Sicuro?":"Are you sure?"}</span>
-              </div>
-              <div className="csrdAlertBtns">
-                <button className="csrdBtnYes" onClick={()=>setCsrdConfirmStep(2)}>{isIt?"Sì":"Yes"}</button>
-                <button className="csrdBtnNo" onClick={()=>setCsrdConfirmStep(0)}>{isIt?"No":"No"}</button>
-              </div>
-            </div>
-          );
-        }
-        return csrdAlert?(
-          <div className="csrdAlert"><span className="csrdAlertIcon">⚠</span><div className="csrdAlertBody"><strong>{isIt?"Indicativamente nel perimetro CSRD sulla base dei dati inseriti.":"Indicatively within the CSRD scope based on the data entered."}</strong><span>{isIt?"Oltre 1.000 dipendenti e €450M di fatturato.":"Over 1,000 employees and €450M revenue."}</span></div><div className="csrdAlertBtns"><button className="csrdBtnYes" onClick={()=>{setCsrdPendingChoice(true);setCsrdConfirmStep(1);}}>{isIt?"Sì, confermo":"Yes, confirm"}</button><button className="csrdBtnNo" onClick={()=>{updateCompanyDim(4,999);setCsrdPendingChoice(false);setCsrdConfirmStep(1);}}>{isIt?"No, correggi":"No, correct"}</button></div></div>
-        ):(
-          <div className="csrdAlert csrdAlertOk"><span className="csrdAlertIcon">ℹ</span><div className="csrdAlertBody"><strong>{isIt?"Indicativamente fuori dal perimetro CSRD sulla base dei dati inseriti.":"Indicatively outside the CSRD scope based on the data entered."}</strong><span>{isIt?"Meno di 1.000 dipendenti o fatturato sotto €450M.":"Under 1,000 employees or revenue below €450M."}</span></div><div className="csrdAlertBtns"><button className="csrdBtnYes" onClick={()=>{setCsrdPendingChoice(false);setCsrdConfirmStep(1);}}>{isIt?"Sì, confermo":"Yes, confirm"}</button><button className="csrdBtnNo" onClick={()=>{updateCompanyDim(4,10000);setCsrdPendingChoice(true);setCsrdConfirmStep(1);}}>{isIt?"No, correggi":"No, correct"}</button></div></div>
-        );
-      })()}
-      <div className="csrdNoteWrap">
-        <button className="csrdNoteToggle" onClick={()=>{if(!csrdNoteOpen){setCsrdNoteDraft(csrdNote);} setCsrdNoteOpen(!csrdNoteOpen);}}>
-          {csrdNote&&!csrdNoteOpen&&<span className="csrdNoteDot"/>}
-          {isIt?"✏ Seleziona per note o osservazioni · perimetro CSRD":"✏ Select for notes or observations · CSRD scope"}
-        </button>
-        {csrdNoteOpen&&(
-          <div className="csrdNoteBox">
-            <textarea className="csrdNoteArea" rows={4} placeholder={isIt?"Aggiungi note sul contesto CSRD di questa azienda...":"Add notes on this company's CSRD context..."} value={csrdNoteDraft} onChange={e=>setCsrdNoteDraft(e.target.value)}/>
-            <div className="csrdNoteActions">
-              <button className="csrdNoteSave" onClick={()=>{setCsrdNote(csrdNoteDraft);setCsrdNoteOpen(false);}}>{isIt?"Salva":"Save"}</button>
-              <button className="csrdNoteCancel" onClick={()=>setCsrdNoteOpen(false)}>{isIt?"Annulla":"Cancel"}</button>
-            </div>
-            {csrdNote&&<p className="csrdNoteSaved"><span>✓</span>{csrdNote}</p>}
-          </div>
-        )}
-        {csrdNote&&!csrdNoteOpen&&<p className="csrdNoteSavedInline"><span>✓</span>{csrdNote}</p>}
-      </div>
       <blockquote>{evolvingGen}</blockquote>
-      {csrdConfirmStep===2&&<button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>}
+      <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
     </section>
     <section className="worldMap" aria-label={`${displayCompanyName} footprint`}>
       <div className="mapGrid"/>
