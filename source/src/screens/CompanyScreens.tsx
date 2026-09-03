@@ -396,6 +396,7 @@ export function CompanyScreen({
               : <span className="companyRptTriggerPrompt">{isIt?"✎ Seleziona il percorso di rendicontazione ESG più adatto per l'azienda":"✎ Select the most appropriate ESG reporting path for the company"}</span>
             }
           </button>
+          {chosen&&<p className="companyRptDecision"><span>{isIt?"Decisione: ":"Decision: "}</span>{isIt?chosen.for.it:chosen.for.en}</p>}
           {/* Popup modale */}
           {rptOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setRptOpen(false)}}>
             <div className="companyRptModal">
