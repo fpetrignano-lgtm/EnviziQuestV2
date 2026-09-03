@@ -1084,6 +1084,22 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csGeoRow .csDimInput{width:68px;padding:6px 10px;font-size:22px}
 .csReadinessDesc{margin:8px 0 0;font-size:22px;line-height:1.65;color:#7a9e92;padding:14px 16px;background:rgba(57,239,180,.05);border:1px solid rgba(57,239,180,.18);border-radius:8px}
 .csConfirmBtn{align-self:stretch;margin-top:12px;font-size:22px!important;padding:18px 24px!important}
+
+/* Site table */
+.csSiteTotal{font-size:20px;color:#72c4a8;font-weight:700;letter-spacing:.06em;margin-bottom:10px}
+.csSiteTotal strong{color:#39efb4;font-size:24px}
+.csSiteTableWrap{overflow-x:auto}
+.csSiteTable{width:100%;border-collapse:collapse;table-layout:fixed}
+.csSiteTable thead th{padding:7px 6px;font:700 14px var(--font-geist-mono);letter-spacing:.08em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
+.csSiteThRow{text-align:left!important;width:140px}
+.csSiteThGeo{width:80px}
+.csSiteTable tbody tr{border-bottom:1px solid #121f19}
+.csSiteRowLabel{font-size:18px;color:#9db3aa;padding:8px 6px 8px 0;white-space:nowrap;vertical-align:middle}
+.csSiteCell{padding:4px 3px;text-align:center;vertical-align:middle}
+.csSiteInput{width:66px;background:#0a1a14;border:1px solid #1e3a2e;border-radius:6px;color:#f2fff9;font:700 18px var(--font-geist-mono);padding:7px 6px;outline:none;text-align:right;-moz-appearance:textfield;appearance:textfield;transition:.15s}
+.csSiteInput::-webkit-inner-spin-button,.csSiteInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.csSiteInput:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}
+
 @media(max-width:1100px){.csFormTwoCol{grid-template-columns:1fr}.csFormRight{position:static}}
 @media(max-width:900px){.csBody{grid-template-columns:1fr}.csLeft{min-height:300px;border-right:none;border-bottom:1px solid #1a3028}.csProfileImg{max-width:220px}}
 @media(max-width:580px){.csTwoCol{grid-template-columns:1fr}.csRight{padding:24px 20px 40px}.csGeoGrid{grid-template-columns:1fr 1fr}}

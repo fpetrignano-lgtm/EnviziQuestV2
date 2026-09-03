@@ -2,6 +2,11 @@ import type { Market, SectorKey, EsgReadiness } from "../types";
 import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
 
+
+type SiteGeoKey="italia"|"europa"|"usa"|"asia"|"australia"|"africa";
+type SiteRowKey="uffici"|"ops"|"datacenter"|"altro";
+type SiteTable=Record<SiteRowKey,Record<SiteGeoKey,number>>;
+
 interface CompanySetupProps extends CommonProps {
   companyName: string;
   setCompanyName: (v: string) => void;
@@ -14,9 +19,9 @@ interface CompanySetupProps extends CommonProps {
   setEsgReadiness: (v: EsgReadiness) => void;
   companyDims: [number,number,number,number,number];
   updateCompanyDim: (i: number, v: number) => void;
-  setCompanyDims: (v: [number,number,number,number,number]) => void;
-  geoDistrib: Record<string,number>;
-  setGeoDistrib: (v: Record<string,number>) => void;
+  siteTable: SiteTable;
+  updateSiteCell: (row: SiteRowKey, geo: SiteGeoKey, val: number) => void;
+  siteTotalAll: () => number;
   name: string;
   workshopDate: string;
   setWorkshopDate: (v: string) => void;
@@ -30,7 +35,7 @@ export function CompanySetupScreen({
   language, profile, setLanguage, setScreen, reset,
   companyName, setCompanyName, questName, companySector, setCompanySector,
   companyMarket, setCompanyMarket, esgReadiness, setEsgReadiness,
-  companyDims, updateCompanyDim, setCompanyDims, geoDistrib, setGeoDistrib, name,
+  companyDims, updateCompanyDim, siteTable, updateSiteCell, siteTotalAll, name,
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
   companyLogo, setCompanyLogo,
 }: CompanySetupProps) {
@@ -38,16 +43,22 @@ export function CompanySetupScreen({
   const sec = SECTORS[companySector];
   const readinessList = isIt ? ESG_READINESS_IT : ESG_READINESS_EN;
   const activeReadiness = readinessList.find(r => r.key === esgReadiness)!;
-  const geoKeys = ["italia","europa","asia","nordamerica","sudamerica","africa","australia"];
-  const geoLabels: Record<string,{it:string,en:string}> = {italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},asia:{it:"Asia",en:"Asia"},nordamerica:{it:"Nord America",en:"N. America"},sudamerica:{it:"Sud America",en:"S. America"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"}};
-  const dimLabelsFull: [{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string}] = [sec.dimUnit, sec.opsUnit, {it:"sedi uffici",en:"Office locations"}, {it:"data center",en:"Data centres"}, {it:"dipendenti",en:"Employees"}];
-  const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); setCompanyDims([0,0,0,0,0]); };
-  const geoDisplayKeys = companyMarket === "mondo" ? geoKeys : ["italia","europa"];
-  const geoTotal = geoDisplayKeys.reduce((s,k) => s + (geoDistrib[k] ?? 0), 0);
-  const handleGeoChange = (key: string, val: number) => {
-    const v = isNaN(val) ? 0 : Math.max(0, val);
-    setGeoDistrib((prev: Record<string,number>) => ({ ...prev, [key]: v }));
+  const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); };
+  const geoColKeys: SiteGeoKey[] = ["italia","europa","usa","asia","australia","africa"];
+  const geoColLabels: Record<SiteGeoKey,{it:string,en:string}> = {
+    italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"},
+    usa:{it:"USA",en:"USA"}, asia:{it:"Asia",en:"Asia"},
+    australia:{it:"Australia",en:"Australia"}, africa:{it:"Africa",en:"Africa"},
   };
+  const siteRowDefs: {key:SiteRowKey,label:{it:string,en:string}}[] = [
+    {key:"uffici",   label:{it:"Sedi uffici",en:"Office locations"}},
+    {key:"ops",      label:{it:sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1),en:sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1)}},
+    {key:"datacenter",label:{it:"Data center",en:"Data centres"}},
+    {key:"altro",    label:{it:"Altro",en:"Other"}},
+  ];
+  const siteTotal = siteTotalAll();
+  const dimLabelRevenue = sec.dimUnit;
+  const dimLabelEmployees:{it:string,en:string}={it:"dipendenti",en:"employees"};
   return <main className="csScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
     <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> {isIt?"LA TUA AZIENDA":"YOUR COMPANY"}</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <div className="csBody">
@@ -82,21 +93,42 @@ export function CompanySetupScreen({
                 </select>
               </div>
             </div>
-            <div className="csField"><label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
+            {/* Dimensioni economiche e persone */}
+            <div className="csField">
+              <label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
               <div className="csDimsGrid">
-                {companyDims.map((v,i)=><div key={i} className="csDimRow"><input className="csDimInput" type="number" min={0} value={v===0?"":v} onChange={e=>updateCompanyDim(i,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelsFull[i].it:dimLabelsFull[i].en}</span></div>)}
-              </div>
-              <div className="csDimTotalRow">
-                <input className="csDimInput csDimInputTotal" type="number" readOnly value={(companyDims[1]+companyDims[2]+companyDims[3])===0?"":(companyDims[1]+companyDims[2]+companyDims[3])}/>
-                <span className="csDimUnit">{isIt?"sedi totali (calcolato)":"total locations (calculated)"}</span>
+                <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span></div>
+                <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
               </div>
             </div>
-            {(companyMarket==="europa"||companyMarket==="mondo")&&<div className="csField"><label>{isIt?"Distribuzione sedi per paese (n. sedi)":"Location distribution by country (no. of sites)"}</label>
-              <div className="csGeoGrid">
-                {geoDisplayKeys.map(k=><div key={k} className="csGeoRow"><span>{isIt?geoLabels[k].it:geoLabels[k].en}</span><input className="csDimInput" type="number" min={0} value={(geoDistrib[k]??0)===0?"":(geoDistrib[k]??0)} onChange={e=>handleGeoChange(k,parseInt(e.target.value))}/></div>)}
-                <div className="csDimTotalRow"><input className="csDimInput csDimInputTotal" type="number" readOnly value={geoTotal===0?"":geoTotal}/><span className="csDimUnit">{isIt?"sedi totali (calcolato)":"total locations (calculated)"}</span></div>
+            {/* Tabella sedi */}
+            <div className="csField">
+              <div className="csSiteTotal">{isIt?"Totale sedi":"Total locations"}: <strong>{siteTotal===0?"—":siteTotal}</strong></div>
+              <div className="csSiteTableWrap">
+                <table className="csSiteTable">
+                  <thead>
+                    <tr>
+                      <th className="csSiteThRow">{isIt?"Tipo sede":"Site type"}</th>
+                      {geoColKeys.map(g=><th key={g} className="csSiteThGeo">{isIt?geoColLabels[g].it:geoColLabels[g].en}</th>)}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {siteRowDefs.map(row=>(
+                      <tr key={row.key}>
+                        <td className="csSiteRowLabel">{isIt?row.label.it:row.label.en}</td>
+                        {geoColKeys.map(g=>(
+                          <td key={g} className="csSiteCell">
+                            <input className="csSiteInput" type="number" min={0}
+                              value={(siteTable[row.key][g]??0)===0?"":(siteTable[row.key][g]??0)}
+                              onChange={e=>updateSiteCell(row.key,g,parseInt(e.target.value))}/>
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>}
+            </div>
           </div>
           <div className="csFormRight">
             <div className="csField"><label>{isIt?"Seleziona il tuo stato attuale dati ESG":"Select your current ESG data status"}</label>
@@ -109,7 +141,7 @@ export function CompanySetupScreen({
               <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
               <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
             </div>
-            <button className="actionButton csConfirmBtn" disabled={geoError} onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
+            <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
           </div>
         </div>
       </div>
