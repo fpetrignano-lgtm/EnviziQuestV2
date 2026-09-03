@@ -87,17 +87,17 @@ export function CompanySetupScreen({
             </div>
             <div className="csField"><label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
               <div className="csDimsGrid">
-                {companyDims.map((v,i)=><div key={i} className="csDimRow"><input className="csDimInput" type="number" min={0} value={v} onChange={e=>updateCompanyDim(i,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelsFull[i].it:dimLabelsFull[i].en}</span></div>)}
+                {companyDims.map((v,i)=><div key={i} className="csDimRow"><input className="csDimInput" type="number" min={0} value={v===0?"":v} onChange={e=>updateCompanyDim(i,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelsFull[i].it:dimLabelsFull[i].en}</span></div>)}
               </div>
               <div className="csDimTotalRow">
-                <input className="csDimInput csDimInputTotal" type="number" readOnly value={companyDims[1]+companyDims[2]+companyDims[3]}/>
+                <input className="csDimInput csDimInputTotal" type="number" readOnly value={(companyDims[1]+companyDims[2]+companyDims[3])===0?"":(companyDims[1]+companyDims[2]+companyDims[3])}/>
                 <span className="csDimUnit">{isIt?"sedi totali (calcolato)":"total locations (calculated)"}</span>
               </div>
             </div>
             {(companyMarket==="europa"||companyMarket==="mondo")&&<div className="csField"><label>{isIt?"Distribuzione sedi per paese (n. sedi)":"Location distribution by country (no. of sites)"}</label>
               <div className="csGeoGrid">
                 <div className={`csGeoRow${geoError?" csGeoRowError":" csGeoRowItalia"}`}><span>{isIt?"Italia":"Italy"}</span><input className="csDimInput csGeoItalyInput" type="number" readOnly value={italyVal} title={isIt?"Calcolato: sedi totali meno la somma degli altri paesi":"Calculated: total sites minus sum of other countries"}/><span className="csGeoItalyHint">{isIt?"← calcolato":"← auto"}</span></div>
-                {nonItalyKeys.map(k=><div key={k} className="csGeoRow"><span>{isIt?geoLabels[k].it:geoLabels[k].en}</span><input className="csDimInput" type="number" min={0} value={geoDistrib[k]??0} onChange={e=>handleGeoChange(k,parseInt(e.target.value))}/></div>)}
+                {nonItalyKeys.map(k=><div key={k} className="csGeoRow"><span>{isIt?geoLabels[k].it:geoLabels[k].en}</span><input className="csDimInput" type="number" min={0} value={(geoDistrib[k]??0)===0?"":(geoDistrib[k]??0)} onChange={e=>handleGeoChange(k,parseInt(e.target.value))}/></div>)}
               </div>
               {geoError&&<p className="csGeoErrorMsg">{isIt?"⚠ Il numero di sedi negli altri paesi supera il totale sedi. Riduci i valori.":"⚠ Sites in other countries exceed total sites. Please reduce the values."}</p>}
             </div>}
