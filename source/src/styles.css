@@ -1089,14 +1089,14 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csSiteTotal{font-size:20px;color:#72c4a8;font-weight:700;letter-spacing:.06em;margin-bottom:10px}
 .csSiteTotal strong{color:#39efb4;font-size:24px}
 .csSiteTableWrap{overflow-x:auto}
-.csSiteTable{width:200%;border-collapse:collapse;table-layout:fixed}
-.csSiteTable thead th{padding:7px 6px;font:700 14px var(--font-geist-mono);letter-spacing:.08em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
-.csSiteThRow{text-align:left!important;width:140px}
-.csSiteThGeo{width:66px;font-size:8px;letter-spacing:0;overflow:hidden;text-overflow:ellipsis}
+.csSiteTable{width:100%;border-collapse:collapse;table-layout:fixed}
+.csSiteTable thead th{padding:4px 2px;font:700 10px var(--font-geist-mono);letter-spacing:.04em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
+.csSiteThRow{text-align:left!important;width:22%}
+.csSiteThGeo{font-size:8px;letter-spacing:0}
 .csSiteTable tbody tr{border-bottom:1px solid #121f19}
-.csSiteRowLabel{font-size:18px;color:#9db3aa;padding:8px 6px 8px 0;white-space:nowrap;vertical-align:middle}
-.csSiteCell{padding:4px 3px;text-align:center;vertical-align:middle}
-.csSiteInput{width:66px;background:#0a1a14;border:1px solid #1e3a2e;border-radius:6px;color:#f2fff9;font:700 18px var(--font-geist-mono);padding:7px 6px;outline:none;text-align:right;-moz-appearance:textfield;appearance:textfield;transition:.15s}
+.csSiteRowLabel{font-size:14px;color:#9db3aa;padding:5px 4px 5px 0;white-space:nowrap;vertical-align:middle}
+.csSiteCell{padding:3px 2px;text-align:center;vertical-align:middle}
+.csSiteInput{width:100%;box-sizing:border-box;background:#0a1a14;border:1px solid #1e3a2e;border-radius:5px;color:#f2fff9;font:700 14px var(--font-geist-mono);padding:5px 4px;outline:none;text-align:right;-moz-appearance:textfield;appearance:textfield;transition:.15s}
 .csSiteInput::-webkit-inner-spin-button,.csSiteInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .csSiteInput:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}
 
