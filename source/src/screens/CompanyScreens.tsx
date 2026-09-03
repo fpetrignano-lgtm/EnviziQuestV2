@@ -410,7 +410,7 @@ export function CompanyScreen({
                     <div className="csReportingCardBody">
                       <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
                       <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
-                      <p className="csReportingCardFor"><span>{isIt?"Indicata per: ":"Indicated for: "}</span>{isIt?p.for.it:p.for.en}</p>
+                      <p className="csReportingCardFor"><span>{isIt?"Decisione: ":"Decision: "}</span>{isIt?p.for.it:p.for.en}</p>
                     </div>
                   </button>
                 ))}
