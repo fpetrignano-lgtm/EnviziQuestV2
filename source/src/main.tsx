@@ -16,11 +16,22 @@ function applyScale() {
 }
 applyScale();
 
-// Copy badge text on click — global handler for all .missionProgress elements
+// Copy on click — missionProgress badge (navbar)
 document.addEventListener("click", (e) => {
   const el = (e.target as HTMLElement).closest(".missionProgress");
   if (!el) return;
   const text = el.textContent?.replace(/^\s*·?\s*/, "").trim() ?? "";
+  navigator.clipboard.writeText(text).then(() => {
+    el.setAttribute("data-copied", "1");
+    setTimeout(() => el.removeAttribute("data-copied"), 1400);
+  });
+});
+
+// Copy on click — pageNum badge (bottom-left slide identifier)
+document.addEventListener("click", (e) => {
+  const el = (e.target as HTMLElement).closest("#envizi-page-num");
+  if (!el) return;
+  const text = el.textContent?.trim() ?? "";
   navigator.clipboard.writeText(text).then(() => {
     el.setAttribute("data-copied", "1");
     setTimeout(() => el.removeAttribute("data-copied"), 1400);
