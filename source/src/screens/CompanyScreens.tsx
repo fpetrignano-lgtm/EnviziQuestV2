@@ -195,83 +195,79 @@ export function CompanySetupScreen({
       <div className="csRight">
         <p className="eyebrow">{isIt?"RACCONTACI LA TUA AZIENDA":"TELL US ABOUT YOUR COMPANY"}</p>
         <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
-        <div className="csFormTwoCol">
-          <div className="csFormLeft">
-            <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
-            <div className="csField">
-              <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
-              <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
-                <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"13px",padding:"6px 12px",border:"1px solid #3a6a50",borderRadius:"6px",background:"#f7faf8",color:"#0d3a2a"}}>
-                  📎 {isIt?"Carica immagine":"Upload image"}
-                  <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{if(ev.target?.result)setCompanyLogo(ev.target.result as string);};reader.readAsDataURL(file);}}/>
-                </label>
-                {companyLogo&&(<><img src={companyLogo} alt="logo" style={{height:"36px",maxWidth:"120px",objectFit:"contain",borderRadius:"4px",border:"1px solid #d0e8d8"}}/><button onClick={()=>setCompanyLogo("")} style={{fontSize:"11px",padding:"3px 8px",border:"1px solid #c0d0c8",borderRadius:"4px",background:"#fff",cursor:"pointer",color:"#666"}}>✕ {isIt?"Rimuovi":"Remove"}</button></>)}
-              </div>
-            </div>
-            <div className="csTwoCol">
-              <div className="csField"><label>{isIt?"Presenza mercati":"Market presence"}</label>
-                <select className="csSelect" value={companyMarket} onChange={e=>setCompanyMarket(e.target.value as Market)}>
-                  <option value="italia">{isIt?"Solo Italia":"Italy only"}</option>
-                  <option value="europa">{isIt?"Europa":"Europe"}</option>
-                  <option value="mondo">{isIt?"Mondo":"Global"}</option>
-                </select>
-              </div>
-              <div className="csField"><label>{isIt?"Settore":"Sector"}</label>
-                <select className="csSelect" value={companySector} onChange={e=>handleSectorChange(e.target.value as SectorKey)}>
-                  {SECTOR_KEYS.map(sk=><option key={sk} value={sk}>{isIt?SECTORS[sk].label.it:SECTORS[sk].label.en}</option>)}
-                </select>
-              </div>
-            </div>
-            {/* Dimensioni economiche e persone */}
-            <div className="csField">
-              <label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
-              <div className="csDimsGrid">
-                <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span></div>
-                <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
-              </div>
-            </div>
-            {/* Tabella sedi */}
-            <div className="csField">
-              <div className="csSiteTotal">{isIt?"Totale sedi":"Total locations"}: <strong>{siteTotal===0?"—":siteTotal}</strong></div>
-              <div className="csSiteTableWrap">
-                <table className="csSiteTable">
-                  <thead>
-                    <tr>
-                      <th className="csSiteThRow">{isIt?"Tipo sede":"Site type"}</th>
-                      {geoColKeys.map(g=><th key={g} className="csSiteThGeo">{isIt?geoColLabels[g].it:geoColLabels[g].en}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {siteRowDefs.map(row=>(
-                      <tr key={row.key}>
-                        <td className="csSiteRowLabel">{isIt?row.label.it:row.label.en}</td>
-                        {geoColKeys.map(g=>(
-                          <td key={g} className="csSiteCell">
-                            <input className="csSiteInput" type="number" min={0}
-                              value={(siteTable[row.key][g]??0)===0?"":(siteTable[row.key][g]??0)}
-                              onChange={e=>updateSiteCell(row.key,g,parseInt(e.target.value))}/>
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+        <div className="csFormOneCol">
+          <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
+          <div className="csField">
+            <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
+            <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
+              <label style={{cursor:"pointer",display:"inline-flex",alignItems:"center",gap:"6px",fontSize:"13px",padding:"6px 12px",border:"1px solid #3a6a50",borderRadius:"6px",background:"#f7faf8",color:"#0d3a2a"}}>
+                📎 {isIt?"Carica immagine":"Upload image"}
+                <input type="file" accept="image/*" style={{display:"none"}} onChange={e=>{const file=e.target.files?.[0];if(!file)return;const reader=new FileReader();reader.onload=ev=>{if(ev.target?.result)setCompanyLogo(ev.target.result as string);};reader.readAsDataURL(file);}}/>
+              </label>
+              {companyLogo&&(<><img src={companyLogo} alt="logo" style={{height:"36px",maxWidth:"120px",objectFit:"contain",borderRadius:"4px",border:"1px solid #d0e8d8"}}/><button onClick={()=>setCompanyLogo("")} style={{fontSize:"11px",padding:"3px 8px",border:"1px solid #c0d0c8",borderRadius:"4px",background:"#fff",cursor:"pointer",color:"#666"}}>✕ {isIt?"Rimuovi":"Remove"}</button></>)}
             </div>
           </div>
-          <div className="csFormRight">
-            <div className="csField"><label>{isIt?"Seleziona il tuo stato attuale dati ESG":"Select your current ESG data status"}</label>
-              <select className="csSelect" value={esgReadiness} onChange={e=>setEsgReadiness(e.target.value as EsgReadiness)}>
-                {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
+          <div className="csTwoCol">
+            <div className="csField"><label>{isIt?"Presenza mercati":"Market presence"}</label>
+              <select className="csSelect" value={companyMarket} onChange={e=>setCompanyMarket(e.target.value as Market)}>
+                <option value="italia">{isIt?"Solo Italia":"Italy only"}</option>
+                <option value="europa">{isIt?"Europa":"Europe"}</option>
+                <option value="mondo">{isIt?"Mondo":"Global"}</option>
               </select>
-              <p className="csReadinessDesc">{activeReadiness.desc}</p>
             </div>
-            <div className="csTwoCol">
-              <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
-              <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Settore":"Sector"}</label>
+              <select className="csSelect" value={companySector} onChange={e=>handleSectorChange(e.target.value as SectorKey)}>
+                {SECTOR_KEYS.map(sk=><option key={sk} value={sk}>{isIt?SECTORS[sk].label.it:SECTORS[sk].label.en}</option>)}
+              </select>
             </div>
-            <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
           </div>
+          {/* Dimensioni economiche e persone */}
+          <div className="csField">
+            <label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
+            <div className="csDimsGrid">
+              <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span></div>
+              <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
+            </div>
+          </div>
+          {/* Tabella sedi */}
+          <div className="csField">
+            <div className="csSiteTotal">{isIt?"Totale sedi":"Total locations"}: <strong>{siteTotal===0?"—":siteTotal}</strong></div>
+            <div className="csSiteTableWrap">
+              <table className="csSiteTable">
+                <thead>
+                  <tr>
+                    <th className="csSiteThRow">{isIt?"Tipo sede":"Site type"}</th>
+                    {geoColKeys.map(g=><th key={g} className="csSiteThGeo">{isIt?geoColLabels[g].it:geoColLabels[g].en}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {siteRowDefs.map(row=>(
+                    <tr key={row.key}>
+                      <td className="csSiteRowLabel">{isIt?row.label.it:row.label.en}</td>
+                      {geoColKeys.map(g=>(
+                        <td key={g} className="csSiteCell">
+                          <input className="csSiteInput" type="number" min={0}
+                            value={(siteTable[row.key][g]??0)===0?"":(siteTable[row.key][g]??0)}
+                            onChange={e=>updateSiteCell(row.key,g,parseInt(e.target.value))}/>
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div className="csField"><label>{isIt?"Seleziona il tuo stato attuale dati ESG":"Select your current ESG data status"}</label>
+            <select className="csSelect" value={esgReadiness} onChange={e=>setEsgReadiness(e.target.value as EsgReadiness)}>
+              {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
+            </select>
+            <p className="csReadinessDesc">{activeReadiness.desc}</p>
+          </div>
+          <div className="csTwoCol">
+            <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Nome consulente":"Consultant name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
+          </div>
+          <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
         </div>
       </div>
     </div>

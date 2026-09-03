@@ -1050,6 +1050,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csFormTwoCol{display:grid;grid-template-columns:1fr 1.8fr;gap:32px;align-items:start}
 .csFormLeft{display:flex;flex-direction:column;gap:20px}
 .csFormRight{display:flex;flex-direction:column;gap:20px;position:sticky;top:0}
+.csFormOneCol{display:flex;flex-direction:column;gap:20px;width:100%}
 .csField{display:flex;flex-direction:column;gap:10px}
 .csField>label{font:700 22px var(--font-geist-mono);letter-spacing:.14em;text-transform:uppercase;color:#72c4a8}
 .csFieldName>label{font:700 28px var(--font-geist-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--teal);text-shadow:0 0 18px rgba(57,239,180,.35);display:flex;align-items:baseline;flex-wrap:wrap;gap:10px}
