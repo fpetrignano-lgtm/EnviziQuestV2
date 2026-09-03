@@ -333,10 +333,10 @@ export function CompanyScreen({
   type MapGeoKey = "italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
   // left = (lon+180)/360*100, top = (90-lat)/180*100  — proiezione equirettangolare
   const GEO_POS: Record<MapGeoKey,{left:string,top:string}> = {
-    italia:     {left:"53%", top:"27%"},  // lon=12, lat=42
+    italia:     {left:"49%", top:"37%"},  // pixel ~870,330
     europa:     {left:"49%", top:"22%"},  // lon=-4, lat=50
     nordamerica:{left:"22%", top:"28%"},  // lon=-100, lat=40
-    sudamerica: {left:"35%", top:"58%"},  // lon=-55, lat=-15
+    sudamerica: {left:"18%", top:"67%"},  // pixel ~310,590
     asia:       {left:"75%", top:"31%"},  // lon=90, lat=35
     africa:     {left:"56%", top:"47%"},  // lon=20, lat=5
     australia:  {left:"87%", top:"64%"},  // lon=135, lat=-25
