@@ -16,6 +16,17 @@ function applyScale() {
 }
 applyScale();
 
+// Copy badge text on click — global handler for all .missionProgress elements
+document.addEventListener("click", (e) => {
+  const el = (e.target as HTMLElement).closest(".missionProgress");
+  if (!el) return;
+  const text = el.textContent?.replace(/^\s*·?\s*/, "").trim() ?? "";
+  navigator.clipboard.writeText(text).then(() => {
+    el.setAttribute("data-copied", "1");
+    setTimeout(() => el.removeAttribute("data-copied"), 1400);
+  });
+});
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <App />
