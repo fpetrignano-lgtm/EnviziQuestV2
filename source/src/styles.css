@@ -1114,7 +1114,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .companyRptOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:center;justify-content:center;padding:40px}
 .companyRptModal{background:#0a1c15;border:1px solid #2a4a3c;border-radius:18px;padding:28px 28px 24px;max-width:1100px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .companyRptModalHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px}
-.companyRptModalTitle{font-size:clamp(18px,1.6vw,24px);color:#b6cac2;margin:0;font-weight:400}
+.companyRptModalTitle{font-size:clamp(36px,3.2vw,48px);color:#b6cac2;margin:0;font-weight:400}
 .companyRptModalClose{background:none;border:1px solid #2a4a3c;border-radius:8px;color:#7a9e92;font-size:16px;width:32px;height:32px;cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:.15s}
 .companyRptModalClose:hover{border-color:#39efb4;color:#39efb4}
 .companyRptModalCards{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
