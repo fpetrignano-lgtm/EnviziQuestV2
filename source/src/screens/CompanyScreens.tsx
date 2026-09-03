@@ -40,7 +40,7 @@ export function CompanySetupScreen({
   const geoKeys = ["italia","europa","asia","nordamerica","sudamerica","africa","australia"];
   const geoLabels: Record<string,{it:string,en:string}> = {italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},asia:{it:"Asia",en:"Asia"},nordamerica:{it:"Nord America",en:"N. America"},sudamerica:{it:"Sud America",en:"S. America"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"}};
   const dimLabelsFull: [{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string},{it:string,en:string}] = [sec.dimUnit, sec.opsUnit, {it:"sedi uffici",en:"Office locations"}, {it:"data center",en:"Data centres"}, {it:"dipendenti",en:"Employees"}];
-  const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); setCompanyDims([...SECTORS[sk].defaults] as [number,number,number,number,number]); };
+  const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); setCompanyDims([0,0,0,0,0]); };
   const totalSedi = companyDims[1] + companyDims[2] + companyDims[3];
   const nonItalyKeys = (companyMarket === "mondo" ? geoKeys : ["europa"]).filter(k => k !== "italia");
   const otherSum = nonItalyKeys.reduce((s,k) => s + (geoDistrib[k] ?? 0), 0);
