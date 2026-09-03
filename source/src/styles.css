@@ -1058,7 +1058,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csProfileTag small{display:block;font:700 16px var(--font-geist-mono);letter-spacing:.16em;color:#72f7ca;margin-bottom:3px}
 .csProfileTag strong{display:block;font-size:22px;color:#f2fff9}
 .csRight{padding:16px 4vw 16px;overflow-y:auto}
-.csTitle{font-size:clamp(22px,2.4vw,36px);line-height:1;letter-spacing:-.05em;margin:4px 0 14px;font-weight:520;color:#b5c9c1}
+.csTitle{font-size:clamp(28px,3vw,44px);line-height:1;letter-spacing:-.05em;margin:4px 0 14px;font-weight:520;color:#b5c9c1}
 .csFormTwoCol{display:grid;grid-template-columns:1fr 1.8fr;gap:24px;align-items:start}
 .csFormLeft{display:flex;flex-direction:column;gap:10px}
 .csFormRight{display:flex;flex-direction:column;gap:10px;position:sticky;top:0}
