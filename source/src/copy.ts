@@ -44,7 +44,7 @@ export const copy = {
       {icon:"📋",label:"Reporting e disclosure",detail:"Framework di rendicontazione, conformità normativa e comunicazione agli stakeholder."},
       {icon:"🎯",label:"Pianificazione e target",detail:"Scenari di decarbonizzazione, obiettivi Net Zero e monitoraggio dell'esecuzione nel tempo."}
     ],
-    approachDataTitle:"Il secondo filone è agire sulle sfide di dati.",
+    approachDataTitle:"2. Il secondo passo è agire sulle sfide di dati.",
     approachOptionsLabel:"Le opzioni che valuterai attraverso questo Quest", approachOptions:[
       {key:"asis",icon:"⏸",label:"Attendere con l'AS-IS",detail:"Nessun investimento immediato, ma i problemi restano e la pressione cresce: da banche, clienti, normativa."},
       {key:"simple",icon:"🔧",label:"Adottare una soluzione percepita come semplice",detail:"Un tool puntuale o un workflow digitale: abbassa la complessità percepita, ma spesso non scala e non integra."},
@@ -81,8 +81,7 @@ export const copy = {
     approachDataCta:"Avanti →",
     approachDecisionsTitle:"3. Affronta le sfide decisionali",
     approachDecisionsBody:[
-      "Sulla base delle priorità emerse, affronterai sei sfide dedicate alle principali aree di evoluzione della gestione ESG: dalla Data Foundation alla rendicontazione delle emissioni, dai framework ESG e CSRD alla supply chain, fino all'energia, alla decarbonizzazione e alla pianificazione degli scenari.",
-      "Alcune capacità possono rappresentare fondamenta necessarie fin dall'inizio; altre possono trovare posto in una seconda fase della roadmap.",
+      "Affronterai sei sfide dedicate alle principali aree di evoluzione della gestione ESG: dalla Data Foundation alla rendicontazione delle emissioni, dai framework ESG e CSRD alla supply chain, fino all'energia, alla decarbonizzazione e alla pianificazione degli scenari.",
       "Per ogni sfida confronterai tre possibili approcci: mantenere l'attuale situazione; adottare una soluzione semplice e di breve periodo; costruire una soluzione enterprise integrata.",
       "Dopo ogni decisione potrai osservare le possibili conseguenze e il contributo che le capacità di IBM Envizi potrebbero offrire.",
     ],
@@ -337,7 +336,7 @@ export const copy = {
       {icon:"📋",label:"Reporting and disclosure",detail:"Reporting frameworks, regulatory compliance and stakeholder communication."},
       {icon:"🎯",label:"Planning and targets",detail:"Decarbonisation scenarios, Net Zero objectives and execution monitoring over time."}
     ],
-    approachDataTitle:"The second track is acting on data challenges.",
+    approachDataTitle:"2. The second step is acting on data challenges.",
     approachOptionsLabel:"The options you will evaluate through this Quest", approachOptions:[
       {key:"asis",icon:"⏸",label:"Wait with the AS-IS",detail:"No immediate investment, but problems persist and pressure grows: from banks, clients, regulation."},
       {key:"simple",icon:"🔧",label:"A solution perceived as simple",detail:"A point tool or digital workflow: lowers perceived complexity, but often does not scale or integrate."},

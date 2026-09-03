@@ -15,7 +15,7 @@ const MISSION_LABELS: Record<number, { it: string; en: string; sub: string; subE
 // ── Shared fullscreen slide style ─────────────────────────────────────────────
 
 const slideStyle: React.CSSProperties = {
-  height: "100dvh",
+  height: "1080px",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -25,6 +25,9 @@ const slideStyle: React.CSSProperties = {
   gap: 0,
   overflow: "hidden",
 };
+
+const blueBarTop: React.CSSProperties = {position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100,width:"100%"};
+const blueBarBot: React.CSSProperties = {position:"absolute",bottom:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100,width:"100%"};
 
 const headerStyle: React.CSSProperties = {
   position: "fixed",
@@ -45,7 +48,8 @@ function ChallengeSeparator({ language, setLanguage, setScreen, reset, goBack, r
   const isIt = language === "it";
   const m = MISSION_LABELS[missionIndex];
   return (
-    <main style={slideStyle}>
+    <main style={slideStyle} className="sectionIntroSlide">
+      <div style={blueBarTop}/>
       <header className="missionNav" style={headerStyle}>
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> {isIt ? `SFIDA ${num}` : `CHALLENGE ${num}`}</div>
@@ -79,6 +83,7 @@ function ChallengeSeparator({ language, setLanguage, setScreen, reset, goBack, r
         <button className="secondaryAction" onClick={() => setScreen("chapterMap")}>⌂ {isIt ? "Indice" : "Index"}</button>
         <button className="actionButton" style={{ marginTop: 0 }} onClick={() => setScreen(nextScreen)}>{isIt ? "Avanti →" : "Next →"}</button>
       </div>
+      <div style={blueBarBot}/>
     </main>
   );
 }
@@ -98,7 +103,8 @@ function ChallengeComplete({ language, setLanguage, setScreen, reset, goBack, re
     ? (isIt ? "Hai completato\ntutte le sfide!" : "You completed\nall challenges!")
     : (isIt ? `Hai completato\nla Sfida ${num}` : `You completed\nChallenge ${num}`);
   return (
-    <main style={slideStyle}>
+    <main style={slideStyle} className="sectionIntroSlide">
+      <div style={blueBarTop}/>
       <header className="missionNav" style={headerStyle}>
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> SFIDE</div>
@@ -113,6 +119,7 @@ function ChallengeComplete({ language, setLanguage, setScreen, reset, goBack, re
           <button className="actionButton" style={{ marginTop: 0 }} onClick={() => setScreen(nextScreen)}>{nextLabel}</button>
         </div>
       </div>
+      <div style={blueBarBot}/>
     </main>
   );
 }
@@ -133,7 +140,8 @@ interface SectionIntroProps extends CommonProps {
 export function SectionIntroSlide({ language, setLanguage, setScreen, reset, goBack, num, labelIt, labelEn, titleIt, titleEn, subIt, subEn, nextScreen }: SectionIntroProps) {
   const isIt = language === "it";
   return (
-    <main style={slideStyle}>
+    <main style={slideStyle} className="sectionIntroSlide">
+      <div style={blueBarTop}/>
       <header className="missionNav" style={headerStyle}>
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> {isIt ? labelIt.toUpperCase() : labelEn.toUpperCase()}</div>
@@ -161,6 +169,7 @@ export function SectionIntroSlide({ language, setLanguage, setScreen, reset, goB
         <button className="secondaryAction" onClick={() => goBack()}>← {isIt ? "Indietro" : "Back"}</button>
         <button className="actionButton" style={{ marginTop: 0 }} onClick={() => setScreen(nextScreen)}>{isIt ? "Avanti →" : "Next →"}</button>
       </div>
+      <div style={blueBarBot}/>
     </main>
   );
 }

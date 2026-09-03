@@ -6,7 +6,7 @@ interface Props extends CommonProps {
 
 export function ApproachIntro({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen">
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -14,7 +14,6 @@ export function ApproachIntro({language,setLanguage,setScreen,reset,goBack,t}:Pr
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachIntroTitle}</h1>
           <div className="approachIntroText">{(t.approachIntroBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -24,13 +23,14 @@ export function ApproachIntro({language,setLanguage,setScreen,reset,goBack,t}:Pr
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("approachSteps")}>{t.approachIntroCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachSteps({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen" style={{position:"relative"}}>
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -38,7 +38,6 @@ export function ApproachSteps({language,setLanguage,setScreen,reset,goBack,t}:Pr
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachStepsTitle}</h1>
           <div className="approachIntroText">{(t.approachStepsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -49,13 +48,14 @@ export function ApproachSteps({language,setLanguage,setScreen,reset,goBack,t}:Pr
           <button className="actionButton approachIntroCta" onClick={()=>setScreen("approachData")}>{t.approachStepsCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachData({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen" style={{position:"relative"}}>
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -63,7 +63,6 @@ export function ApproachData({language,setLanguage,setScreen,reset,goBack,t}:Pro
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachDataTitle}</h1>
           <div className="approachIntroText">{(t.approachDataBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -74,13 +73,14 @@ export function ApproachData({language,setLanguage,setScreen,reset,goBack,t}:Pro
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("approachDecisions")}>{t.approachDataCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachDecisions({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen" style={{position:"relative"}}>
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -88,7 +88,6 @@ export function ApproachDecisions({language,setLanguage,setScreen,reset,goBack,t
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachDecisionsTitle}</h1>
           <div className="approachIntroText">{(t.approachDecisionsBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -99,13 +98,14 @@ export function ApproachDecisions({language,setLanguage,setScreen,reset,goBack,t
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("approachRoadmap")}>{t.approachDecisionsCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachRoadmap({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen">
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -113,7 +113,6 @@ export function ApproachRoadmap({language,setLanguage,setScreen,reset,goBack,t}:
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachRoadmapTitle}</h1>
           <div className="approachIntroText">{(t.approachRoadmapBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -124,13 +123,14 @@ export function ApproachRoadmap({language,setLanguage,setScreen,reset,goBack,t}:
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("approachTrust")}>{t.approachRoadmapCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachTrust({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen">
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -138,7 +138,6 @@ export function ApproachTrust({language,setLanguage,setScreen,reset,goBack,t}:Pr
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachTrustTitle}</h1>
           <div className="approachIntroText">{(t.approachTrustBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -149,13 +148,14 @@ export function ApproachTrust({language,setLanguage,setScreen,reset,goBack,t}:Pr
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("approachReport")}>{t.approachTrustCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }
 
 export function ApproachReport({language,setLanguage,setScreen,reset,goBack,t}:Props){
   return(
-    <main className="approachIntroScreen">
+    <main className="approachIntroScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> IL PERCORSO</div>
@@ -163,7 +163,6 @@ export function ApproachReport({language,setLanguage,setScreen,reset,goBack,t}:P
       </header>
       <section className="approachIntroBody approachIntroBodyWithImg">
         <div className="approachIntroLeft">
-          <button className="introBackBtn" onClick={()=>goBack()}>← {language==="it"?"Indietro":"Back"}</button>
           <h1 className="approachIntroTitle">{t.approachReportTitle}</h1>
           <div className="approachIntroText">{(t.approachReportBody as string[]).map((para,i)=><p key={i}>{para}</p>)}</div>
         </div>
@@ -174,6 +173,7 @@ export function ApproachReport({language,setLanguage,setScreen,reset,goBack,t}:P
           <button className="actionButton approachIntroCta approachIntroCtaRight" onClick={()=>setScreen("intro")}>{t.approachReportCta}<b>→</b></button>
         </div>
       </section>
+      <div className="welcomeBlueBar"/>
     </main>
   );
 }

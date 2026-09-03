@@ -14,8 +14,8 @@ export function P10Slideshow({language,setLanguage,setScreen,reset,p10SlideIdx,s
         <span style={{color:"#c9e8dc",fontSize:"13px",fontWeight:700}}>{p10SlideIdx+1} / {P10_SLIDES.length}</span>
         <button className="langMini" onClick={()=>setScreen("blank1")} style={{background:"transparent",border:"1px solid #39efb4",color:"#39efb4",borderRadius:"4px",padding:"4px 10px",cursor:"pointer"}}>✕ {language==="it"?"Chiudi":"Close"}</button>
       </header>
-      <section style={{display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#000"}}>
-        <img src={P10_SLIDES[p10SlideIdx]} alt={`Slide ${p10SlideIdx+1}`} style={{maxWidth:"90%",maxHeight:"90%",width:"90%",objectFit:"contain"}}/>
+      <section style={{display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",background:"#000",minHeight:0}}>
+        <img src={P10_SLIDES[p10SlideIdx]} alt={`Slide ${p10SlideIdx+1}`} style={{maxWidth:"100%",maxHeight:"100%",width:"100%",height:"100%",objectFit:"contain"}}/>
       </section>
       <footer style={{display:"flex",alignItems:"center",justifyContent:"center",gap:"24px",padding:"12px 20px",background:"rgba(0,0,0,.85)"}}>
         <button onClick={()=>setP10SlideIdx(i=>Math.max(0,i-1))} disabled={p10SlideIdx===0} style={{background:"transparent",border:"none",cursor:p10SlideIdx===0?"not-allowed":"pointer",opacity:p10SlideIdx===0?0.2:1}}>

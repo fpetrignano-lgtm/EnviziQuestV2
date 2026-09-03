@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
-import { generateSummaryPptx, type SummaryPptxData } from "../generateSummaryPptx";
-import { generateTemplatePptx } from "../generateTemplatePptx";
+import type { SummaryPptxData } from "../generateSummaryPptx";
 
 interface Props {
   data: SummaryPptxData;
@@ -37,10 +36,16 @@ export function SummarySlideViewer({ data, language, onClose, onSave, defaultSav
         <span style={{ color: "#39efb4", fontSize: "13px", fontWeight: 700, fontFamily: "monospace" }}>e· Envizi Impact Quest</span>
         <span style={{ color: "#c9e8dc", fontSize: "13px", fontWeight: 700 }}>{idx + 1} / {total}</span>
         <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-          <button style={{ background: "rgba(57,239,180,.12)", border: "1px solid rgba(57,239,180,.5)", color: "#39efb4", borderRadius: "6px", padding: "12px 32px", fontWeight: 700, cursor: "pointer", fontSize: "22px" }} onClick={() => generateSummaryPptx(data)}>
+          <button style={{ background: "rgba(57,239,180,.12)", border: "1px solid rgba(57,239,180,.5)", color: "#39efb4", borderRadius: "6px", padding: "12px 32px", fontWeight: 700, cursor: "pointer", fontSize: "22px" }} onClick={async () => {
+            const { generateSummaryPptx } = await import("../generateSummaryPptx");
+            generateSummaryPptx(data);
+          }}>
             ↓ {isIt ? "Scarica sintesi" : "Download summary"}
           </button>
-          <button style={{ background: "rgba(57,239,180,.25)", border: "2px solid #39efb4", color: "#39efb4", borderRadius: "6px", padding: "12px 32px", fontWeight: 700, cursor: "pointer", fontSize: "22px" }} onClick={() => generateTemplatePptx(data)}>
+          <button style={{ background: "rgba(57,239,180,.25)", border: "2px solid #39efb4", color: "#39efb4", borderRadius: "6px", padding: "12px 32px", fontWeight: 700, cursor: "pointer", fontSize: "22px" }} onClick={async () => {
+            const { generateTemplatePptx } = await import("../generateTemplatePptx");
+            generateTemplatePptx(data);
+          }}>
             ↓ {isIt ? "Scarica Report" : "Download Report"}
           </button>
           {onClose && (

@@ -30,20 +30,22 @@ interface Props extends CommonProps {
 export function ChapterMap({ language, profile, setLanguage, setScreen, reset, renderTrustBar, name, missionOrder }: Props) {
   const isIt = language === "it";
 
-  // Sfide nell'ordine corretto
+  // Sfide nell'ordine corretto: il routing segue la posizione mostrata nell'indice.
   const missionSections = missionOrder.map((mi, pos) => ({
     num: `M${pos + 1}`,
     labelIt: MISSION_DATA[mi].labelIt,
     labelEn: MISSION_DATA[mi].labelEn,
     subIt: MISSION_DATA[mi].subIt,
     subEn: MISSION_DATA[mi].subEn,
-    screen: MISSION_DATA[mi].screen,
+    screen: `challengeSeparator${pos + 1}` as Screen,
   }));
 
   const allSections = [...FIXED_TOP, ...missionSections, ...FIXED_BOTTOM];
 
   return (
-    <main style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--bg)", overflow: "hidden" }}>
+    <main style={{ display: "flex", flexDirection: "column", height: "100dvh", background: "var(--bg)", overflow: "hidden", position: "relative" }}>
+      <div style={{ position: "fixed", top: 0, left: 0, right: 0, height: "4px", background: "#3b82f4", zIndex: 9999, pointerEvents: "none" }}/>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, height: "4px", background: "#3b82f4", zIndex: 9999, pointerEvents: "none" }}/>
       <header className="missionNav missionNavTrust">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
         <div className="missionProgress"><span className="activeDot"/> {isIt ? "LA TUA ESPERIENZA" : "YOUR EXPERIENCE"}</div>
@@ -51,48 +53,47 @@ export function ChapterMap({ language, profile, setLanguage, setScreen, reset, r
         <button className="langMini" onClick={() => setLanguage(language === "it" ? "en" : "it")}>{language === "it" ? "EN" : "IT"}</button>
       </header>
 
-      <section style={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "stretch", padding: "20px 28px 16px", gap: "32px", overflow: "hidden", boxSizing: "border-box" }}>
+      <section style={{ flex: 1, display: "flex", flexDirection: "row", alignItems: "stretch", padding: "12px 24px 12px", gap: "24px", overflow: "hidden", boxSizing: "border-box", minHeight: 0 }}>
 
         {/* colonna sinistra: profilo */}
-        <div style={{ flexShrink: 0, width: "220px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
-          <img src={`./characters/${profile}-neutral.png`} alt={name} style={{ width: "200px", height: "200px", objectFit: "contain", borderRadius: "50%", display: "block" }}/>
-          <span style={{ fontWeight: 700, fontSize: "18px", textAlign: "center", lineHeight: 1.3 }}>{name}<br/><small style={{ fontWeight: 400, fontSize: "14px", color: "var(--muted)" }}>ESG Manager</small></span>
+        <div style={{ flexShrink: 0, width: "180px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+          <img src={`./characters/${profile}-neutral.png`} alt={name} style={{ width: "160px", height: "160px", objectFit: "contain", borderRadius: "50%", display: "block" }}/>
+          <span style={{ fontWeight: 700, fontSize: "16px", textAlign: "center", lineHeight: 1.3 }}>{name}<br/><small style={{ fontWeight: 400, fontSize: "13px", color: "var(--muted)" }}>ESG Manager</small></span>
         </div>
 
         {/* colonna destra: titolo + griglia sezioni */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "12px", minWidth: 0, overflow: "hidden" }}>
-          <div>
-            <h1 style={{ fontSize: "clamp(56px,6vw,104px)", fontWeight: 800, margin: "4px 0 2px", lineHeight: 1.1 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px", minWidth: 0, overflow: "hidden", minHeight: 0 }}>
+          <div style={{ flexShrink: 0 }}>
+            <h1 style={{ fontSize: "clamp(28px,3vw,44px)", fontWeight: 520, margin: "0 0 2px", lineHeight: 1, letterSpacing: "-0.05em", color: "#b5c9c1" }}>
               {isIt ? "La tua esperienza Envizi Quest" : "Your Envizi Quest experience"}
             </h1>
-            <p style={{ color: "var(--muted)", fontSize: "30px", lineHeight: 1.5, margin: 0 }}>
-              {isIt ? "Salta direttamente alla sezione che ti interessa." : "Jump directly to the section you want."}
+            <p style={{ color: "#b5c9c1", fontSize: "clamp(16px,1.45vw,21px)", lineHeight: 1.55, margin: 0 }}>
+              {isIt ? "Accedi direttamente alla sezione che ti interessa." : "Access directly the section you want."}
             </p>
           </div>
 
-          {/* griglia sezioni */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", flex: 1, alignContent: "start", overflowY: "auto" }}>
+          {/* griglia sezioni — 5 righe × 2 colonne, occupa tutto lo spazio */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "repeat(5, 1fr)", gap: "5px", flex: 1, minHeight: 0 }}>
             {allSections.map((s) => (
               <button
                 key={s.screen}
                 onClick={() => setScreen(s.screen)}
-                style={{ display: "flex", alignItems: "center", gap: "12px", background: "var(--surface,#1a1a2e)", border: "1px solid rgba(255,255,255,.1)", borderRadius: "10px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "border-color .15s", color: "inherit" }}
+                style={{ display: "flex", alignItems: "center", gap: "10px", background: "var(--surface,#1a1a2e)", border: "1px solid rgba(255,255,255,.1)", borderRadius: "10px", padding: "6px 12px", cursor: "pointer", textAlign: "left", transition: "border-color .15s", color: "inherit", overflow: "hidden", minWidth: 0 }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = "#39efb4")}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,.1)")}
               >
-                <span style={{ minWidth: "52px", height: "52px", borderRadius: "50%", border: "2px solid #39efb4", background: "transparent", color: "#39efb4", fontWeight: 800, fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: ".02em", flexShrink: 0 }}>
+                <span style={{ minWidth: "36px", height: "36px", borderRadius: "50%", border: "2px solid #39efb4", background: "transparent", color: "#39efb4", fontWeight: 800, fontSize: "clamp(12px,1.2vw,18px)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {s.num}
                 </span>
                 <div style={{ display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 }}>
-                  <span style={{ fontWeight: 700, fontSize: "30px", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.labelIt : s.labelEn}</span>
-                  <span style={{ fontSize: "24px", color: "var(--muted)", lineHeight: 1.3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.subIt : s.subEn}</span>
+                  <span style={{ fontWeight: 700, fontSize: "clamp(24px,2.175vw,31.5px)", lineHeight: 1.55, color: "#b5c9c1", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.labelIt : s.labelEn}</span>
+                  <span style={{ fontSize: "clamp(17.3px,1.566vw,22.7px)", color: "#b5c9c1", lineHeight: 1.55, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{isIt ? s.subIt : s.subEn}</span>
                 </div>
               </button>
             ))}
           </div>
 
-          <div style={{ display: "flex", gap: "10px", paddingBottom: "4px", flexShrink: 0 }}>
-            <button className="introBackBtn" onClick={() => setScreen("onboarding")}>← {isIt ? "Indietro" : "Back"}</button>
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px", paddingBottom: "4px", flexShrink: 0 }}>
             <button className="actionButton approachIntroCta" onClick={() => setScreen("blank1")}>{isIt ? "Presentazione Envizi" : "Envizi Presentation"} <b>→</b></button>
           </div>
         </div>
