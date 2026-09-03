@@ -3,10 +3,10 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./styles.css";
 
-// Lock the layout to 1080px height regardless of browser zoom (Cmd+/-).
-// screen.height is the physical monitor height in CSS pixels — unaffected by browser zoom.
+// Scale the 1080px layout to fill the browser viewport.
+// Uses window.innerHeight so it tracks the actual visible area (excludes browser chrome).
 function applyScale() {
-  const scale = screen.height / 1080;
+  const scale = window.innerHeight / 1080;
   const root = document.getElementById("root") as HTMLElement;
   root.style.transform = `scale(${scale})`;
   root.style.transformOrigin = "top left";
@@ -15,6 +15,7 @@ function applyScale() {
   root.style.overflow = "hidden";
 }
 applyScale();
+window.addEventListener("resize", applyScale);
 
 // Copy on click — missionProgress badge (navbar)
 document.addEventListener("click", (e) => {
