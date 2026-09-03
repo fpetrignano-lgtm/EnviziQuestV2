@@ -29,10 +29,10 @@ export default function Home(){
   const [companySector,setCompanySector]=useState<SectorKey>("manifatturiero");
   const [companyMarket,setCompanyMarket]=useState<Market>("mondo");
   const [esgReadiness,setEsgReadiness]=useState<EsgReadiness>("primi");
-  type SiteGeoKey="italia"|"europa"|"usa"|"asia"|"australia"|"africa";
+  type SiteGeoKey="italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
   type SiteRowKey="uffici"|"ops"|"datacenter"|"altro";
   type SiteTable=Record<SiteRowKey,Record<SiteGeoKey,number>>;
-  const emptyRow=():Record<SiteGeoKey,number>=>{return {italia:0,europa:0,usa:0,asia:0,australia:0,africa:0};};
+  const emptyRow=():Record<SiteGeoKey,number>=>{return {italia:0,europa:0,nordamerica:0,sudamerica:0,asia:0,africa:0,australia:0};};
   const [siteTable,setSiteTable]=useState<SiteTable>(()=>({uffici:emptyRow(),ops:emptyRow(),datacenter:emptyRow(),altro:emptyRow()}));
   const updateSiteCell=(row:SiteRowKey,geo:SiteGeoKey,val:number)=>setSiteTable(prev=>({...prev,[row]:{...prev[row],[geo]:isNaN(val)?0:Math.max(0,val)}}));
   const siteRowSum=(row:SiteRowKey)=>Object.values(siteTable[row]).reduce((s,v)=>s+v,0);
@@ -42,7 +42,7 @@ export default function Home(){
   const [companyDims,setCompanyDims]=useState<[number,number,number,number,number]>([0,0,0,0,0]);
   const updateCompanyDim=(i:number,v:number)=>{const next=[...companyDims] as [number,number,number,number,number];next[i]=v;setCompanyDims(next);};
   // geoDistrib derivato da siteTable per compatibilità downstream (mappa verso chiavi legacy)
-  const geoDistrib:Record<string,number>={italia:siteColSum("italia"),europa:siteColSum("europa"),nordamerica:siteColSum("usa"),asia:siteColSum("asia"),africa:siteColSum("africa"),australia:siteColSum("australia"),sudamerica:0};
+  const geoDistrib:Record<string,number>={italia:siteColSum("italia"),europa:siteColSum("europa"),nordamerica:siteColSum("nordamerica"),sudamerica:siteColSum("sudamerica"),asia:siteColSum("asia"),africa:siteColSum("africa"),australia:siteColSum("australia")};
   type DataNeedItem={id:string,priority:Priority,label:string};
   const buildDefaultDataNeeds=(lang:"it"|"en",prioOrder:Priority[]):DataNeedItem[]=>{
     const needs=copy[lang].priorityDataNeeds as Record<Priority,{id:string,label:string}[]>;

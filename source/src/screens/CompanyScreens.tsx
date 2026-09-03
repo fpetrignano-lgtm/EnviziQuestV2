@@ -3,7 +3,7 @@ import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
 
 
-type SiteGeoKey="italia"|"europa"|"usa"|"asia"|"australia"|"africa";
+type SiteGeoKey="italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
 type SiteRowKey="uffici"|"ops"|"datacenter"|"altro";
 type SiteTable=Record<SiteRowKey,Record<SiteGeoKey,number>>;
 
@@ -44,11 +44,12 @@ export function CompanySetupScreen({
   const readinessList = isIt ? ESG_READINESS_IT : ESG_READINESS_EN;
   const activeReadiness = readinessList.find(r => r.key === esgReadiness)!;
   const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); };
-  const geoColKeys: SiteGeoKey[] = ["italia","europa","usa","asia","africa","australia"];
+  const geoColKeys: SiteGeoKey[] = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
   const geoColLabels: Record<SiteGeoKey,{it:string,en:string}> = {
     italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"},
-    usa:{it:"USA",en:"USA"}, asia:{it:"Asia",en:"Asia"},
-    australia:{it:"Australia",en:"Australia"}, africa:{it:"Africa",en:"Africa"},
+    nordamerica:{it:"N. America",en:"N. America"}, sudamerica:{it:"S. America",en:"S. America"},
+    asia:{it:"Asia",en:"Asia"}, africa:{it:"Africa",en:"Africa"},
+    australia:{it:"Australia",en:"Australia"},
   };
   const siteRowDefs: {key:SiteRowKey,label:{it:string,en:string}}[] = [
     {key:"uffici",   label:{it:"Sedi uffici",en:"Office locations"}},
