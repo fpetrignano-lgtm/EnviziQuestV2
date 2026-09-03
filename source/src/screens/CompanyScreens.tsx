@@ -361,6 +361,14 @@ export function CompanyScreen({
         <div><strong>{dimVal}</strong><span>{dimUnit}</span></div>
         <div><strong>{totalSedi}</strong><span>{sediUnit}</span></div>
         <div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div>
+        <div style={{background:csrdAlert?"rgba(245,166,35,.10)":"rgba(57,239,180,.07)"}}>
+          <strong style={{fontSize:"clamp(14px,1.4vw,20px)",color:csrdAlert?"#f5c855":"#39efb4",letterSpacing:"-.02em",lineHeight:1.1}}>
+            {csrdAlert?(isIt?"Soggetta CSRD":"Subject to CSRD"):(isIt?"Non soggetta CSRD":"Not subject to CSRD")}
+          </strong>
+          <span style={{color:csrdAlert?"#c9a96e":"#7ab3a5",fontSize:"clamp(11px,1vw,14px)",marginTop:"6px"}}>
+            {csrdAlert?(isIt?">1.000 dip. · >€450M":">1,000 emp. · >€450M"):(isIt?"<1.000 dip. o <€450M":"<1,000 emp. or <€450M")}
+          </span>
+        </div>
       </div>
       <blockquote>{evolvingGen}</blockquote>
       <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
