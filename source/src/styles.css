@@ -1092,7 +1092,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csSiteTable{width:100%;border-collapse:collapse;table-layout:fixed}
 .csSiteTable thead th{padding:7px 6px;font:700 14px var(--font-geist-mono);letter-spacing:.08em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
 .csSiteThRow{text-align:left!important;width:140px}
-.csSiteThGeo{width:80px}
+.csSiteThGeo{width:80px;font-size:11px}
 .csSiteTable tbody tr{border-bottom:1px solid #121f19}
 .csSiteRowLabel{font-size:18px;color:#9db3aa;padding:8px 6px 8px 0;white-space:nowrap;vertical-align:middle}
 .csSiteCell{padding:4px 3px;text-align:center;vertical-align:middle}
