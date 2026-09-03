@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Market, SectorKey, EsgReadiness } from "../types";
 import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
@@ -354,6 +355,7 @@ export function CompanyScreen({
     datacenter: {color:"#b08adc", path:"M2,4 L18,4 L18,8 L2,8 Z M2,10 L18,10 L18,14 L2,14 Z M2,16 L18,16 L18,20 L2,20 Z M15,6 L15,6.5 M15,12 L15,12.5 M15,18 L15,18.5"},
     altro:      {color:"#e8a84a", path:"M10,2 C6.13,2 3,5.13 3,9 C3,14.25 10,22 10,22 C10,22 17,14.25 17,9 C17,5.13 13.87,2 10,2 Z M10,11.5 C8.62,11.5 7.5,10.38 7.5,9 C7.5,7.62 8.62,6.5 10,6.5 C11.38,6.5 12.5,7.62 12.5,9 C12.5,10.38 11.38,11.5 10,11.5 Z"},
   };
+  const [rptOpen,setRptOpen]=useState(false);
   return <main className="companyScreen">
     <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <section className="companyCopy">
@@ -377,9 +379,6 @@ export function CompanyScreen({
         </div>
       </div>
       <blockquote>{evolvingGen}</blockquote>
-      <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
-    </section>
-    <section className="companyReportingSection">
       {(()=>{
         const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
           {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
@@ -388,22 +387,39 @@ export function CompanyScreen({
           {num:4,label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},for:{it:"L'azienda o il gruppo supera le soglie previste dalla normativa ed è pertanto soggetto agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
           {num:5,label:{it:"Rendicontazione libera",en:"Free-form reporting"},desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},for:{it:"L'azienda non rientra nelle opzioni precedenti e intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
         ];
+        const chosen = paths.find(p=>p.num===reportingPath);
         return <>
-          <p className="csReportingIntro">{isIt?"Seleziona il percorso di rendicontazione ESG più adatto:":"Select the most appropriate ESG reporting path:"}</p>
-          <div className="csReportingCards">
-            {paths.map(p=>(
-              <button key={p.num} className={`csReportingCard${reportingPath===p.num?" csReportingCardActive":""}`} onClick={()=>setReportingPath(reportingPath===p.num?0:p.num)}>
-                <div className="csReportingCardNum">{p.num}</div>
-                <div className="csReportingCardBody">
-                  <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
-                  <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
-                  <p className="csReportingCardFor"><span>{isIt?"Indicata per: ":"Indicated for: "}</span>{isIt?p.for.it:p.for.en}</p>
-                </div>
-              </button>
-            ))}
-          </div>
+          {/* Trigger — paragrafo cliccabile */}
+          <button className="companyRptTrigger" onClick={()=>setRptOpen(true)}>
+            {chosen
+              ? <><span className="companyRptTriggerNum">{chosen.num}</span><span className="companyRptTriggerChosen">{isIt?chosen.label.it:chosen.label.en}</span><span className="companyRptTriggerEdit">✎ {isIt?"modifica":"edit"}</span></>
+              : <span className="companyRptTriggerPrompt">{isIt?"✎ Seleziona il percorso di rendicontazione ESG più adatto per l'azienda":"✎ Select the most appropriate ESG reporting path for the company"}</span>
+            }
+          </button>
+          {/* Popup modale */}
+          {rptOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setRptOpen(false)}}>
+            <div className="companyRptModal">
+              <div className="companyRptModalHead">
+                <p className="companyRptModalTitle">{isIt?"Seleziona il percorso di rendicontazione ESG più adatto:":"Select the most appropriate ESG reporting path:"}</p>
+                <button className="companyRptModalClose" onClick={()=>setRptOpen(false)}>✕</button>
+              </div>
+              <div className="companyRptModalCards">
+                {paths.map(p=>(
+                  <button key={p.num} className={`companyRptModalCard${reportingPath===p.num?" companyRptModalCardActive":""}`} onClick={()=>{setReportingPath(p.num);setRptOpen(false);}}>
+                    <div className="csReportingCardNum">{p.num}</div>
+                    <div className="csReportingCardBody">
+                      <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
+                      <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
+                      <p className="csReportingCardFor"><span>{isIt?"Indicata per: ":"Indicated for: "}</span>{isIt?p.for.it:p.for.en}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>}
         </>;
       })()}
+      <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
     </section>
     <section className="worldMap" aria-label={`${displayCompanyName} footprint`}>
       <div className="mapGrid"/>
