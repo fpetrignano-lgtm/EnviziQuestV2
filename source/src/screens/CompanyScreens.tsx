@@ -51,7 +51,7 @@ export function CompanySetupScreen({
     const v = isNaN(val) ? 0 : Math.max(0, val);
     setGeoDistrib((prev: Record<string,number>) => { const next = {...prev,[key]:v}; return next; });
   };
-  return <main className="csScreen">
+  return <main className="csScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
     <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> {isIt?"LA TUA AZIENDA":"YOUR COMPANY"}</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <div className="csBody">
       <div className="csLeft"><img className="csProfileImg" src={`./characters/${profile}-neutral.png`} alt={name}/><div className="csProfileTag"><span className="statusDot"/><div><small>ESG MANAGER</small><strong>{name}</strong></div></div></div>
@@ -118,7 +118,7 @@ export function CompanySetupScreen({
         </div>
       </div>
     </div>
-  </main>;
+  <div className="welcomeBlueBar"/></main>;
 }
 
 interface CompanyScreenProps extends CommonProps {

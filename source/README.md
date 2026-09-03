@@ -142,6 +142,7 @@ Quando l'utente scrive **SCONG** seguito dal nome della slide, la slide torna mo
 - `App.tsx` → `17 · intro` — "Guadagna la fiducia" 🔒
 - `App.tsx` → `18 · separatorNext` — "Partiamo dagli obiettivi" 🔒
 - `App.tsx` → `19 · approachStepsCopy` — "Il percorso" (step 1 obiettivi) 🔒
+- `CompanyScreens.tsx` → `20 · companySetup` — "La tua azienda" 🔒
 
 ---
 

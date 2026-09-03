@@ -1037,7 +1037,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .approachQuestCallout p{margin:0;font-size:28px;color:#c9e8dc;line-height:1.6}
 
 /* Company Setup screen */
-.csScreen{height:100vh;overflow:hidden;background:#07110e;display:grid;grid-template-rows:76px 1fr}
+.csScreen{height:1080px;overflow:hidden;background:#07110e;display:grid;grid-template-rows:76px 1fr;position:relative}.csScreen>.welcomeBlueBar:first-child{position:absolute;top:0;left:0;right:0;z-index:100}.csScreen>.welcomeBlueBar:last-child{position:absolute;bottom:0;left:0;right:0;z-index:100}
 .csBody{display:grid;grid-template-columns:minmax(280px,.38fr) minmax(480px,1.62fr);min-height:0;overflow:hidden}
 .csLeft{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 80%,#0e2a1e,transparent 60%),#07120f;border-right:1px solid #1a3028;overflow:hidden;min-height:calc(100vh - 76px)}
 .csProfileImg{width:100%;max-width:380px;object-fit:cover;object-position:center top;display:block;margin-top:-15%}
@@ -1046,7 +1046,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csProfileTag small{display:block;font:700 16px var(--font-geist-mono);letter-spacing:.16em;color:#72f7ca;margin-bottom:3px}
 .csProfileTag strong{display:block;font-size:22px;color:#f2fff9}
 .csRight{padding:36px 4vw 48px;overflow-y:auto}
-.csTitle{font-size:clamp(38px,4vw,62px);line-height:.94;letter-spacing:-.055em;margin:8px 0 28px;color:#f2fff9}
+.csTitle{font-size:clamp(28px,3vw,44px);line-height:1;letter-spacing:-.05em;margin:8px 0 28px;font-weight:520;color:#b5c9c1}
 .csFormTwoCol{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
 .csFormLeft{display:flex;flex-direction:column;gap:20px}
 .csFormRight{display:flex;flex-direction:column;gap:20px;position:sticky;top:0}
