@@ -331,14 +331,15 @@ export function CompanyScreen({
   const evolvingGen = `${displayCompanyName} — ${activeReadiness.desc}`;
   // Posizioni anchor per area geografica sulla mappa (left/top %)
   type MapGeoKey = "italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
+  // left = (lon+180)/360*100, top = (90-lat)/180*100  — proiezione equirettangolare
   const GEO_POS: Record<MapGeoKey,{left:string,top:string}> = {
-    italia:     {left:"51%",top:"36%"},
-    europa:     {left:"48%",top:"28%"},
-    nordamerica:{left:"18%",top:"30%"},
-    sudamerica: {left:"27%",top:"60%"},
-    asia:       {left:"72%",top:"30%"},
-    africa:     {left:"50%",top:"52%"},
-    australia:  {left:"80%",top:"68%"},
+    italia:     {left:"53%", top:"27%"},  // lon=12, lat=42
+    europa:     {left:"49%", top:"22%"},  // lon=-4, lat=50
+    nordamerica:{left:"22%", top:"28%"},  // lon=-100, lat=40
+    sudamerica: {left:"35%", top:"58%"},  // lon=-55, lat=-15
+    asia:       {left:"75%", top:"31%"},  // lon=90, lat=35
+    africa:     {left:"56%", top:"47%"},  // lon=20, lat=5
+    australia:  {left:"87%", top:"64%"},  // lon=135, lat=-25
   };
   const SITE_ROWS: (keyof typeof siteTable)[] = ["uffici","ops","datacenter","altro"];
   // Colori e path SVG per tipo sede
