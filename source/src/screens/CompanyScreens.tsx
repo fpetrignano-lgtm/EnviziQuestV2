@@ -266,7 +266,6 @@ export function CompanySetupScreen({
             <select className="csSelect" value={esgReadiness} onChange={e=>setEsgReadiness(e.target.value as EsgReadiness)}>
               {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
             </select>
-            <p className="csReadinessDesc">{activeReadiness.desc}</p>
           </div>
           <div className="csFourCol">
             <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
