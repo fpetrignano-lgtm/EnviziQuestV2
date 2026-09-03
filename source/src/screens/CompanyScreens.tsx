@@ -289,6 +289,7 @@ interface CompanyScreenProps extends CommonProps {
   companyDims: [number,number,number,number,number];
   updateCompanyDim: (i: number, v: number) => void;
   geoDistrib: Record<string,number>;
+  siteTable: SiteTable;
   displayCompanyName: string;
   csrdConfirmStep: 0|1|2;
   setCsrdConfirmStep: (v: 0|1|2) => void;
@@ -309,7 +310,7 @@ interface CompanyScreenProps extends CommonProps {
 export function CompanyScreen({
   language, profile, setLanguage, setScreen, reset, renderTrustBar,
   companySector, companyMarket, esgReadiness, companyDims, updateCompanyDim,
-  geoDistrib, displayCompanyName,
+  geoDistrib, siteTable, displayCompanyName,
   csrdConfirmStep, setCsrdConfirmStep, csrdPendingChoice, setCsrdPendingChoice,
   csrdNote, setCsrdNote, csrdNoteOpen, setCsrdNoteOpen, csrdNoteDraft, setCsrdNoteDraft,
   t, name, companyLogo,
@@ -329,10 +330,25 @@ export function CompanyScreen({
   const pepUnit = isIt ? "dipendenti" : "employees";
   const companyStoryGen = isIt ? `Un ${sectorLabel.toLowerCase()} da ${dimVal} ${dimUnit}, con ${totalSedi} sedi nel mondo.` : `A ${sectorLabel.toLowerCase()} with ${dimVal} ${dimUnit} and ${totalSedi} locations worldwide.`;
   const evolvingGen = `${displayCompanyName} — ${activeReadiness.desc}`;
-  const geoKeys = ["italia","europa","asia","nordamerica","sudamerica","africa","australia"];
-  const geoLabelsShort: Record<string,{it:string,en:string}> = {italia:{it:"ITALIA",en:"ITALY"},europa:{it:"EUROPA",en:"EUROPE"},asia:{it:"ASIA",en:"ASIA"},nordamerica:{it:"N. AMERICA",en:"N. AMERICA"},sudamerica:{it:"S. AMERICA",en:"S. AMERICA"},africa:{it:"AFRICA",en:"AFRICA"},australia:{it:"AUSTRALIA",en:"AUSTRALIA"}};
-  const activeGeo = geoKeys.filter(k => (geoDistrib[k] ?? 0) > 0 && (companyMarket === "mondo" || (companyMarket === "europa" && (k === "italia" || k === "europa")) || companyMarket === "italia" && k === "italia"));
-  const posMap: Record<string,{left:string,top:string}[]> = {europa:[{left:"48%",top:"38%"},{left:"51%",top:"42%"},{left:"44%",top:"40%"},{left:"53%",top:"36%"}],asia:[{left:"72%",top:"42%"},{left:"75%",top:"46%"},{left:"68%",top:"44%"}],nordamerica:[{left:"18%",top:"40%"},{left:"22%",top:"36%"},{left:"15%",top:"44%"}],sudamerica:[{left:"28%",top:"64%"},{left:"24%",top:"68%"}],africa:[{left:"50%",top:"58%"},{left:"46%",top:"62%"}],australia:[{left:"78%",top:"66%"},{left:"82%",top:"62%"}]};
+  // Posizioni anchor per area geografica sulla mappa (left/top %)
+  type MapGeoKey = "italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
+  const GEO_POS: Record<MapGeoKey,{left:string,top:string}> = {
+    italia:     {left:"49%",top:"41%"},
+    europa:     {left:"47%",top:"35%"},
+    nordamerica:{left:"17%",top:"38%"},
+    sudamerica: {left:"26%",top:"63%"},
+    asia:       {left:"70%",top:"38%"},
+    africa:     {left:"48%",top:"57%"},
+    australia:  {left:"78%",top:"65%"},
+  };
+  const SITE_ROWS: (keyof typeof siteTable)[] = ["uffici","ops","datacenter","altro"];
+  // Colori e path SVG per tipo sede
+  const SITE_ICONS: Record<string,{color:string,path:string}> = {
+    uffici:     {color:"#7ab8d8", path:"M2,12 L2,20 L8,20 L8,14 L12,14 L12,20 L18,20 L18,12 L10,4 Z M4,8 L10,2 L16,8"},
+    ops:        {color:"#72c4a0", path:"M1,19 L19,19 M3,19 L3,10 L17,10 L17,19 M7,19 L7,14 L13,14 L13,19 M1,10 L10,3 L19,10"},
+    datacenter: {color:"#b08adc", path:"M2,4 L18,4 L18,8 L2,8 Z M2,10 L18,10 L18,14 L2,14 Z M2,16 L18,16 L18,20 L2,20 Z M15,6 L15,6.5 M15,12 L15,12.5 M15,18 L15,18.5"},
+    altro:      {color:"#e8a84a", path:"M10,2 C6.13,2 3,5.13 3,9 C3,14.25 10,22 10,22 C10,22 17,14.25 17,9 C17,5.13 13.87,2 10,2 Z M10,11.5 C8.62,11.5 7.5,10.38 7.5,9 C7.5,7.62 8.62,6.5 10,6.5 C11.38,6.5 12.5,7.62 12.5,9 C12.5,10.38 11.38,11.5 10,11.5 Z"},
+  };
   return <main className="companyScreen">
     <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <section className="companyCopy">
@@ -399,10 +415,39 @@ export function CompanyScreen({
     </section>
     <section className="worldMap" aria-label={`${displayCompanyName} footprint`}>
       <div className="mapGrid"/>
-      <div className="region americas">AMERICAS</div><div className="region emea">EMEA</div><div className="region apac">APAC</div>
-      <div className="mapPoint office milan" title="Milano HQ"><i/><span style={{left:"24px",top:"-46px",bottom:"auto",lineHeight:"1.45"}}><b style={{display:"block",color:"#effff9"}}>HQ · {displayCompanyName}</b><small style={{display:"block",color:"#72f7ca",fontSize:"8px"}}>MILAN</small></span></div>
-      {activeGeo.filter(k=>k!=="italia").map(k=>{const n=geoDistrib[k]??0;const count=Math.max(1,Math.round(n/10));const positions=posMap[k]||[];return Array.from({length:Math.min(count,positions.length)}).map((_,idx)=><div key={`${k}-${idx}`} className="mapPoint office" style={{left:positions[idx].left,top:positions[idx].top}} title={isIt?geoLabelsShort[k].it:geoLabelsShort[k].en}><i/>{idx===0&&<span>{isIt?geoLabelsShort[k].it:geoLabelsShort[k].en} · {n}</span>}</div>);})}
-      <div className="mapLegend"><b><i className="officeDot"/> {isIt?"SEDE":"OFFICE"}</b></div>
+      {(Object.keys(GEO_POS) as MapGeoKey[]).map(geo=>{
+        const rows=SITE_ROWS.filter(r=>(siteTable[r][geo]??0)>0);
+        if(rows.length===0)return null;
+        const {left,top}=GEO_POS[geo];
+        const iconSize=18;
+        const gap=4;
+        const totalW=rows.length*(iconSize+gap)-gap;
+        return <div key={geo} style={{position:"absolute",left,top,transform:"translate(-50%,-50%)",display:"flex",gap:`${gap}px`,alignItems:"center"}}>
+          {rows.map(r=>{
+            const n=siteTable[r][geo]??0;
+            const ic=SITE_ICONS[r];
+            return <div key={r} style={{position:"relative",width:`${iconSize}px`,height:`${iconSize}px`}} title={`${r}: ${n}`}>
+              <svg width={iconSize} height={iconSize} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d={ic.path} stroke={ic.color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span style={{position:"absolute",bottom:"-14px",left:"50%",transform:"translateX(-50%)",fontSize:"8px",fontFamily:"var(--font-geist-mono)",color:ic.color,fontWeight:700,whiteSpace:"nowrap"}}>{n}</span>
+            </div>;
+          })}
+          <div style={{width:`${totalW}px`}}/>
+        </div>;
+      })}
+      <div className="mapLegend" style={{display:"flex",gap:"12px",flexWrap:"wrap"}}>
+        {SITE_ROWS.filter(r=>SITE_ROWS.some(()=>(Object.keys(GEO_POS) as MapGeoKey[]).some(g=>(siteTable[r][g]??0)>0))).map(r=>{
+          const hasAny=(Object.keys(GEO_POS) as MapGeoKey[]).some(g=>(siteTable[r][g]??0)>0);
+          if(!hasAny)return null;
+          const ic=SITE_ICONS[r];
+          const label=r==="uffici"?(isIt?"Uffici":"Offices"):r==="ops"?(isIt?"Operativo":"Operational"):r==="datacenter"?"Data center":(isIt?"Altro":"Other");
+          return <b key={r} style={{display:"flex",alignItems:"center",gap:"5px",fontSize:"9px",fontFamily:"var(--font-geist-mono)",color:ic.color,letterSpacing:".1em",textTransform:"uppercase"}}>
+            <svg width={12} height={12} viewBox="0 0 20 20" fill="none"><path d={ic.path} stroke={ic.color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            {label}
+          </b>;
+        })}
+      </div>
     </section>
   </main>;
 }
