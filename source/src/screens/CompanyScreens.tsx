@@ -333,13 +333,13 @@ export function CompanyScreen({
   // Posizioni anchor per area geografica sulla mappa (left/top %)
   type MapGeoKey = "italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
   const GEO_POS: Record<MapGeoKey,{left:string,top:string}> = {
-    italia:     {left:"49%",top:"41%"},
-    europa:     {left:"47%",top:"35%"},
-    nordamerica:{left:"17%",top:"38%"},
-    sudamerica: {left:"26%",top:"63%"},
-    asia:       {left:"70%",top:"38%"},
-    africa:     {left:"48%",top:"57%"},
-    australia:  {left:"78%",top:"65%"},
+    italia:     {left:"51%",top:"36%"},
+    europa:     {left:"48%",top:"28%"},
+    nordamerica:{left:"18%",top:"30%"},
+    sudamerica: {left:"27%",top:"60%"},
+    asia:       {left:"72%",top:"30%"},
+    africa:     {left:"50%",top:"52%"},
+    australia:  {left:"80%",top:"68%"},
   };
   const SITE_ROWS: (keyof typeof siteTable)[] = ["uffici","ops","datacenter","altro"];
   // Colori e path SVG per tipo sede
