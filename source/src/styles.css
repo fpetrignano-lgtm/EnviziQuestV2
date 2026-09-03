@@ -1112,7 +1112,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .companyRptTriggerEdit{font-size:clamp(12px,1vw,15px);color:#5a9e88;font-weight:400;margin-left:4px;opacity:.8}
 .companyRptTrigger:hover .companyRptTriggerEdit{opacity:1;color:#39efb4}
 .companyRptOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:center;justify-content:center;padding:40px}
-.companyRptModal{background:#0a1c15;border:1px solid #2a4a3c;border-radius:18px;padding:28px 28px 24px;max-width:1100px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.companyRptModal{background:#0a1c15;border:1px solid #2a4a3c;border-radius:18px;padding:28px 28px 24px;max-width:96vw;width:96vw;max-height:80vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
 .companyRptModalHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:16px}
 .companyRptModalTitle{font-size:clamp(18px,1.6vw,24px);color:#b6cac2;margin:0;font-weight:400}
 .companyRptModalClose{background:none;border:1px solid #2a4a3c;border-radius:8px;color:#7a9e92;font-size:16px;width:32px;height:32px;cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:.15s}
@@ -1121,10 +1121,10 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .companyRptModalCard{display:flex;flex-direction:column;align-items:flex-start;padding:14px 14px 16px;border:1px solid #1e3a2e;border-radius:10px;background:#070f0c;color:inherit;cursor:pointer;text-align:left;transition:border-color .15s,background .15s;font:inherit}
 .companyRptModalCard:hover{border-color:#3a6a50;background:#0b1610}
 .companyRptModalCardActive{border-color:#39efb4!important;background:rgba(57,239,180,.07)!important}
-.companyRptModalCard .csReportingCardNum{font-size:44px}
-.companyRptModalCard .csReportingCardLabel{font-size:26px}
-.companyRptModalCard .csReportingCardDesc{font-size:22px}
-.companyRptModalCard .csReportingCardFor{font-size:22px}
+.companyRptModalCard .csReportingCardNum{font-size:35px}
+.companyRptModalCard .csReportingCardLabel{font-size:21px}
+.companyRptModalCard .csReportingCardDesc{font-size:18px}
+.companyRptModalCard .csReportingCardFor{font-size:18px}
 .csReportingCards{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .csReportingCard{display:flex;flex-direction:column;align-items:flex-start;gap:0;padding:12px 14px 14px;border:1px solid #1e3a2e;border-radius:10px;background:#080f0c;color:inherit;cursor:pointer;text-align:left;transition:border-color .15s,background .15s;font:inherit}
 .csReportingCard:hover{border-color:#3a6a50;background:#0b1610}
