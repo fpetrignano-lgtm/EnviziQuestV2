@@ -47,7 +47,7 @@ export function CompanySetupScreen({
   const geoColKeys: SiteGeoKey[] = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
   const geoColLabels: Record<SiteGeoKey,{it:string,en:string}> = {
     italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"},
-    nordamerica:{it:"N. America",en:"N. America"}, sudamerica:{it:"S. America",en:"S. America"},
+    nordamerica:{it:"N. Amer.",en:"N. Amer."}, sudamerica:{it:"S. Amer.",en:"S. Amer."},
     asia:{it:"Asia",en:"Asia"}, africa:{it:"Africa",en:"Africa"},
     australia:{it:"Australia",en:"Australia"},
   };
