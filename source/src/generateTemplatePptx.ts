@@ -292,9 +292,15 @@ function processSlide4Frameworks(
   xml: string,
   frameworkChecks: Record<string, { inUso: boolean; diInteresse: boolean }> | undefined
 ): string {
-  // Always remove the "DI INTERESSE" block (label, TCFD name, TCFD desc,
-  // background rect, "Implicazione" label, implication text).
-  xml = removeShapesById(xml, [35, 36, 37, 38, 39, 40]);
+  // Always remove the "DI INTERESSE" label + TCFD shapes.
+  xml = removeShapesById(xml, [35, 36, 37]);
+
+  // Remove the "Implicazione per il sistema dati" block (background rect + label + text)
+  // unless the user has 2 or more frameworks in use.
+  const inUsoCount = Object.values(frameworkChecks ?? {}).filter(f => f.inUso).length;
+  if (inUsoCount < 2) {
+    xml = removeShapesById(xml, [38, 39, 40]);
+  }
 
   if (!frameworkChecks) return xml;
 
