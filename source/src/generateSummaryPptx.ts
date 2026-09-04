@@ -270,7 +270,7 @@ export interface SummaryPptxData {
   csrdNote: string;
   prioIntroText: string;
   prioItems: { rank: number; name: string; detail: string; note?: string }[];
-  critItems: { rank: number; label: string; priority: string; rel: number; crit: number; tier: string }[];
+  critItems: { rank: number; label: string; priority: string; rel: number; crit: number; tier: string; needId?: string }[];
   isIt: boolean;
   // extra fields used by template PPTX
   geoDistrib?: Record<string, number>;
@@ -282,6 +282,7 @@ export interface SummaryPptxData {
   participantCompany?: string;
   businessUnit?: string;
   reportingPath?: 0|1|2|3|4|5;
+  needCapabilities?: Record<string, { it: string; en: string }>;
 }
 
 export function generateSummaryPptx(data: SummaryPptxData) {

@@ -594,8 +594,9 @@ export default function Home(){
       csrdNote:csrdNote||"",
       prioIntroText:isIt?prioDescIt2:prioDescEn2,
       prioItems:includedPrios2.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})).sort((a,b)=>a.rank-b.rank),
-      critItems:top72.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
+      critItems:top72.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier,needId:n.id})),
       isIt,geoDistrib,siteTable,workshopDate,consultantName,companyLogo,participantRole,participantCompany,businessUnit,reportingPath,
+      needCapabilities:needIdToCapability,
     };
   };
 

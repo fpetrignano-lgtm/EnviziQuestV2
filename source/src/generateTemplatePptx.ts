@@ -263,6 +263,16 @@ function fixSlide2ReadinessFont(xml: string): string {
   );
 }
 
+// ── Slide 5 reputazione note nudge ───────────────────────────────────────────
+// Shifts the note text box of the reputazione slot (id=50) slightly downward
+// so it aligns better visually with the other bottom-row note boxes.
+function nudgeSlide5ReputazioneNote(xml: string): string {
+  return xml.replace(
+    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="50"[^>]*>[\s\S]*?<a:off x="[^"]*" y=")(\d+)(")/,
+    (_, pre, _y, post) => `${pre}3679584${post}`
+  );
+}
+
 // ── Slide 6 title font reducer ────────────────────────────────────────────────
 // Reduces the font size of shape id=13 (title bar in slide6) to fit long text.
 function reduceSlide6TitleFont(xml: string): string {
@@ -271,6 +281,124 @@ function reduceSlide6TitleFont(xml: string): string {
     (spBlock) => spBlock.replace(/\bsz="2700"/g, `sz="1600"`)
                         .replace(/\bsz="1600"/g, `sz="1400"`)
   );
+}
+
+// ── Slide 3 geo table replacement ─────────────────────────────────────────────
+// Updates the "SEDI" column in the geo table of slide3 with actual siteTable values.
+// Table row order: Italia, Europa, UK, Nord America, Sud America, Asia, Africa, Australia.
+// Strategy: extract each <a:tr>, check if its concatenated text contains the geo label,
+// then replace the number in the second <a:tc> (SEDI column) preserving XML structure.
+function replaceSlide3GeoTable(
+  xml: string,
+  siteTable: Record<string, Record<string, number>> | undefined
+): string {
+  if (!siteTable) return xml;
+
+  const GEO_ROW_ORDER = [
+    { key: "italia",       label: "Italia" },
+    { key: "europa",       label: "Europa" },
+    { key: "uk",           label: "UK" },
+    { key: "nordamerica",  label: "Nord America" },
+    { key: "sudamerica",   label: "Sud America" },
+    { key: "asia",         label: "Asia" },
+    { key: "africa",       label: "Africa" },
+    { key: "australia",    label: "Australia" },
+  ];
+  const siteRows = ["uffici", "ops", "datacenter", "altro"] as const;
+  const colSum = (geo: string) =>
+    siteRows.reduce((s, r) => s + ((siteTable[r]?.[geo]) ?? 0), 0);
+
+  // Helper: extract all text from a block of XML (concatenates all <a:t> contents)
+  const extractText = (block: string) =>
+    (block.match(/<a:t[^>]*>([^<]*)<\/a:t>/g) || [])
+      .map(m => m.replace(/<a:t[^>]*>|<\/a:t>/g, ""))
+      .join("");
+
+  // Process each <a:tr> block independently
+  xml = xml.replace(/<a:tr[\s\S]*?<\/a:tr>/g, (trBlock) => {
+    const trText = extractText(trBlock);
+
+    // Identify which geo this row belongs to
+    const match = GEO_ROW_ORDER.find(({ label }) => trText.includes(label));
+    if (!match) return trBlock; // header row or unrecognised row — leave unchanged
+
+    const count = colSum(match.key);
+
+    // Split the row into individual <a:tc> cells
+    const cells: string[] = [];
+    let rest = trBlock;
+    // Capture the <a:tr ...> opening tag
+    const trOpen = rest.match(/^<a:tr[^>]*>/)?.[0] || "<a:tr>";
+    rest = rest.slice(trOpen.length);
+
+    const cellRegex = /<a:tc>[\s\S]*?<\/a:tc>/g;
+    let cellMatch: RegExpExecArray | null;
+    while ((cellMatch = cellRegex.exec(rest)) !== null) {
+      cells.push(cellMatch[0]);
+    }
+
+    if (cells.length < 2) return trBlock; // unexpected structure — leave unchanged
+
+    // Replace all <a:t> text content in the second cell (SEDI column) with the count
+    const newSecondCell = cells[1].replace(
+      /(<a:t[^>]*>)[^<]*(<\/a:t>)/,
+      `$1${count}$2`
+    );
+    cells[1] = newSecondCell;
+
+    return `${trOpen}${cells.join("")}</a:tr>`;
+  });
+
+  return xml;
+}
+
+// ── Slide 7 recommendations replacement ──────────────────────────────────────
+// Replaces the 7 recommendation blocks in slide7 with the top critItems from slide6
+// (sorted by rel+crit descending) so the content is coherent with slide6.
+// Each block shows: area label (title) + priority category (description).
+// Layout: left column = blocks 01-04 (title ids: 8,13,18,23 / desc ids: 9,14,19,24)
+//         right column = blocks 05-07 (title ids: 28,33,38  / desc ids: 29,34,39)
+function replaceSlide7Recommendations(
+  xml: string,
+  critItems: SummaryPptxData["critItems"],
+  needCapabilities: SummaryPptxData["needCapabilities"],
+  isIt: boolean
+): string {
+  const TITLE_IDS = [8, 13, 18, 23, 28, 33, 38];
+  const DESC_IDS  = [9, 14, 19, 24, 29, 34, 39];
+
+  // Same sort as slide6 — top 7 by rel+crit score
+  const top7 = [...critItems]
+    .sort((a, b) => (b.rel + b.crit) - (a.rel + a.crit))
+    .slice(0, 7);
+
+  const replaceShapeText = (xml: string, shapeId: number, newText: string): string => {
+    return xml.replace(
+      new RegExp(`(<p:sp>(?:(?!<p:sp>)[\\s\\S])*?<p:cNvPr[^>]*\\bid="${shapeId}"[^>]*>[\\s\\S]*?)<p:txBody>[\\s\\S]*?<\\/p:txBody>(<\\/p:sp>)`),
+      (match, pre, post) => {
+        const origTxBody = match.match(/<p:txBody>([\s\S]*?)<\/p:txBody>/)?.[1] || "";
+        const rPr    = origTxBody.match(/(<a:rPr[\s\S]*?<\/a:rPr>|<a:rPr[^/]*\/>)/)?.[0] || "";
+        const bodyPr = origTxBody.match(/(<a:bodyPr[\s\S]*?<\/a:bodyPr>|<a:bodyPr[^/]*\/>)/)?.[0] || "<a:bodyPr/>";
+        const newTxBody = `<p:txBody>${bodyPr}<a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(newText)}</a:t></a:r></a:p></p:txBody>`;
+        return `${pre}${newTxBody}${post}`;
+      }
+    );
+  };
+
+  TITLE_IDS.forEach((titleId, i) => {
+    const item = top7[i];
+    // Title: need label (strip trailing parentheses if any)
+    const titleText = item ? item.label.replace(/\s*\(.*?\)\s*$/, "").trimEnd() : "—";
+    // Description: IBM Envizi capability recommendation for this need
+    const cap = item?.needId ? needCapabilities?.[item.needId] : undefined;
+    const descText = cap
+      ? (isIt ? cap.it : cap.en)
+      : item ? `${item.priority}  ·  R:${item.rel} C:${item.crit}` : "";
+    xml = replaceShapeText(xml, titleId, titleText);
+    xml = replaceShapeText(xml, DESC_IDS[i], descText);
+  });
+
+  return xml;
 }
 
 // ── Slide 6 needs list replacement ───────────────────────────────────────────
@@ -700,8 +828,18 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
 
   const dc = data.dataCenters ?? 0;
 
-  // Total sites (used for slide2 stat card and map)
-  const totalSedi = siteRows.reduce((s, r) => s + siteRowSum(r), 0) || (data.plants + data.offices + dc);
+  // Total sites and per-type counts (used for slide2 card, slide3 cards, subtitle).
+  // Use siteTable values directly — no fallback to legacy fields so that zeros entered
+  // by the user are respected and don't get overridden by old default values.
+  const siteTableHasData = siteRows.reduce((s, r) => s + siteRowSum(r), 0) > 0;
+  const ufficiCount     = siteRowSum("uffici");
+  const opsCount        = siteRowSum("ops");
+  const datacenterCount = siteRowSum("datacenter");
+  const altroCount      = siteRowSum("altro");
+  // Fall back to legacy scalar fields only when siteTable is completely empty
+  const totalSedi = siteTableHasData
+    ? ufficiCount + opsCount + datacenterCount + altroCount
+    : (data.plants + data.offices + dc);
 
   // Slide 2 card values — new template uses individual shapes per stat
   const activeGeoCount = geoKeys2.filter(g => siteColSum(g) > 0).length;
@@ -806,15 +944,15 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
     // Note cells — template demo texts map to the same slot order
     "Il nostro settore è sotto osservazione da parte di ESMA per il rischio di greenwashing. Il Compliance Officer ha chiesto al team ESG di dimostrare che ogni dato pubblicato è tracciabile fino alla fonte primaria. Oggi non siamo in grado di farlo.":
       s1.note,
-    "Stiamo lavorando a un\u2019emissione di green bond. Il lead arranger ci ha già richiesto un framework ESG verificabile con dati storici su emissioni ed energia. Non abbiamo ancora un sistema capace di produrre questo livello di evidenza.":
+    "Stiamo lavorando a un'emissione di green bond. Il lead arranger ci ha già richiesto un framework ESG verificabile con dati storici su emissioni ed energia. Non abbiamo ancora un sistema capace di produrre questo livello di evidenza.":
       s2.note,
     "Un grande retailer europeo ci ha notificato che dal 2025 tutti i fornitori dovranno dichiarare le emissioni Scope 3 cat. 1 con dati specifici per prodotto. Oggi lavoriamo con stime spend-based che non soddisfano questo requisito.":
       s3.note,
-    "Il CFO ha chiesto un piano di decarbonizzazione con NPV e payback per ogni iniziativa. Non disponiamo di una baseline energetica affidabile per sito, né di un sistema che aggreghi consumi, costi e produzioni per calcolare l\u2019intensità emissiva.":
+    "Il CFO ha chiesto un piano di decarbonizzazione con NPV e payback per ogni iniziativa. Non disponiamo di una baseline energetica affidabile per sito, né di un sistema che aggreghi consumi, costi e produzioni per calcolare l'intensità emissiva.":
       s4.note,
     "Scope 3 cat. 1 e 2 valgono il 65% della nostra impronta totale. I principali fornitori non inviano dati strutturati: riceviamo PDF e allegati e-mail che non riusciamo a riconciliare. Un cliente chiave ci ha già chiesto un piano di riduzione Scope 3.":
       s5.note,
-    "Abbiamo perso tre candidati senior in favore di competitor che comunicano obiettivi di Net Zero con dati verificabili. Il nostro employer branding ESG è percepito come generico. I neolaureati STEM chiedono di vedere metriche reali prima di accettare un\u2019offerta.":
+    "Abbiamo perso tre candidati senior in favore di competitor che comunicano obiettivi di Net Zero con dati verificabili. Il nostro employer branding ESG è percepito come generico. I neolaureati STEM chiedono di vedere metriche reali prima di accettare un'offerta.":
       s6.note,
 
     // ── Slide 6 (needs) ──
@@ -826,32 +964,35 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   };
 
   // ── Slide 5 icon remapping ──────────────────────────────────────────────────
-  // Slide5 has 6 icon pictures in fixed slots. The template demo order is:
-  //   slot1=compliance (rId7, id=68), slot2=credito (rId8, id=69),
-  //   slot3=clienti    (rId9, id=70), slot4=efficienza (rId4, id=60),
-  //   slot5=supply     (rId5, id=61), slot6=reputazione (rId6, id=66)
+  // Physical slot positions (by pic id and x coordinate):
+  //   slot1 (left-top,   id=68, x≈240):   rId7 — text id=8  "1/6 Compliance e reporting"
+  //   slot2 (centre-top, id=70, x≈4082):  rId9 — text id=4  "2/6 Accesso al credito"
+  //   slot3 (right-top,  id=69, x≈8138):  rId8 — text id=6  "3/6 Clienti e gare"
+  //   slot4 (left-bot,   id=60, x≈127):   rId4 — text id=10 "4/6 Efficienza, energia e costi"
+  //   slot5 (centre-bot, id=66, x≈4137):  rId6 — text id=12 "5/6 Resilienza della supply chain"
+  //   slot6 (right-bot,  id=61, x≈8079):  rId5 — text id=27 "6/6 Reputazione e attrazione dei talenti"
   //
-  // Priority key → original rId that carries its icon (slide5 rels):
+  // Each priority key maps to the rId of the icon sitting in the same physical slot as its text.
   const PRIO_KEY_TO_RID: Record<string, string> = {
     "Compliance e reporting":               "rId7",
-    "Accesso al credito":                   "rId8",
-    "Clienti e gare":                       "rId9",
+    "Accesso al credito":                   "rId9",
+    "Clienti e gare":                       "rId8",
     "Efficienza, energia e costi":          "rId4",
-    "Resilienza della supply chain":        "rId5",
-    "Reputazione e attrazione dei talenti": "rId6",
+    "Resilienza della supply chain":        "rId6",
+    "Reputazione e attrazione dei talenti": "rId5",
     // EN keys
     "Compliance and reporting":          "rId7",
-    "Access to finance":                 "rId8",
-    "Customers and tenders":             "rId9",
+    "Access to finance":                 "rId9",
+    "Customers and tenders":             "rId8",
     "Efficiency, energy and cost":       "rId4",
-    "Supply-chain resilience":           "rId5",
-    "Reputation and talent attraction":  "rId6",
+    "Supply-chain resilience":           "rId6",
+    "Reputation and talent attraction":  "rId5",
   };
 
-  // Slot pic ids in template order (slot1..slot6):
-  //   slot1=id68(rId7/compliance) slot2=id69(rId8/credito) slot3=id70(rId9/clienti)
-  //   slot4=id60(rId4/efficienza) slot5=id61(rId5/supply)  slot6=id66(rId6/reputazione)
-  const SLOT_PIC_IDS = [68, 69, 70, 60, 61, 66];
+  // Slot pic ids in template order matching text slots (slot1..slot6):
+  //   slot1=id68(rId7) slot2=id70(rId9) slot3=id69(rId8)
+  //   slot4=id60(rId4) slot5=id66(rId6) slot6=id61(rId5)
+  const SLOT_PIC_IDS = [68, 70, 69, 60, 66, 61];
 
   function remapSlide5Icons(xml: string): string {
     const desiredRIds: string[] = [];
@@ -861,8 +1002,8 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       desiredRIds.push(rId ?? "");
     }
 
-    // Original rId for each slot (same order as SLOT_PIC_IDS)
-    const SLOT_ORIGINAL_RIDS = ["rId7", "rId8", "rId9", "rId4", "rId5", "rId6"];
+    // Original rId for each slot (same order as SLOT_PIC_IDS: id68,id70,id69,id60,id66,id61)
+    const SLOT_ORIGINAL_RIDS = ["rId7", "rId9", "rId8", "rId4", "rId6", "rId5"];
 
     SLOT_PIC_IDS.forEach((picId, slotIdx) => {
       const desired = desiredRIds[slotIdx];
@@ -987,16 +1128,43 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   //   slide1=cover, slide2=company profile, slide3=geo table (static),
   //   slide4=frameworks (title has company name), slide5=priorities, slide6=needs list,
   //   slide7=next steps (static)
-  // We process slides 1, 2, 3, 4, 5, 6 (the dynamic ones).
-  for (const i of [1, 2, 3, 4, 5, 6]) {
+  // We process slides 1, 2, 3, 4, 5, 6, 7 (the dynamic ones).
+  for (const i of [1, 2, 3, 4, 5, 6, 7]) {
     const path = `ppt/slides/slide${i}.xml`;
     const file = zip.file(path);
     if (!file) continue;
     let xmlStr = await file.async("string");
 
-    // Slide 2: fix readiness label font size (id=23 has sz=2850 in template, align to sz=2025)
+    // Slide 2: fix readiness label font size + inject CSRD sentence below the two blocks
     if (i === 2) {
       xmlStr = fixSlide2ReadinessFont(xmlStr);
+
+      // Build CSRD sentence from csrdLabel (e.g. "Non soggetta a CSRD") + optional csrdSub
+      const csrdSentence = data.csrdSub
+        ? `${data.csrdLabel} — ${data.csrdSub}`
+        : data.csrdLabel;
+
+      // Inject as a new text shape spanning the full width, just below the two card blocks
+      // Card blocks bottom: y=5829300; footer: y=6534150 → centre in gap ≈ y=5900000
+      const csrdRPr = `<a:rPr lang="it-IT" sz="1100" b="0" dirty="0"><a:solidFill><a:srgbClr val="4D6D67"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+      const csrdShapeXml = `<p:sp><p:nvSpPr><p:cNvPr id="997" name="csrd_sentence"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="419100" y="5880000"/><a:ext cx="11353800" cy="400000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="ctr"/><a:r>${csrdRPr}<a:t>${escapeXml(csrdSentence)}</a:t></a:r></a:p></p:txBody></p:sp>`;
+      xmlStr = xmlStr.replace("</p:spTree>", csrdShapeXml + "</p:spTree>");
+    }
+
+    // Slide 7: replace company name in subtitle + populate recommendation blocks from priorities
+    if (i === 7) {
+      const slide7Subtitle = isIt
+        ? `Aree proposte in base alle risposte e alle criticità dichiarate da ${resolvedCompanyName}`
+        : `Areas proposed based on ${resolvedCompanyName}'s responses and declared criticalities`;
+      xmlStr = xmlStr.replace(
+        /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="3"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
+        (_, pre, post) => {
+          const rPr = `<a:rPr sz="1200" b="0"><a:solidFill><a:srgbClr val="4D6D67"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+          const newTxBody = `<p:txBody><a:bodyPr><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(slide7Subtitle)}</a:t></a:r></a:p></p:txBody>`;
+          return `${pre}${newTxBody}${post}`;
+        }
+      );
+      xmlStr = replaceSlide7Recommendations(xmlStr, data.critItems, data.needCapabilities, isIt);
     }
 
     // Slide 3: replace company name in subtitle (id=3) directly to avoid substring collision
@@ -1015,9 +1183,10 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       );
     }
 
-    // Slide 5: remap priority icons to match user priority order
+    // Slide 5: remap priority icons + nudge reputazione note downward
     if (i === 5) {
       xmlStr = remapSlide5Icons(xmlStr);
+      xmlStr = nudgeSlide5ReputazioneNote(xmlStr);
     }
 
     // Slide 6: reduce title font, run text replacements, then write the needs list last
@@ -1048,12 +1217,36 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       }
     }
 
-    // Run generic text replacements before needs list so the list paragraphs are written last
-    // and cannot be corrupted by replaceInSlideXml's txBody-level pass.
-    const updated = replaceInSlideXml(xmlStr, replacements);
+    // Run generic text replacements first. Shape-specific overrides (slide3 cards, slide6 needs)
+    // are applied AFTER to prevent replaceInSlideXml's txBody pass from corrupting them.
+    let final = replaceInSlideXml(xmlStr, replacements);
+
+    // Slide 3: write stat card values after replaceInSlideXml to avoid numeric substring collisions
+    if (i === 3) {
+      const replaceCardValue = (xml: string, shapeId: number, value: number): string =>
+        xml.replace(
+          new RegExp(`(<p:sp>(?:(?!<p:sp>)[\\s\\S])*?<p:cNvPr[^>]*\\bid="${shapeId}"[^>]*>[\\s\\S]*?)<p:txBody>[\\s\\S]*?<\\/p:txBody>(<\\/p:sp>)`),
+          (match, pre, post) => {
+            const origBody = match.match(/<p:txBody>([\s\S]*?)<\/p:txBody>/)?.[1] || "";
+            const rPr    = origBody.match(/(<a:rPr[\s\S]*?<\/a:rPr>|<a:rPr[^/]*\/>)/)?.[0] || "";
+            const bodyPr = origBody.match(/(<a:bodyPr[\s\S]*?<\/a:bodyPr>|<a:bodyPr[^/]*\/>)/)?.[0] || "<a:bodyPr/>";
+            const newTxBody = `<p:txBody>${bodyPr}<a:lstStyle/><a:p><a:r>${rPr}<a:t>${value}</a:t></a:r></a:p></p:txBody>`;
+            return `${pre}${newTxBody}${post}`;
+          }
+        );
+      // id=7 total, id=11 uffici, id=15 ops, id=19 datacenter, id=23 altro
+      final = replaceCardValue(final, 7,  totalSedi);
+      final = replaceCardValue(final, 11, ufficiCount);
+      final = replaceCardValue(final, 15, opsCount);
+      final = replaceCardValue(final, 19, datacenterCount);
+      final = replaceCardValue(final, 23, altroCount);
+      // Also update the geo table (a:tbl) with actual siteTable counts per area
+      final = replaceSlide3GeoTable(final, data.siteTable as Record<string, Record<string, number>> | undefined);
+    }
 
     // Slide 6: write needs list after replaceInSlideXml to preserve paragraph structure
-    const final = i === 6 ? replaceSlide6NeedsList(updated, data.critItems, isIt) : updated;
+    if (i === 6) final = replaceSlide6NeedsList(final, data.critItems, isIt);
+
     zip.file(path, final);
   }
 

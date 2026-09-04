@@ -7,7 +7,7 @@ type SiteRowKey = "uffici"|"ops"|"datacenter"|"altro";
 type SiteTable = Record<SiteRowKey, Record<SiteGeoKey, number>>;
 
 interface PrioItem { rank: number; name: string; detail: string; note?: string; }
-interface CritItem { rank: number; label: string; priority: string; rel: number; crit: number; tier: "high"|"medium"|"low"; }
+interface CritItem { rank: number; label: string; priority: string; rel: number; crit: number; tier: "high"|"medium"|"low"; needId?: string; }
 
 export interface ReportData {
   companyName: string;
@@ -33,6 +33,7 @@ export interface ReportData {
   participantRole?: string;
   participantCompany?: string;
   businessUnit?: string;
+  needCapabilities?: Record<string, { it: string; en: string }>;
 }
 
 interface Props extends CommonProps {
@@ -461,6 +462,58 @@ function Slide5({ d }: { d: ReportData }) {
   );
 }
 
+// ── Slide 6 — Recommendations / Next steps ────────────────────────────────────
+function Slide6({ d }: { d: ReportData }) {
+  const isIt = d.isIt;
+  const top7 = [...d.critItems]
+    .sort((a, b) => (b.rel + b.crit) - (a.rel + a.crit))
+    .slice(0, 7);
+  const TIER_COLOR: Record<string, string> = { high: "#e05050", medium: "#4a90c8", low: "#9ca3af" };
+  return (
+    <Slide bg="#ffffff">
+      {d.companyLogo && <img src={d.companyLogo} alt="logo" style={{position:"absolute",top:20,right:28,height:44,maxWidth:130,objectFit:"contain"}}/>}
+      <div style={{padding:"28px 40px 0"}}>
+        <div style={{fontSize:24,fontWeight:700,color:"#1a7a4a",marginBottom:6,letterSpacing:"-.01em"}}>
+          {isIt?"Next steps e raccomandazioni IBM Envizi":"Next steps & IBM Envizi recommendations"}
+        </div>
+        <div style={{fontSize:13,color:"#557",marginBottom:20}}>
+          {isIt
+            ? `Aree proposte in base alle risposte e alle criticità dichiarate da ${d.companyName}`
+            : `Areas proposed based on ${d.companyName}'s responses and declared criticalities`}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          {top7.map((item, i) => {
+            const cap = item.needId ? d.needCapabilities?.[item.needId] : undefined;
+            const capText = cap ? (isIt ? cap.it : cap.en) : item.priority;
+            const cleanLabel = item.label.replace(/\s*\(.*?\)\s*$/, "").trimEnd();
+            return (
+              <div key={item.label} style={{
+                display:"flex",gap:10,padding:"10px 14px",
+                background:"#f8fdf9",borderRadius:10,
+                border:"1.5px solid #c8e4d0",alignItems:"flex-start",
+              }}>
+                <span style={{
+                  width:28,height:28,borderRadius:"50%",
+                  background:TIER_COLOR[item.tier]||"#aaa",
+                  display:"inline-flex",alignItems:"center",justifyContent:"center",
+                  fontSize:13,color:"#fff",fontWeight:800,flexShrink:0,marginTop:2,
+                }}>
+                  {String(i+1).padStart(2,"0")}
+                </span>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:14,fontWeight:700,color:"#0a2a1a",marginBottom:3,lineHeight:1.3}}>{cleanLabel}</div>
+                  <div style={{fontSize:11,color:"#557",lineHeight:1.5}}>{capText}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      <div style={{position:"absolute",bottom:14,left:0,right:0,textAlign:"center",fontSize:13,color:"#8aaa98",letterSpacing:".08em"}}>IBM Envizi Quest</div>
+    </Slide>
+  );
+}
+
 // ── Main slideshow component ──────────────────────────────────────────────────
 export function ReportSlideshow({ language, setLanguage, setScreen, reset, data }: Props) {
   const [idx, setIdx] = useState(0);
@@ -471,6 +524,7 @@ export function ReportSlideshow({ language, setLanguage, setScreen, reset, data 
     <Slide3 key={2} d={data}/>,
     <Slide4 key={3} d={data}/>,
     <Slide5 key={4} d={data}/>,
+    <Slide6 key={5} d={data}/>,
   ];
   // unused bust var removed — slides are React components, not PNGs
   const total = slides.length;
