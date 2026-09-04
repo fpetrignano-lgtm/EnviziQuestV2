@@ -368,7 +368,13 @@ export function CompanyScreen({
   const totalSedi = Object.values(geoDistrib).reduce((s,v)=>s+v,0);
   const sediUnit = isIt ? "sedi totali" : "total locations";
   const pepUnit = isIt ? "dipendenti" : "employees";
-  const companyStoryGen = isIt ? `Un ${sectorLabel.toLowerCase()} da ${dimVal} ${dimUnit}, con ${totalSedi} sedi nel mondo.` : `A ${sectorLabel.toLowerCase()} with ${dimVal} ${dimUnit} and ${totalSedi} locations worldwide.`;
+  const companyStoryLine1 = isIt
+    ? `Un ${sectorLabel.toLowerCase()} da ${dimVal} ${dimUnit}, con ${totalSedi} sedi nel mondo e ${peopleVal.toLocaleString()} dipendenti.`
+    : `A ${sectorLabel.toLowerCase()} with ${dimVal} ${dimUnit}, ${totalSedi} locations worldwide and ${peopleVal.toLocaleString()} employees.`;
+  const companyStoryLine2 = isIt
+    ? `Indicativamente ${csrdAlert?"soggetta":"non soggetta"} a CSRD (dipendenti ${csrdAlert?">":"<"} 1.000 e fatturato ${csrdAlert?">":"<"} €450M).`
+    : `Indicatively ${csrdAlert?"subject to":"not subject to"} CSRD (employees ${csrdAlert?">":"<"} 1,000 and revenue ${csrdAlert?">":"<"} €450M).`;
+  const companyStoryGen = companyStoryLine1;
   const evolvingGen = `${displayCompanyName} — ${activeReadiness.desc}`;
   // Posizioni anchor per area geografica sulla mappa (left/top %)
   type MapGeoKey = "italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
@@ -405,8 +411,7 @@ export function CompanyScreen({
   };
   return <main className="companyScreen">
     <div className="welcomeBlueBar"/>
-    <div style={{display:"flex",flexDirection:"column",minHeight:0,overflow:"hidden",position:"relative"}}>
-    <header className="missionNav missionNavTrust" style={{flexShrink:0}}><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
+    <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"8px"}}><img src={`./characters/${profile}-neutral.png`} alt={name} style={{width:"36px",height:"36px",borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(57,239,180,.35)",flexShrink:0}}/><div style={{display:"flex",flexDirection:"column",lineHeight:1.2}}><small style={{font:"700 8px var(--font-geist-mono,monospace)",letterSpacing:".12em",textTransform:"uppercase",color:"#39efb4"}}>ESG MANAGER</small><strong style={{fontSize:"12px",color:"#f2fff9",fontWeight:700}}>{name}</strong></div></div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     {showGeo ? (
     <section className="geoMapsSection" style={{position:"relative",flex:1,minHeight:0}} aria-label={`${displayCompanyName} footprint`}>
       {(()=>{
@@ -573,41 +578,33 @@ export function CompanyScreen({
     </section>
     ) : (
     <section className="companyCopy">
-      <div style={{display:"flex",alignItems:"center",gap:"14px"}}>
-        <h1 style={{margin:0,fontSize:"clamp(28px,3vw,44px)",fontWeight:520,letterSpacing:"-.05em",lineHeight:1,color:"#b5c9c1"}}>{isIt?`Introduzione alla strategia ESG di ${displayCompanyName}`:`Introduction to ${displayCompanyName}'s ESG strategy`}</h1>
-        {companyLogo && <img src={companyLogo} alt="logo" style={{height:"48px",maxWidth:"140px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"4px"}}/>}
+      <div style={{display:"flex",alignItems:"center",gap:"14px",marginBottom:"8px"}}>
+        <h1 style={{margin:0,flex:1,minWidth:0}}>{isIt?`Introduzione alla strategia ESG di ${displayCompanyName}`:`Introduction to ${displayCompanyName}'s ESG strategy`}</h1>
+        {companyLogo && <img src={companyLogo} alt="logo" style={{height:"48px",maxWidth:"140px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"4px",flexShrink:0}}/>}
       </div>
-      <p className="companyLead">{companyStoryGen}</p>
-      <div className="companyStats">
-        <CopyChip fieldName="Revenue" value={String(dimVal)}><div><strong>{dimVal}</strong><span>{dimUnit}</span></div></CopyChip>
-        <CopyChip fieldName="Total Locations" value={String(totalSedi)}><div><strong>{totalSedi}</strong><span>{sediUnit}</span></div></CopyChip>
-        <CopyChip fieldName="Number of Employees" value={String(peopleVal)}><div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div></CopyChip>
-        <div style={{background:csrdAlert?"rgba(245,166,35,.10)":"rgba(57,239,180,.07)"}}>
-          <strong style={{fontSize:"clamp(14px,1.4vw,20px)",color:csrdAlert?"#f5c855":"#39efb4",letterSpacing:"-.02em",lineHeight:1.1}}>
-            {csrdAlert?(isIt?"Soggetta CSRD":"Subject to CSRD"):(isIt?"Indicativamente non soggetta CSRD":"Indicatively not subject to CSRD")}
-          </strong>
-          <span style={{color:csrdAlert?"#c9a96e":"#7ab3a5",fontSize:"clamp(11px,1vw,14px)",marginTop:"6px"}}>
-            {csrdAlert?(isIt?">1.000 dip. · >€450M":">1,000 emp. · >€450M"):(isIt?"<1.000 dip. o <€450M":"<1,000 emp. or <€450M")}
-          </span>
-        </div>
+      <div className="priorityPersona">
+        <img src={`./characters/${profile}-neutral.png`} alt={name}/>
+        <div><strong>{name}</strong><small>ESG MANAGER</small></div>
       </div>
+      <p className="companyLead" style={{margin:"1.5vh 0 0"}}>{companyStoryLine1}</p>
+      <p className="companyLead" style={{margin:"4px 0 1.5vh",color:csrdAlert?"#f5c855":"#7ab3a5"}}>{companyStoryLine2}</p>
       {setSustainabilityReportSince&&<div className="srRow">
-        {sustainabilityReportSince==="mai"
-          ? <span className="srSentence">{isIt?<>{displayCompanyName} <strong>non ha pubblicato</strong> un bilancio di sostenibilità.</>:<>{displayCompanyName} has <strong>not published</strong> a sustainability report.</>}</span>
-          : <span className="srSentence">{isIt?<>{displayCompanyName} redige il bilancio di sostenibilità dall'anno <strong>{sustainabilityReportSince}</strong>.</>:<>{displayCompanyName} has been publishing a sustainability report since <strong>{sustainabilityReportSince}</strong>.</>}</span>
-        }
-        <div className="srControls">
-          <button className="srBtn" onClick={()=>{if(sustainabilityReportSince==="mai")setSustainabilityReportSince(new Date().getFullYear()-1);else setSustainabilityReportSince(sustainabilityReportSince-1);}}>▼</button>
-          <button className="srBtn" onClick={()=>{if(typeof sustainabilityReportSince==="number")setSustainabilityReportSince(sustainabilityReportSince+1);}}>▲</button>
-          <button className={`srMaiBtn${sustainabilityReportSince==="mai"?" srMaiBtnOn":""}`} onClick={()=>setSustainabilityReportSince(sustainabilityReportSince==="mai"?2024:"mai")}>{isIt?"Mai":"Never"}</button>
-        </div>
+        <span className="srSentence">
+          {sustainabilityReportSince==="mai"
+            ? (isIt?<>{displayCompanyName} <strong>non ha pubblicato</strong> un bilancio di sostenibilità.{" "}<button className={`srMaiBtn srMaiBtnOn`} onClick={()=>setSustainabilityReportSince(2024)}>Mai</button></>:<>{displayCompanyName} has <strong>not published</strong> a sustainability report.{" "}<button className={`srMaiBtn srMaiBtnOn`} onClick={()=>setSustainabilityReportSince(2024)}>Never</button></>)
+            : (isIt
+                ? <>{displayCompanyName} redige il bilancio di sostenibilità dall'anno{" "}<span className="srInlineYear"><button className="srBtn" onClick={()=>setSustainabilityReportSince(sustainabilityReportSince-1)}>▼</button><strong>{sustainabilityReportSince}</strong><button className="srBtn" onClick={()=>setSustainabilityReportSince(sustainabilityReportSince+1)}>▲</button><button className={`srMaiBtn${sustainabilityReportSince==="mai"?" srMaiBtnOn":""}`} onClick={()=>setSustainabilityReportSince(sustainabilityReportSince==="mai"?2024:"mai")}>{isIt?"Mai":"Never"}</button></span>.</>
+                : <>{displayCompanyName} has been publishing a sustainability report since{" "}<span className="srInlineYear"><button className="srBtn" onClick={()=>setSustainabilityReportSince(sustainabilityReportSince-1)}>▼</button><strong>{sustainabilityReportSince}</strong><button className="srBtn" onClick={()=>setSustainabilityReportSince(sustainabilityReportSince+1)}>▲</button><button className={`srMaiBtn${sustainabilityReportSince==="mai"?" srMaiBtnOn":""}`} onClick={()=>setSustainabilityReportSince(sustainabilityReportSince==="mai"?2024:"mai")}>{isIt?"Mai":"Never"}</button></span>.</>
+              )
+          }
+        </span>
       </div>}
       <CopyChip fieldName="ESG Readiness" value={evolvingGen}><blockquote style={{cursor:"copy"}}>{evolvingGen}</blockquote></CopyChip>
       {(()=>{
         const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
           {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
           {num:2,label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico, un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
-          {num:3,label:{it:"Adozione integrale volontaria",en:"Full voluntary adoption"},desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
+          {num:3,label:{it:"Adozione integrale volontaria di CSRD/ESRS",en:"Full voluntary adoption of CSRD/ESRS"},desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
           {num:4,label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},for:{it:"L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
           {num:5,label:{it:"Rendicontazione libera",en:"Free-form reporting"},desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},for:{it:"L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
         ];
@@ -636,11 +633,14 @@ export function CompanyScreen({
             ];
             const selected = rows.filter(([id])=>frameworkChecks[id]?.inUso||frameworkChecks[id]?.diInteresse);
             return <>
-              {/* Trigger */}
-              <button className="fwTrigger" onClick={()=>setFwOpen(true)}>
-                <span className="fwTriggerLabel">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</span>
-                <span className="fwTriggerEdit">✎ {isIt?"seleziona":"select"}</span>
-              </button>
+              {/* Trigger + Avanti sulla stessa riga */}
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px"}}>
+                <button className="fwTrigger" onClick={()=>setFwOpen(true)}>
+                  <span className="fwTriggerLabel">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</span>
+                  <span className="fwTriggerEdit">✎ {isIt?"seleziona":"select"}</span>
+                </button>
+                <button className="actionButton" style={{flexShrink:0,marginTop:0,width:"auto"}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
+              </div>
               {/* Summary: selected list or fallback */}
               {selected.length>0
                 ? <div className="fwSummary">{selected.map(([id,label])=>{
@@ -712,8 +712,6 @@ export function CompanyScreen({
       })()}
     </section>
     )}
-    <button className="actionButton" style={{position:"absolute",bottom:"28px",right:"3vw",zIndex:10}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
-    </div>{/* end content wrapper */}
     <div className="welcomeBlueBar"/>
   </main>;
 }
