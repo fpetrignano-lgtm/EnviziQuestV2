@@ -197,6 +197,14 @@ function Slide2({ d }: { d: ReportData }) {
   const dc = GEO_KEYS.reduce((s,g)=>s+(d.siteTable.datacenter[g]??0),0);
   const altro = GEO_KEYS.reduce((s,g)=>s+(d.siteTable.altro[g]??0),0);
   const activeGeos = GEO_KEYS.filter(g=>SITE_ROWS.some(r=>(d.siteTable[r][g]??0)>0));
+  // Complexity badge: count active geo areas outside Italy and Europe
+  const extraGeoCount = (["nordamerica","sudamerica","asia","africa","australia"] as const)
+    .filter(g=>SITE_ROWS.some(r=>(d.siteTable[r][g]??0)>0)).length;
+  const complexityLevel = extraGeoCount === 0 ? "low" : extraGeoCount <= 2 ? "medium" : "high";
+  const complexityLabel = isIt
+    ? (complexityLevel==="low"?"Bassa":complexityLevel==="medium"?"Media":"Alta")
+    : (complexityLevel==="low"?"Low":complexityLevel==="medium"?"Medium":"High");
+  const complexityBg = complexityLevel==="low"?"#2E7D54":complexityLevel==="medium"?"#C07A00":"#C0392B";
   const geoLine = activeGeos.map(g=>{
     const n=GEO_KEYS.filter(k=>k===g).reduce((s)=>s+SITE_ROWS.reduce((ss,r)=>ss+(d.siteTable[r][g]??0),0),0);
     const tot=SITE_ROWS.reduce((ss,r)=>ss+(d.siteTable[r][g]??0),0);
@@ -206,8 +214,16 @@ function Slide2({ d }: { d: ReportData }) {
     <Slide bg="#fff">
       {d.companyLogo && <img src={d.companyLogo} alt="logo" style={{position:"absolute",top:24,right:32,height:48,maxWidth:140,objectFit:"contain"}}/>}
       <div style={{padding:"40px 48px 0"}}>
-        <div style={{fontSize:32,fontWeight:600,color:"#1a7a4a",marginBottom:32,maxWidth:700,lineHeight:1.3}}>
-          {isIt?`${d.companyName} ha avviato il percorso ESG`:`${d.companyName} has started its ESG journey`}
+        <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:32,flexWrap:"wrap"}}>
+          <div style={{fontSize:32,fontWeight:600,color:"#1a7a4a",maxWidth:700,lineHeight:1.3}}>
+            {isIt?`${d.companyName} ha avviato il percorso ESG`:`${d.companyName} has started its ESG journey`}
+          </div>
+          {/* Complexity badge */}
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",background:complexityBg,borderRadius:20,flexShrink:0}}>
+            <span style={{fontSize:12,fontWeight:700,color:"#fff",letterSpacing:".04em"}}>
+              {isIt?`Complessità di reporting: ${complexityLabel}`:`Reporting complexity: ${complexityLabel}`}
+            </span>
+          </div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 60px"}}>
           {/* left col */}

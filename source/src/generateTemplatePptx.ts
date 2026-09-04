@@ -843,6 +843,20 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
 
   // Slide 2 card values — new template uses individual shapes per stat
   const activeGeoCount = geoKeys2.filter(g => siteColSum(g) > 0).length;
+
+  // Slide 3 complexity badge — based on number of active geo areas outside Italy and Europe.
+  // 0 extra areas → Low / Bassa; 1-2 → Medium / Media; 3+ → High / Alta
+  const extraGeoCount = (["nordamerica","sudamerica","asia","africa","australia"] as const)
+    .filter(g => siteColSum(g) > 0).length;
+  const geoComplexityLevel = extraGeoCount === 0 ? "low" : extraGeoCount <= 2 ? "medium" : "high";
+  const geoComplexityLabel = isIt
+    ? (geoComplexityLevel === "low" ? "Bassa" : geoComplexityLevel === "medium" ? "Media" : "Alta")
+    : (geoComplexityLevel === "low" ? "Low"   : geoComplexityLevel === "medium" ? "Medium" : "High");
+  const geoComplexityColor = geoComplexityLevel === "low" ? "2E7D54" : geoComplexityLevel === "medium" ? "C07A00" : "C0392B";
+  const slide3ComplexityText = isIt
+    ? `Complessità di reporting per ${resolvedCompanyName}: ${geoComplexityLabel}`
+    : `Reporting complexity for ${resolvedCompanyName}: ${geoComplexityLabel}`;
+
   // Slide2 title (shape id=2): company name + market presence + ESG focus
   const slide2Title = isIt
     ? `${resolvedCompanyName} combina una presenza ${data.marketLabel.toLowerCase()} con una forte attenzione a ESG`
@@ -1169,6 +1183,7 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
 
     // Slide 3: replace company name in subtitle (id=3) directly to avoid substring collision
     // with the "54" stat-card placeholder which gets substituted first by replaceInSlideXml.
+    // Also inject a complexity badge below the subtitle.
     if (i === 3) {
       const slide3Subtitle = isIt
         ? `Evidenza raccolta sulle ${totalSedi} sedi di ${resolvedCompanyName}`
@@ -1181,6 +1196,12 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
           return `${pre}${newTxBody}${post}`;
         }
       );
+
+      // Inject complexity badge as a new shape just below the subtitle (id=3 bottom ≈ y=1047750).
+      // Placed at y=1090000; uses a coloured background pill matching the complexity level.
+      const badgeRPr = `<a:rPr lang="it-IT" sz="1100" b="1" dirty="0"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+      const badgeShapeXml = `<p:sp><p:nvSpPr><p:cNvPr id="998" name="complexity_badge"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="419100" y="1090000"/><a:ext cx="4000000" cy="304800"/></a:xfrm><a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 16667"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr val="${geoComplexityColor}"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr anchor="ctr"><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="l" marL="180000" marR="0" indent="0"/><a:r>${badgeRPr}<a:t>${escapeXml(slide3ComplexityText)}</a:t></a:r></a:p></p:txBody></p:sp>`;
+      xmlStr = xmlStr.replace("</p:spTree>", badgeShapeXml + "</p:spTree>");
     }
 
     // Slide 5: remap priority icons + nudge reputazione note downward
