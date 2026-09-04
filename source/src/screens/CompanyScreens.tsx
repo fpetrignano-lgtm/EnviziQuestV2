@@ -694,7 +694,7 @@ export function CompanyScreen({
               }
               {/* Popup */}
               {fwOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setFwOpen(false)}}>
-                <div className="companyRptModal" style={{maxWidth:"780px",width:"90vw"}}>
+                <div className="companyRptModal" style={{maxWidth:"1560px",width:"90vw"}}>
                   <div className="companyRptModalHead">
                     <p className="companyRptModalTitle">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</p>
                     <button className="companyRptModalClose" onClick={()=>setFwOpen(false)}>✕</button>
