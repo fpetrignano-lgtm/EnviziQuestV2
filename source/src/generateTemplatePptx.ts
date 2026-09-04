@@ -286,13 +286,16 @@ function reduceSlide6TitleFont(xml: string): string {
 // ── Slide 4 framework visibility ─────────────────────────────────────────────
 // Each framework in the "IN USO" grid has a check mark shape (✓) and a name shape.
 // If the user did not select a framework (neither inUso nor diInteresse), blank its name
-// and replace the ✓ with an em dash so the slot reads as empty.
-// If diInteresse only, replace ✓ with ◦ to visually distinguish it.
-// The TCFD block is in the "DI INTERESSE" column — hide name+desc if not selected.
+// and blank the ✓ so the slot reads as empty.
+// The entire "DI INTERESSE" column (ids 35–40) is always removed.
 function processSlide4Frameworks(
   xml: string,
   frameworkChecks: Record<string, { inUso: boolean; diInteresse: boolean }> | undefined
 ): string {
+  // Always remove the "DI INTERESSE" block (label, TCFD name, TCFD desc,
+  // background rect, "Implicazione" label, implication text).
+  xml = removeShapesById(xml, [35, 36, 37, 38, 39, 40]);
+
   if (!frameworkChecks) return xml;
 
   // fw key → { checkId, labelId } for the IN USO grid
@@ -321,23 +324,11 @@ function processSlide4Frameworks(
 
   for (const [fwKey, { checkId, labelId }] of Object.entries(FW_MAP)) {
     const state = frameworkChecks[fwKey] ?? { inUso: false, diInteresse: false };
-    if (state.inUso) {
-      // keep ✓ and name as-is
-    } else if (state.diInteresse) {
-      // replace ✓ with ◦ to signal "of interest"
-      xml = setShapeText(xml, checkId, "◦");
-    } else {
-      // not selected — blank out both check and label
+    if (!state.inUso) {
+      // not selected — blank out both check mark and label
       xml = setShapeText(xml, checkId, "");
       xml = setShapeText(xml, labelId, "");
     }
-  }
-
-  // TCFD is in the "DI INTERESSE" right column (id=36 name, id=37 desc)
-  const tcfd = frameworkChecks["tcfd"] ?? { inUso: false, diInteresse: false };
-  if (!tcfd.inUso && !tcfd.diInteresse) {
-    xml = setShapeText(xml, 36, "");
-    xml = setShapeText(xml, 37, "");
   }
 
   return xml;
