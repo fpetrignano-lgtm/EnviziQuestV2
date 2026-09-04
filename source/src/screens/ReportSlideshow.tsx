@@ -32,6 +32,7 @@ export interface ReportData {
   companyLogo?: string;
   participantRole?: string;
   participantCompany?: string;
+  businessUnit?: string;
 }
 
 interface Props extends CommonProps {
@@ -89,11 +90,99 @@ function Slide1({ d }: { d: ReportData }) {
         <div>{isIt?"Sintesi workshop Envizi Quest":"Envizi Quest workshop summary"}{date?` · ${date}`:""}</div>
         {d.consultantName&&<div>IBM Envizi Team · {d.consultantName}</div>}
         {d.participantRole&&d.participantCompany&&<div>{d.participantRole} · {d.participantCompany}</div>}
+        {d.businessUnit&&<div>{d.businessUnit}</div>}
       </div>
       {/* Footer */}
       <div style={{position:"absolute",bottom:18,left:40,fontSize:12,color:"rgba(10,40,25,.5)",letterSpacing:".08em"}}>
         {isIt?"Incontro di lavoro":"Working session"} · {new Date().getFullYear()}
       </div>
+    </Slide>
+  );
+}
+
+// ── Slide 1b — Company overview (contenuti 21·company) ────────────────────────
+function SlideCompany({ d }: { d: ReportData }) {
+  const isIt = d.isIt;
+  const GEO_KEYS = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"] as const;
+  const GEO_LABELS: Record<string,{it:string,en:string}> = {
+    italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},
+    nordamerica:{it:"Nord America",en:"North America"},sudamerica:{it:"Sud America",en:"South America"},
+    asia:{it:"Asia",en:"Asia"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"},
+  };
+  const SITE_ROWS = ["uffici","ops","datacenter","altro"] as const;
+  const SITE_LABELS: Record<string,{it:string,en:string}> = {
+    uffici:{it:"Uffici",en:"Offices"},ops:{it:"Sedi operative",en:"Operational sites"},
+    datacenter:{it:"Data centre",en:"Data centres"},altro:{it:"Altro",en:"Other"},
+  };
+  const SITE_COLORS: Record<string,string> = {uffici:"#7ab8d8",ops:"#72c4a0",datacenter:"#b08adc",altro:"#e8a84a"};
+  const activeGeos = GEO_KEYS.filter(g => SITE_ROWS.some(r => (d.siteTable[r][g] ?? 0) > 0));
+  const totalSites = SITE_ROWS.reduce((s,r) => s + GEO_KEYS.reduce((ss,g) => ss + (d.siteTable[r][g] ?? 0), 0), 0);
+  return (
+    <Slide bg="#ffffff">
+      {d.companyLogo && <img src={d.companyLogo} alt="logo" style={{position:"absolute",top:24,right:32,height:48,maxWidth:140,objectFit:"contain"}}/>}
+      <div style={{padding:"36px 48px 0"}}>
+        {/* Titolo */}
+        <div style={{fontSize:28,fontWeight:700,color:"#0a3a2a",marginBottom:24,letterSpacing:"-.01em"}}>
+          {isIt?`Profilo aziendale — ${d.companyName}`:`Company profile — ${d.companyName}`}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 56px"}}>
+          {/* Colonna sinistra: dati aziendali */}
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            {/* Stats */}
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[
+                {label:isIt?"Settore":"Sector", value:d.sectorLabel},
+                {label:isIt?"Mercato":"Market", value:d.marketLabel},
+                {label:isIt?"Fatturato":"Revenue", value:`${d.revenue} ${d.dimUnit}`},
+                {label:isIt?"Dipendenti":"Employees", value:d.employees.toLocaleString()},
+              ].map(({label,value})=>(
+                <div key={label} style={{background:"#f0f7f3",borderRadius:10,padding:"10px 14px",borderLeft:"3px solid #1a7a4a"}}>
+                  <div style={{fontSize:11,fontWeight:700,color:"#1a7a4a",letterSpacing:".08em",textTransform:"uppercase",marginBottom:4}}>{label}</div>
+                  <div style={{fontSize:16,fontWeight:600,color:"#0a2a1a",lineHeight:1.3}}>{value}</div>
+                </div>
+              ))}
+            </div>
+            {/* CSRD */}
+            <div style={{background:"#fff8ee",border:"1px solid #f5a623",borderRadius:10,padding:"10px 14px"}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#c05000",letterSpacing:".08em",textTransform:"uppercase",marginBottom:4}}>CSRD</div>
+              <div style={{fontSize:15,fontWeight:600,color:"#0a2a1a"}}>{d.csrdLabel}</div>
+              <div style={{fontSize:13,color:"#557"}}>{d.csrdSub}</div>
+              {d.csrdNote&&<div style={{fontSize:12,color:"#888",fontStyle:"italic",marginTop:4}}>{d.csrdNote}</div>}
+            </div>
+            {/* Maturità ESG */}
+            <div style={{background:"#f0f7f3",borderRadius:10,padding:"10px 14px",borderLeft:"3px solid #39efb4"}}>
+              <div style={{fontSize:11,fontWeight:700,color:"#1a7a4a",letterSpacing:".08em",textTransform:"uppercase",marginBottom:4}}>{isIt?"Maturità ESG":"ESG Maturity"}</div>
+              <div style={{fontSize:15,fontWeight:600,color:"#0a2a1a"}}>{d.maturityTitle}</div>
+              <div style={{fontSize:13,color:"#557",marginTop:4}}>{d.maturityDesc}</div>
+            </div>
+          </div>
+          {/* Colonna destra: footprint geografico */}
+          <div>
+            <div style={{fontSize:13,fontWeight:700,color:"#1a7a4a",letterSpacing:".06em",textTransform:"uppercase",marginBottom:10}}>
+              {isIt?`Footprint geografico (${totalSites} sedi totali)`:`Geographic footprint (${totalSites} total sites)`}
+            </div>
+            {activeGeos.length > 0 ? (
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {activeGeos.map(g => (
+                  <div key={g} style={{display:"flex",alignItems:"center",gap:10,padding:"7px 12px",background:"#f0f7f3",borderRadius:8}}>
+                    <span style={{fontSize:14,fontWeight:700,color:"#0a2a1a",minWidth:120}}>{isIt?GEO_LABELS[g].it:GEO_LABELS[g].en}</span>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                      {SITE_ROWS.filter(r=>(d.siteTable[r][g]??0)>0).map(r=>(
+                        <span key={r} style={{fontSize:12,padding:"2px 8px",borderRadius:5,border:`1px solid ${SITE_COLORS[r]}`,color:SITE_COLORS[r],fontWeight:600}}>
+                          {isIt?SITE_LABELS[r].it:SITE_LABELS[r].en} {d.siteTable[r][g]}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{color:"#8aaa98",fontSize:14,fontStyle:"italic"}}>{isIt?"Nessuna sede configurata":"No sites configured"}</div>
+            )}
+          </div>
+        </div>
+      </div>
+      <div style={{position:"absolute",bottom:14,left:0,right:0,textAlign:"center",fontSize:12,color:"#aaccbb",letterSpacing:".08em"}}>IBM Envizi Quest</div>
     </Slide>
   );
 }
@@ -285,14 +374,103 @@ function Slide4({ d }: { d: ReportData }) {
   );
 }
 
+// ── Slide 5 — Top 10 needs + matrix with numbered circles ────────────────────
+function Slide5({ d }: { d: ReportData }) {
+  const isIt = d.isIt;
+  const top10 = d.critItems.slice(0, 10);
+  const MATRIX_W = 440, MATRIX_H = 400;
+  const AXIS_PAD_L = 40, AXIS_PAD_B = 40;
+  const PLOT_W = MATRIX_W - AXIS_PAD_L;
+  const PLOT_H = MATRIX_H - AXIS_PAD_B;
+  const toX = (r: number) => AXIS_PAD_L + ((r - 1) / 9) * PLOT_W;
+  const toY = (c: number) => PLOT_H - ((c - 1) / 9) * PLOT_H;
+  const TIER_COLOR: Record<string, string> = { high: "#e05050", medium: "#4a90c8", low: "#9ca3af" };
+  return (
+    <Slide bg="#fff">
+      {d.companyLogo && <img src={d.companyLogo} alt="logo" style={{position:"absolute",top:20,right:28,height:44,maxWidth:130,objectFit:"contain"}}/>}
+      <div style={{padding:"24px 36px 0",display:"grid",gridTemplateColumns:"1fr 480px",gap:28,height:"calc(100% - 50px)"}}>
+        {/* left — numbered list */}
+        <div>
+          <div style={{fontSize:18,fontWeight:700,color:"#1a7a4a",marginBottom:14,lineHeight:1.3}}>
+            {isIt?"Top 10 esigenze di gestione dati ESG":"Top 10 ESG data management needs"}
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {top10.map((n, i) => (
+              <div key={n.label} style={{display:"flex",alignItems:"center",gap:10,padding:"5px 8px",background:i%2===0?"#f8fdf9":"#fff",borderRadius:6,border:"1px solid #e0eeea"}}>
+                <span style={{width:26,height:26,borderRadius:"50%",background:TIER_COLOR[n.tier]||"#aaa",display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#fff",fontWeight:800,flexShrink:0}}>{i+1}</span>
+                <span style={{fontSize:13,color:"#1a3a2a",fontWeight:600,flex:1,lineHeight:1.3}}>{n.label}</span>
+                <span style={{fontSize:11,color:"#888",whiteSpace:"nowrap",flexShrink:0}}>R:{n.rel} C:{n.crit}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* right — matrix */}
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",paddingTop:4}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#1a7a4a",marginBottom:8,letterSpacing:".06em",textTransform:"uppercase"}}>{isIt?"Matrice Rilevanza / Criticità":"Relevance / Criticality Matrix"}</div>
+          <div style={{fontSize:10,color:"#888",marginBottom:6,display:"flex",gap:16}}>
+            {Object.entries({high:isIt?"Alta":"High",medium:isIt?"Media":"Medium",low:isIt?"Bassa":"Low"}).map(([tier,label])=>(
+              <span key={tier} style={{display:"inline-flex",alignItems:"center",gap:4}}>
+                <span style={{width:10,height:10,borderRadius:"50%",background:TIER_COLOR[tier],display:"inline-block"}}/>
+                {label}
+              </span>
+            ))}
+          </div>
+          <svg width={MATRIX_W} height={MATRIX_H} viewBox={`0 0 ${MATRIX_W} ${MATRIX_H}`}>
+            {/* quadrant backgrounds */}
+            <rect x={AXIS_PAD_L} y={0} width={PLOT_W/2} height={PLOT_H/2} fill="rgba(74,144,200,.08)"/>
+            <rect x={AXIS_PAD_L+PLOT_W/2} y={0} width={PLOT_W/2} height={PLOT_H/2} fill="rgba(224,80,80,.18)"/>
+            <rect x={AXIS_PAD_L} y={PLOT_H/2} width={PLOT_W/2} height={PLOT_H/2} fill="rgba(240,248,255,.5)"/>
+            <rect x={AXIS_PAD_L+PLOT_W/2} y={PLOT_H/2} width={PLOT_W/2} height={PLOT_H/2} fill="rgba(224,80,80,.06)"/>
+            {/* border + dividers */}
+            <rect x={AXIS_PAD_L} y={0} width={PLOT_W} height={PLOT_H} fill="none" stroke="#1a7a4a" strokeWidth={1.5}/>
+            <line x1={AXIS_PAD_L+PLOT_W/2} y1={0} x2={AXIS_PAD_L+PLOT_W/2} y2={PLOT_H} stroke="#1a7a4a" strokeWidth={1} strokeDasharray="4 3"/>
+            <line x1={AXIS_PAD_L} y1={PLOT_H/2} x2={AXIS_PAD_L+PLOT_W} y2={PLOT_H/2} stroke="#1a7a4a" strokeWidth={1} strokeDasharray="4 3"/>
+            {/* quadrant labels */}
+            <text x={AXIS_PAD_L+PLOT_W*0.25} y={16} textAnchor="middle" fontSize={12} fill="#4a90c8" fontWeight="600">{isIt?"Migliorare":"Improve"}</text>
+            <text x={AXIS_PAD_L+PLOT_W*0.75} y={16} textAnchor="middle" fontSize={12} fill="#e05050" fontWeight="700">{isIt?"Trasformare":"Transform"}</text>
+            <text x={AXIS_PAD_L+PLOT_W*0.25} y={PLOT_H-6} textAnchor="middle" fontSize={11} fill="#9ca3af">{isIt?"Monitorare":"Monitor"}</text>
+            <text x={AXIS_PAD_L+PLOT_W*0.75} y={PLOT_H-6} textAnchor="middle" fontSize={11} fill="#9ca3af">{isIt?"Mantenere":"Maintain"}</text>
+            {/* axis labels */}
+            <text x={AXIS_PAD_L/2} y={PLOT_H/2} textAnchor="middle" fontSize={11} fill="#555" transform={`rotate(-90,${AXIS_PAD_L/2},${PLOT_H/2})`}>{isIt?"Criticità (C)":"Criticality (C)"}</text>
+            <text x={AXIS_PAD_L+PLOT_W/2} y={MATRIX_H-4} textAnchor="middle" fontSize={11} fill="#555">{isIt?"Rilevanza (R)":"Relevance (R)"}</text>
+            {/* axis ticks */}
+            {[1,2,3,4,5,6,7,8,9,10].map(v=>(
+              <g key={v}>
+                <text x={toX(v)} y={PLOT_H+14} textAnchor="middle" fontSize={9} fill="#aaa">{v}</text>
+                <text x={AXIS_PAD_L-4} y={toY(v)+4} textAnchor="end" fontSize={9} fill="#aaa">{v}</text>
+                <line x1={toX(v)} y1={PLOT_H} x2={toX(v)} y2={PLOT_H+4} stroke="#ccc" strokeWidth={1}/>
+                <line x1={AXIS_PAD_L-3} y1={toY(v)} x2={AXIS_PAD_L} y2={toY(v)} stroke="#ccc" strokeWidth={1}/>
+              </g>
+            ))}
+            {/* numbered circles */}
+            {top10.map((n, i) => {
+              const cx = toX(n.rel);
+              const cy = toY(n.crit);
+              return (
+                <g key={n.label}>
+                  <circle cx={cx} cy={cy} r={13} fill={TIER_COLOR[n.tier]||"#aaa"} opacity={0.9}/>
+                  <text x={cx} y={cy+5} textAnchor="middle" fontSize={11} fill="#fff" fontWeight="800">{i+1}</text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      </div>
+      <div style={{position:"absolute",bottom:14,left:0,right:0,textAlign:"center",fontSize:13,color:"#8aaa98",letterSpacing:".08em"}}>IBM Envizi Quest</div>
+    </Slide>
+  );
+}
+
 // ── Main slideshow component ──────────────────────────────────────────────────
 export function ReportSlideshow({ language, setLanguage, setScreen, reset, data }: Props) {
   const [idx, setIdx] = useState(0);
   const slides = [
     <Slide1 key={0} d={data}/>,
+    <SlideCompany key="company" d={data}/>,
     <Slide2 key={1} d={data}/>,
     <Slide3 key={2} d={data}/>,
     <Slide4 key={3} d={data}/>,
+    <Slide5 key={4} d={data}/>,
   ];
   // unused bust var removed — slides are React components, not PNGs
   const total = slides.length;

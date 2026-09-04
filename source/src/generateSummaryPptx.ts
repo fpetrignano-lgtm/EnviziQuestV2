@@ -280,6 +280,7 @@ export interface SummaryPptxData {
   companyLogo?: string;
   participantRole?: string;
   participantCompany?: string;
+  businessUnit?: string;
   reportingPath?: 0|1|2|3|4|5;
 }
 

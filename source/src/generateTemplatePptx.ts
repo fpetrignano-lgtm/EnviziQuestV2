@@ -249,20 +249,34 @@ function removeShapesById(xml: string, ids: number[]): string {
   return xml;
 }
 
-// ── Slide 4 title font reducer ────────────────────────────────────────────────
-// Reduces the font size of shape id=13 (title bar) from 27pt to 16pt.
-function reduceSlide4TitleFont(xml: string): string {
-  // Target: inside the sp with id=13, change all sz="2700" to sz="1600"
+// ── Slide 2 readiness label fix ───────────────────────────────────────────────
+// Shape id=23 (readiness value label):
+//   - font was sz=2850 in the template demo → align to sz=2025 (matches id=27)
+//   - width was 2286000 EMU (180pt) — enough for "BASSA" but not for longer
+//     maturity labels. Widen to 4572000 EMU (360pt) so text fits on one line.
+function fixSlide2ReadinessFont(xml: string): string {
   return xml.replace(
-    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="13"[^>]*>[\s\S]*?<\/p:sp>)/,
-    (spBlock) => spBlock.replace(/\bsz="2700"/g, `sz="1600"`)
+    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="23"[^>]*>[\s\S]*?<\/p:sp>)/,
+    (spBlock) => spBlock
+      .replace(/\bsz="2850"/g, `sz="2025"`)
+      .replace(/(<a:ext cx=")2286000(")/,  `$14572000$2`)
   );
 }
 
-// ── Slide 4 needs list replacement ───────────────────────────────────────────
-// Replaces the txBody of shape id=15 (left column) with a numbered list.
+// ── Slide 6 title font reducer ────────────────────────────────────────────────
+// Reduces the font size of shape id=13 (title bar in slide6) to fit long text.
+function reduceSlide6TitleFont(xml: string): string {
+  return xml.replace(
+    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="13"[^>]*>[\s\S]*?<\/p:sp>)/,
+    (spBlock) => spBlock.replace(/\bsz="2700"/g, `sz="1600"`)
+                        .replace(/\bsz="1600"/g, `sz="1400"`)
+  );
+}
+
+// ── Slide 6 needs list replacement ───────────────────────────────────────────
+// Replaces the txBody of shape id=15 (left column in slide6) with a numbered list.
 // Items sorted by R+C descending, top 10. Format: "N. label (R:x C:y)"
-function replaceSlide4NeedsList(
+function replaceSlide6NeedsList(
   xml: string,
   items: SummaryPptxData["critItems"],
   isIt: boolean
@@ -461,56 +475,6 @@ function generateMatrixPng(
   }
 }
 
-// ── Slide 2 body replacement ──────────────────────────────────────────────────
-// Replaces the entire txBody of shape id=2 in slide 2 with structured paragraphs.
-// Each data line becomes its own <a:p>. Empty lines become empty paragraphs.
-// Uses the same rPr styling as the original template (Calibri 16pt #477268).
-function replaceSlide2Body(xml: string, lines: string[]): string {
-  // The base rPr for all runs — matching the template style
-  const RPR = `<a:rPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
-  const PPR = `<a:pPr><a:defRPr sz="1125" b="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill></a:defRPr></a:pPr>`;
-
-  const paras = lines.map(line => {
-    if (line === "") {
-      // empty paragraph — use endParaRPr
-      return `<a:p>${PPR}<a:endParaRPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:endParaRPr></a:p>`;
-    }
-    return `<a:p>${PPR}<a:r>${RPR}<a:t>${escapeXml(line)}</a:t></a:r></a:p>`;
-  }).join("");
-
-  const BODY_PR = `<a:bodyPr/>`;
-  const LST_STYLE = `<a:lstStyle/>`;
-  const newTxBody = `<p:txBody>${BODY_PR}${LST_STYLE}${paras}</p:txBody>`;
-
-  // Replace the txBody inside the sp with id=2
-  return xml.replace(
-    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="2"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
-    `$1${newTxBody}$2`
-  );
-}
-
-// ── Slide 2 right block replacement ──────────────────────────────────────────
-// Replaces the entire txBody of shape id=3 in slide 2 with the CSRD/reporting
-// decision text lines.
-function replaceSlide2RightBlock(xml: string, lines: string[]): string {
-  const RPR = `<a:rPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
-  const PPR = `<a:pPr><a:defRPr sz="1125" b="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill></a:defRPr></a:pPr>`;
-
-  const paras = lines.map(line => {
-    if (line === "") {
-      return `<a:p>${PPR}<a:endParaRPr lang="it-IT" sz="1600" dirty="0"><a:solidFill><a:srgbClr val="477268"/></a:solidFill><a:latin typeface="Calibri"/><a:cs typeface="Calibri"/></a:endParaRPr></a:p>`;
-    }
-    return `<a:p>${PPR}<a:r>${RPR}<a:t>${escapeXml(line)}</a:t></a:r></a:p>`;
-  }).join("");
-
-  const newTxBody = `<p:txBody><a:bodyPr/><a:lstStyle/>${paras}</p:txBody>`;
-
-  return xml.replace(
-    /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="3"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
-    `$1${newTxBody}$2`
-  );
-}
-
 // ── CSRD / reporting path lookup ──────────────────────────────────────────────
 const REPORTING_PATHS: Record<number, { status: { it: string; en: string }; decision: { it: string; en: string } }> = {
   0: { status: { it: "Percorso di rendicontazione non selezionato", en: "Reporting path not selected" }, decision: { it: "", en: "" } },
@@ -520,6 +484,173 @@ const REPORTING_PATHS: Record<number, { status: { it: string; en: string }; deci
   4: { status: { it: "CSRD obbligatoria", en: "Mandatory CSRD" }, decision: { it: "L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.", en: "The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations." } },
   5: { status: { it: "Rendicontazione libera", en: "Free-form reporting" }, decision: { it: "L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.", en: "The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance." } },
 };
+
+// ── Company slide PNG generator ────────────────────────────────────────────────
+async function generateCompanySlidePng(data: SummaryPptxData, isIt: boolean): Promise<string | null> {
+  const W = 1270, H = 714; // 16:9 proportions
+  const siteTable = data.siteTable as Record<string, Record<string, number>> | undefined;
+  const GEO_KEYS = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
+  const GEO_LABELS: Record<string,string[]> = {
+    italia:["Italia","Italy"], europa:["Europa","Europe"],
+    nordamerica:["Nord America","North America"], sudamerica:["Sud America","South America"],
+    asia:["Asia","Asia"], africa:["Africa","Africa"], australia:["Australia","Australia"],
+  };
+  const SITE_ROWS = ["uffici","ops","datacenter","altro"];
+  const SITE_LABELS: Record<string,string[]> = {
+    uffici:["Uffici","Offices"], ops:["Sedi op.","Op. sites"],
+    datacenter:["Data centre","Data centres"], altro:["Altro","Other"],
+  };
+  const SITE_COLORS: Record<string,string> = {uffici:"#7ab8d8",ops:"#72c4a0",datacenter:"#b08adc",altro:"#e8a84a"};
+  const li = isIt ? 0 : 1;
+
+  return new Promise((resolve) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext("2d")!;
+
+    // Background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, W, H);
+
+    // Top accent bar
+    ctx.fillStyle = "#1a7a4a";
+    ctx.fillRect(0, 0, W, 6);
+
+    // Title
+    ctx.fillStyle = "#0a3a2a";
+    ctx.font = "bold 28px Arial, sans-serif";
+    const companyName = data.participantCompany?.trim() || data.companyName;
+    ctx.fillText(isIt ? `Profilo aziendale — ${companyName}` : `Company profile — ${companyName}`, 48, 56);
+
+    // ── Left column: stats ─────────────────────────────────────────────
+    const COL1_X = 48, COL2_X = W / 2 + 20;
+    const stats = [
+      [isIt?"Settore":"Sector", data.sectorLabel],
+      [isIt?"Mercato":"Market", data.marketLabel],
+      [isIt?"Fatturato":"Revenue", `${data.revenue} ${data.dimUnit}`],
+      [isIt?"Dipendenti":"Employees", String(data.employees?.toLocaleString() ?? "—")],
+    ];
+    let y = 90;
+    const statW = (W/2 - 72) / 2 - 8;
+    stats.forEach(([label, value], idx) => {
+      const x = COL1_X + (idx % 2) * (statW + 8);
+      if (idx % 2 === 0 && idx > 0) y += 68;
+      const bY = idx < 2 ? 90 : 158;
+      const bX = COL1_X + (idx % 2) * (statW + 8);
+      ctx.fillStyle = "#f0f7f3";
+      roundRect(ctx, bX, bY, statW, 58, 8);
+      ctx.fillStyle = "#f0f7f3";
+      ctx.fill();
+      ctx.fillStyle = "#1a7a4a";
+      ctx.font = "bold 10px Arial, sans-serif";
+      ctx.fillText(label.toUpperCase(), bX + 10, bY + 18);
+      ctx.fillStyle = "#0a2a1a";
+      ctx.font = "bold 14px Arial, sans-serif";
+      ctx.fillText(String(value).slice(0, 32), bX + 10, bY + 42);
+    });
+
+    // CSRD box
+    ctx.fillStyle = "#fff8ee";
+    roundRect(ctx, COL1_X, 236, W/2 - 72, 64, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#f5a623";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = "#c05000";
+    ctx.font = "bold 10px Arial, sans-serif";
+    ctx.fillText("CSRD", COL1_X + 10, 256);
+    ctx.fillStyle = "#0a2a1a";
+    ctx.font = "bold 13px Arial, sans-serif";
+    ctx.fillText(String(data.csrdLabel ?? "").slice(0, 50), COL1_X + 10, 274);
+    ctx.fillStyle = "#556677";
+    ctx.font = "12px Arial, sans-serif";
+    ctx.fillText(String(data.csrdSub ?? "").slice(0, 60), COL1_X + 10, 291);
+
+    // Maturity box
+    ctx.fillStyle = "#f0f7f3";
+    roundRect(ctx, COL1_X, 316, W/2 - 72, 72, 8);
+    ctx.fill();
+    ctx.strokeStyle = "#39efb4";
+    ctx.lineWidth = 2;
+    ctx.fillStyle = "#39efb4";
+    ctx.fillRect(COL1_X, 316, 3, 72);
+    ctx.fillStyle = "#1a7a4a";
+    ctx.font = "bold 10px Arial, sans-serif";
+    ctx.fillText((isIt?"MATURITÀ ESG":"ESG MATURITY"), COL1_X + 12, 334);
+    ctx.fillStyle = "#0a2a1a";
+    ctx.font = "bold 13px Arial, sans-serif";
+    ctx.fillText(String(data.maturityTitle ?? "").slice(0, 50), COL1_X + 12, 352);
+    ctx.fillStyle = "#556677";
+    ctx.font = "11px Arial, sans-serif";
+    const matDesc = String(data.maturityDesc ?? "");
+    ctx.fillText(matDesc.slice(0, 70), COL1_X + 12, 368);
+    if (matDesc.length > 70) ctx.fillText(matDesc.slice(70, 140), COL1_X + 12, 382);
+
+    // ── Right column: geographic footprint ────────────────────────────
+    ctx.fillStyle = "#1a7a4a";
+    ctx.font = "bold 12px Arial, sans-serif";
+    ctx.fillText((isIt?"FOOTPRINT GEOGRAFICO":"GEOGRAPHIC FOOTPRINT").toUpperCase(), COL2_X, 100);
+
+    if (siteTable) {
+      const activeGeos = GEO_KEYS.filter(g => SITE_ROWS.some(r => (siteTable[r]?.[g] ?? 0) > 0));
+      let gy = 116;
+      activeGeos.forEach(g => {
+        const rowH = 44;
+        ctx.fillStyle = "#f0f7f3";
+        roundRect(ctx, COL2_X, gy, W - COL2_X - 48, rowH, 6);
+        ctx.fill();
+        ctx.fillStyle = "#0a2a1a";
+        ctx.font = "bold 13px Arial, sans-serif";
+        ctx.fillText(GEO_LABELS[g]?.[li] ?? g, COL2_X + 10, gy + 18);
+        let cx = COL2_X + 130;
+        SITE_ROWS.forEach(r => {
+          const val = siteTable[r]?.[g] ?? 0;
+          if (val === 0) return;
+          const chip = `${SITE_LABELS[r]?.[li] ?? r} ${val}`;
+          ctx.strokeStyle = SITE_COLORS[r];
+          ctx.lineWidth = 1;
+          ctx.fillStyle = "transparent";
+          const cw = ctx.measureText(chip).width + 14;
+          roundRect(ctx, cx, gy + 8, cw, 22, 4);
+          ctx.stroke();
+          ctx.fillStyle = SITE_COLORS[r];
+          ctx.font = "bold 10px Arial, sans-serif";
+          ctx.fillText(chip, cx + 7, gy + 23);
+          cx += cw + 6;
+        });
+        gy += rowH + 6;
+      });
+      if (activeGeos.length === 0) {
+        ctx.fillStyle = "#8aaa98";
+        ctx.font = "italic 13px Arial, sans-serif";
+        ctx.fillText(isIt?"Nessuna sede configurata":"No sites configured", COL2_X, 130);
+      }
+    }
+
+    // Bottom bar
+    ctx.fillStyle = "#e8f5ef";
+    ctx.fillRect(0, H - 28, W, 28);
+    ctx.fillStyle = "#8aaa98";
+    ctx.font = "11px Arial, sans-serif";
+    ctx.fillText("IBM Envizi Quest", W / 2 - 45, H - 10);
+
+    resolve(canvas.toDataURL("image/png"));
+  });
+}
+
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
 
 // ── Main export ────────────────────────────────────────────────────────────────
 export async function generateTemplatePptx(data: SummaryPptxData): Promise<void> {
@@ -543,25 +674,20 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const siteRowSum = (row: string): number =>
     geoKeys2.reduce((s, g) => s + ((siteTable?.[row]?.[g]) ?? 0), 0);
 
-  // siteTableCountsForMap — per-geo totals (all types)
-  const siteTableCountsForMap: Record<string, number> = {};
-  for (const g of geoKeys2) siteTableCountsForMap[g] = siteColSum(g);
-
-  // Geo distribution
-  const geo = data.geoDistrib as Record<string, number> | undefined;
-
   // Workshop date / consultant
   const wDate       = data.workshopDate;
   const wConsultant = data.consultantName?.trim() || "";
   const dateStr     = wDate
     ? new Date(wDate).toLocaleDateString(isIt ? "it-IT" : "en-GB", { day: "2-digit", month: "long", year: "numeric" })
     : isIt ? "data da definire" : "date TBD";
-  // Consultant string: one line per element (name, role, company)
+  // Consultant string: one line per element (name, businessUnit, role, company)
+  const businessUnit = data.businessUnit?.trim() || "";
   const consultantStr = (() => {
     const parts: string[] = [];
     if (wConsultant) parts.push(wConsultant);
     if (participantRole) parts.push(participantRole);
     if (participantCompany) parts.push(participantCompany);
+    if (businessUnit) parts.push(businessUnit);
     return parts.join("\n") || "IBM Envizi Team";
   })();
 
@@ -572,84 +698,28 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const csrdDecision = isIt ? pathEntry.decision.it : pathEntry.decision.en;
   const line7 = csrdDecision ? `${csrdStatus}\n${csrdDecision}` : csrdStatus;
 
-  // Slide 2 body
   const dc = data.dataCenters ?? 0;
-  const year = new Date().getFullYear();
 
-  // Build geo line from siteTable absolute counts, including sudamerica + australia
-  const geoEntries: string[] = [];
-  const geoColLabels: Record<string, string> = {
-    italia: "Italia", europa: "Europa",
-    nordamerica: "Nord America", sudamerica: "Sud America",
-    asia: "Asia", africa: "Africa", australia: "Australia",
-  };
-  for (const g of geoKeys2) {
-    const cnt = siteColSum(g);
-    if (cnt > 0) geoEntries.push(`${geoColLabels[g]} ${cnt}`);
-  }
-  const lineGeoHeader = isIt ? "distribuite nelle seguenti regioni" : "distributed across the following regions";
-  const geoLine = geoEntries.length > 0 ? geoEntries.join(" · ") : "";
-
-  // Line 1: company intro
-  const line1 = isIt
-    ? `${resolvedCompanyName} è un ${data.sectorLabel} presente a livello ${data.marketLabel}.`
-    : `${resolvedCompanyName} is a ${data.sectorLabel} operating at ${data.marketLabel} level.`;
-
-  // Line 3: revenue
-  const line3 = isIt
-    ? `Nell'anno ${year} ha registrato ${data.revenue} ${data.dimUnit}.`
-    : `In ${year} it recorded ${data.revenue} ${data.dimUnit}.`;
-
-  // Line 5: employees
-  const line5 = isIt
-    ? `L'organizzazione occupa ${data.employees.toLocaleString()} dipendenti.`
-    : `The organisation employs ${data.employees.toLocaleString()} people.`;
-
-  // Lines 10+: sites breakdown using siteTable row sums
+  // Total sites (used for slide2 stat card and map)
   const totalSedi = siteRows.reduce((s, r) => s + siteRowSum(r), 0) || (data.plants + data.offices + dc);
-  const ufficiCount     = siteRowSum("uffici")     || data.offices;
-  const opsCount        = siteRowSum("ops")        || data.plants;
-  const datacenterCount = siteRowSum("datacenter") || dc;
-  const altroCount      = siteRowSum("altro");
 
-  const line10 = isIt
-    ? `${resolvedCompanyName} ha ${totalSedi} sedi totali di cui`
-    : `${resolvedCompanyName} has ${totalSedi} total sites of which`;
-  const line12 = ufficiCount > 0
-    ? (isIt ? `${ufficiCount} ${ufficiCount === 1 ? "sede ufficio" : "sedi ufficio"}` : `${ufficiCount} ${ufficiCount === 1 ? "office" : "offices"}`)
-    : "";
-  const line13 = opsCount > 0
-    ? (isIt ? `${opsCount} ${opsCount === 1 ? "sede operativa" : "sedi operative"}` : `${opsCount} ${opsCount === 1 ? "operational site" : "operational sites"}`)
-    : "";
-  const line14dc = datacenterCount > 0
-    ? (isIt ? `${datacenterCount} data center` : `${datacenterCount} data centre${datacenterCount > 1 ? "s" : ""}`)
-    : "";
-  const line14altro = altroCount > 0
-    ? (isIt ? `${altroCount} altro` : `${altroCount} other`)
-    : "";
-  const csrdNoteLine = data.csrdNote ? (isIt ? `Note: ${data.csrdNote}` : `Note: ${data.csrdNote}`) : "";
+  // Slide 2 card values — new template uses individual shapes per stat
+  const activeGeoCount = geoKeys2.filter(g => siteColSum(g) > 0).length;
+  // Slide2 title (shape id=2): company name + market presence + ESG focus
+  const slide2Title = isIt
+    ? `${resolvedCompanyName} combina una presenza ${data.marketLabel.toLowerCase()} con una forte attenzione a ESG`
+    : `${resolvedCompanyName} combines a ${data.marketLabel.toLowerCase()} presence with a strong focus on ESG`;
 
-  // Build slide2Lines (left block, shape id=2)
-  const slide2Lines: string[] = [
-    line1, "", line3, "", line5, "", "", "", "",
-    line10, "",
-    ...(line12 ? [line12] : []),
-    ...(line13 ? [line13] : []),
-    ...(line14dc ? [line14dc] : []),
-    ...(line14altro ? [line14altro] : []),
-    "",
-    ...(geoLine ? [lineGeoHeader, geoLine] : []),
-    ...(csrdNoteLine ? ["", csrdNoteLine] : []),
-  ];
-
-  // slide2RightLines (right block, shape id=3): CSRD/reporting decision
-  const slide2RightLines: string[] = line7.split("\n").filter(Boolean);
-
-  // Maturity text for slide 2
-  const maturityText = `${data.maturityTitle} — ${data.maturityDesc}`;
-
-  // Slide 3: fill each of the 6 fixed cells (in template order: customers=1, compliance=2,
-  // credit=3, efficiency=4, supply=5, reputation=6) with the user's priority at that rank.
+  // Slide 5 (priorities): fill each of the 6 fixed cells.
+  // Template cell order (by shape id in slide5):
+  //   id=8  → slot compliance (rank=1 in Erica demo)
+  //   id=4  → slot credito    (rank=2)
+  //   id=6  → slot clienti    (rank=3)
+  //   id=10 → slot efficienza (rank=4)
+  //   id=12 → slot supply     (rank=5)
+  //   id=27 → slot reputazione(rank=6)
+  // The slot order matches the "demo" values in the template (1/6..6/6).
+  // We map user priorities at each rank to the corresponding slot.
   const slot = (rank: number) => {
     const item = prioAtRank(data.prioItems, rank);
     return {
@@ -660,10 +730,10 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const s1 = slot(1); const s2 = slot(2); const s3 = slot(3);
   const s4 = slot(4); const s5 = slot(5); const s6 = slot(6);
 
-  // Slide 3 intro sentence
+  // Slide 5 intro sentence
   const top1 = prioAtRank(data.prioItems, 1);
   const top2 = prioAtRank(data.prioItems, 2);
-  const slide3Intro = isIt
+  const slide5Intro = isIt
     ? `La priorità principale di ${resolvedCompanyName} è ${top1?.name ?? "–"}`
       + (top2 ? ` seguita da ${top2.name}` : "")
       + `, evidenziando il valore di ESG per il business.`
@@ -671,7 +741,7 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       + (top2 ? ` followed by ${top2.name}` : "")
       + `, highlighting the value of ESG for the business.`;
 
-  // Slide 4 title — use top-2 needs (sorted by R+C desc, same order as list)
+  // Slide 6 title — use top-2 needs (sorted by R+C desc, same order as list)
   const sortedForTitle = [...data.critItems]
     .sort((a, b) => (b.rel + b.crit) - (a.rel + a.crit));
   const cleanLabel = (s: string) => s.replace(/\)+\s*$/, "").trimEnd();
@@ -680,104 +750,110 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const titleAreas = titleNeed2
     ? (isIt ? `${titleNeed1} e ${titleNeed2}` : `${titleNeed1} and ${titleNeed2}`)
     : titleNeed1;
-  const slide4Title = isIt
+  const slide6Title = isIt
     ? `${resolvedCompanyName} mostra le principali esigenze a supporto degli obiettivi di business nelle aree ${titleAreas}`
     : `${resolvedCompanyName} shows the main data needs supporting business objectives in the areas of ${titleAreas}`;
 
 
   const replacements: Record<string, string> = {
     // ── Slide 1 ──
-    "Il percorso ESG  di Erica":
+    "Il percorso ESG di Erica":
       isIt ? `Il percorso ESG di ${resolvedCompanyName}` : `The ESG journey of ${resolvedCompanyName}`,
-    "Sintesi workshop Envizi Quest data da definire WorkshopIBM Envizi Team IBM Envizi":
+    // Slide1 shape id=5: multi-paragraph (intro + date + consultant lines)
+    // The template has 5 paragraphs: "Sintesi…", date, name, role, company
+    // replaceInSlideXml concatenates all <a:t> in a txBody match then replaces
+    "Sintesi workshop Envizi Quest04 settembre 2026Felice Petrignano VESG Consultant VAbc V":
       `${isIt ? "Sintesi workshop Envizi Quest" : "Envizi Quest workshop summary"}\n${dateStr}\n${consultantStr}`,
     "Incontro di lavoro · 2026":
       `${isIt ? "Incontro di lavoro" : "Working session"} · ${new Date().getFullYear()}`,
 
     // ── Slide 2 ──
-    // (shape id=2 body is handled separately via replaceSlide2Body — see below)
-    // (shape id=3 right block is handled via replaceSlide2RightBlock — see below)
-    "(Nome Azienda) ha avviato il percorso ESG ":
-      isIt ? `${resolvedCompanyName} ha avviato il percorso ESG` : `${resolvedCompanyName} has started the ESG journey`,
-    "(qui inserisci frase e commenti su livello maturità esg)": maturityText,
-    "(qui inserisci Immagine mondo o italia o europa cona la distribuzione sedi come Nella visualizzazione in applicazione)": geoLine,
+    // Title (id=2): dynamic sentence
+    "Erica combina una presenza globale con una maturità ESG ancora iniziale": slide2Title,
+    // Stat cards — value shapes
+    // Strip trailing descriptor word from dimUnit (e.g. "€mln ricavi" → "€mln")
+    // so the card shows only the numeric value + monetary unit; the label below already carries the descriptor.
+    "€100 mln": `${data.revenue} ${data.dimUnit.replace(/\s+\S+$/, "")}`,
+    "500":      `${data.employees.toLocaleString()}`,
+    "54":       `${totalSedi}`,
+    "8":        `${activeGeoCount}`,
+    // Readiness block (id=23 label, id=24 desc)
+    "BASSA": data.maturityTitle,
+    "I dati sono pochi e frammentati. Erica cerca un sistema unico per raccoglierli, identificare i gap e organizzare le evidenze.":
+      data.maturityDesc,
+    // Reporting path block (id=27 label, id=28 desc)
+    "Report volontario CSRD-aligned": csrdStatus,
+    "Erica non rientra indicativamente nel perimetro CSRD 2026, ma vuole avvicinarsi gradualmente ai requisiti europei e rispondere alle richieste degli stakeholder.":
+      csrdDecision,
 
-    // ── Slide 3 ──
-    "La priorità di principale di (Nome Azienda) è (nome obiettivo priorità 1) seguita da (nome obiettivo priorità 2) evidenziando il valore di ESG per il business.":
-      slide3Intro,
-    // Header cells — positional: template cell order = customers(1), compliance(2), credit(3), efficiency(4), supply(5), reputation(6)
-    "N/6  Clienti e gare":                   s1.header,
-    "N/6  Compliance e reporting":            s2.header,
-    "N/6  Accesso al credito":                s3.header,
-    "N/6  Efficienza, energia e costi":       s4.header,
-    "N/6  Resilienza della supply chain":     s5.header,
-    "N/6  Reputazione e attrazione talenti":  s6.header,
-    // Note cells — same positional mapping
-    "(qui le note dell\u2019obiettivo clienti e gare con questo font, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    // ── Slide 4 (frameworks) ──
+    "Erica usa più framework e vuole aggiungere una vista strutturata sul rischio climatico":
+      isIt
+        ? `${resolvedCompanyName} usa più framework e vuole aggiungere una vista strutturata sul rischio climatico`
+        : `${resolvedCompanyName} uses multiple frameworks and wants to add a structured view on climate risk`,
+
+    // ── Slide 5 (priorities) ──
+    // Intro title
+    "La priorità principale di Nat 1 è Compliance e reporting seguita da Accesso al credito, evidenziando il valore di ESG per il business.":
+      slide5Intro,
+    // Header cells — template order by shape id (compliance=8, credito=4, clienti=6, efficienza=10, supply=12, reputazione=27)
+    "1/6  Compliance e reporting":       s1.header,
+    "2/6  Accesso al credito":           s2.header,
+    "3/6  Clienti e gare":               s3.header,
+    "4/6  Efficienza, energia e costi":  s4.header,
+    "5/6  Resilienza della supply chain": s5.header,
+    "6/6  Reputazione e attrazione dei talenti": s6.header,
+    // Note cells — template demo texts map to the same slot order
+    "Il nostro settore è sotto osservazione da parte di ESMA per il rischio di greenwashing. Il Compliance Officer ha chiesto al team ESG di dimostrare che ogni dato pubblicato è tracciabile fino alla fonte primaria. Oggi non siamo in grado di farlo.":
       s1.note,
-    "(qui le note dell\u2019obiettivo compliance e reporting  con questo font, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    "Stiamo lavorando a un\u2019emissione di green bond. Il lead arranger ci ha già richiesto un framework ESG verificabile con dati storici su emissioni ed energia. Non abbiamo ancora un sistema capace di produrre questo livello di evidenza.":
       s2.note,
-    "(qui le note dell\u2019obiettivo accesso al credito con questo font, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    "Un grande retailer europeo ci ha notificato che dal 2025 tutti i fornitori dovranno dichiarare le emissioni Scope 3 cat. 1 con dati specifici per prodotto. Oggi lavoriamo con stime spend-based che non soddisfano questo requisito.":
       s3.note,
-    "(qui le note dell\u2019obiettivo efficienza energia con questo font, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    "Il CFO ha chiesto un piano di decarbonizzazione con NPV e payback per ogni iniziativa. Non disponiamo di una baseline energetica affidabile per sito, né di un sistema che aggreghi consumi, costi e produzioni per calcolare l\u2019intensità emissiva.":
       s4.note,
-    "(qui le note dell\u2019obiettivo supply chain con questo font, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    "Scope 3 cat. 1 e 2 valgono il 65% della nostra impronta totale. I principali fornitori non inviano dati strutturati: riceviamo PDF e allegati e-mail che non riusciamo a riconciliare. Un cliente chiave ci ha già chiesto un piano di riduzione Scope 3.":
       s5.note,
-    "(qui le note dell\u2019obiettivo reputazione e talenti, se il testo supera questo blocco tagliare, non mostrare riquadro tratteggio) ":
+    "Abbiamo perso tre candidati senior in favore di competitor che comunicano obiettivi di Net Zero con dati verificabili. Il nostro employer branding ESG è percepito come generico. I neolaureati STEM chiedono di vedere metriche reali prima di accettare un\u2019offerta.":
       s6.note,
 
-    // ── Slide 4 ──
-    // (shape id=13 title font is reduced via reduceSlide4TitleFont)
-    // (shape id=15 list is replaced via replaceSlide4NeedsList)
-    "(nome azienda)  mostra le principali esigenze a supporto degli obiettivi di business nelle aree (inserire prima esigenza) ":
-      slide4Title,
-
-    // ── Common (logo / ignored placeholders) ──
-    "(qui il logo di nome azienda se caricato) ": "",
-    "(qui il logo di nome azienda se caricato)":  "",
+    // ── Slide 6 (needs) ──
+    // (shape id=13 title font is reduced via reduceSlide6TitleFont)
+    // (shape id=15 list is replaced via replaceSlide6NeedsList)
+    // The title text is replaced via find-replace on the demo text:
+    "Nat 1 mostra le principali esigenze a supporto degli obiettivi di business nelle aree Registro delle modifiche e audit trail per ogni dato ESG e Scenari previsionali che mostrino traiettorie, gap e impatto degli investimenti ESG":
+      slide6Title,
   };
 
-  // ── Slide 3 icon remapping ──────────────────────────────────────────────────
-  // The template has 6 icon pictures fixed in 6 slots (reading order: slot1..6).
-  // Each slot has a fixed rId pointing to the icon for the original priority order.
-  // When the user reorders priorities we must remap rId values so each slot shows
-  // the icon matching the priority now in that position.
+  // ── Slide 5 icon remapping ──────────────────────────────────────────────────
+  // Slide5 has 6 icon pictures in fixed slots. The template demo order is:
+  //   slot1=compliance (rId7, id=68), slot2=credito (rId8, id=69),
+  //   slot3=clienti    (rId9, id=70), slot4=efficienza (rId4, id=60),
+  //   slot5=supply     (rId5, id=61), slot6=reputazione (rId6, id=66)
   //
-  // Slot → original priority key (template order):
-  //   slot1=customers  slot2=credit  slot3=compliance
-  //   slot4=efficiency slot5=reputation slot6=supply
-  //
-  // Icon pic ids (sorted by y then x = reading order):
-  //   slot1=id33(rId7) slot2=id35(rId8) slot3=id37(rId9)
-  //   slot4=id31(rId4) slot5=id24(rId5) slot6=id29(rId6)
-  //
-  // Priority key → original rId that carries its icon:
+  // Priority key → original rId that carries its icon (slide5 rels):
   const PRIO_KEY_TO_RID: Record<string, string> = {
-    "Clienti e gare":                    "rId7",
-    "Compliance e reporting":            "rId9",
-    "Accesso al credito":                "rId8",
-    "Efficienza, energia e costi":       "rId4",
-    "Resilienza della supply chain":     "rId6",
-    "Reputazione e attrazione dei talenti": "rId5",
+    "Compliance e reporting":               "rId7",
+    "Accesso al credito":                   "rId8",
+    "Clienti e gare":                       "rId9",
+    "Efficienza, energia e costi":          "rId4",
+    "Resilienza della supply chain":        "rId5",
+    "Reputazione e attrazione dei talenti": "rId6",
     // EN keys
-    "Customers and tenders":             "rId7",
-    "Compliance and reporting":          "rId9",
+    "Compliance and reporting":          "rId7",
     "Access to finance":                 "rId8",
+    "Customers and tenders":             "rId9",
     "Efficiency, energy and cost":       "rId4",
-    "Supply-chain resilience":           "rId6",
-    "Reputation and talent attraction":  "rId5",
+    "Supply-chain resilience":           "rId5",
+    "Reputation and talent attraction":  "rId6",
   };
 
-  // Slot pic ids in reading order left→center→right, top→bottom:
-  //   slot1(top-left  x=26 ): id=33 rId7 → Clienti e gare
-  //   slot2(top-center x=446): id=37 rId9 → Compliance
-  //   slot3(top-right x=890): id=35 rId8 → Accesso al credito
-  //   slot4(bot-left  x=13 ): id=31 rId4 → Efficienza
-  //   slot5(bot-center x=452): id=29 rId6 → Supply chain
-  //   slot6(bot-right x=883): id=24 rId5 → Reputazione
-  const SLOT_PIC_IDS = [33, 37, 35, 31, 29, 24];
+  // Slot pic ids in template order (slot1..slot6):
+  //   slot1=id68(rId7/compliance) slot2=id69(rId8/credito) slot3=id70(rId9/clienti)
+  //   slot4=id60(rId4/efficienza) slot5=id61(rId5/supply)  slot6=id66(rId6/reputazione)
+  const SLOT_PIC_IDS = [68, 69, 70, 60, 61, 66];
 
-  function remapSlide3Icons(xml: string): string {
+  function remapSlide5Icons(xml: string): string {
     const desiredRIds: string[] = [];
     for (let rank = 1; rank <= 6; rank++) {
       const item = prioAtRank(data.prioItems, rank);
@@ -785,17 +861,15 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       desiredRIds.push(rId ?? "");
     }
 
-    // Original rId for each slot (same reading order as SLOT_PIC_IDS)
-    const SLOT_ORIGINAL_RIDS = ["rId7", "rId9", "rId8", "rId4", "rId6", "rId5"];
+    // Original rId for each slot (same order as SLOT_PIC_IDS)
+    const SLOT_ORIGINAL_RIDS = ["rId7", "rId8", "rId9", "rId4", "rId5", "rId6"];
 
-    // For each slot, replace the r:embed of its pic shape
     SLOT_PIC_IDS.forEach((picId, slotIdx) => {
       const desired = desiredRIds[slotIdx];
-      if (!desired) return; // no priority at this rank, leave as-is
+      if (!desired) return;
       const original = SLOT_ORIGINAL_RIDS[slotIdx];
-      if (desired === original) return; // already correct
+      if (desired === original) return;
 
-      // Replace r:embed inside this specific pic shape
       const pattern = new RegExp(
         `(<p:pic>(?:(?!<p:pic>)[\\s\\S])*?<p:cNvPr[^>]*\\bid="${picId}"[\\s\\S]*?r:embed=")([^"]+)(")`
       );
@@ -808,15 +882,8 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   // ── Generate matrix PNG for slide 4 ───────────────────────────────────────
   const matrixPng = generateMatrixPng(data.critItems, isIt);
 
-  // ── Generate map PNG ───────────────────────────────────────────────────────
-  const market = (() => {
-    if (data.marketLabel === "Solo Italia" || data.marketLabel === "Italy only") return "italia";
-    if (data.marketLabel === "Europa" || data.marketLabel === "Europe") return "europa";
-    return "mondo";
-  })();
-  const totalSitesForMap = totalSedi;
-  const geoDistribForMap = geo ?? {};
-  const mapPng = await generateMapPng(market, geoDistribForMap, totalSitesForMap, resolvedCompanyName, siteTableCountsForMap);
+  // ── Generate company slide PNG ──────────────────────────────────────────────
+  const companySlidePng = await generateCompanySlidePng(data, isIt);
 
   // Fetch the new template (cache-bust to avoid stale file)
   const res = await fetch(`./Envizi-Report-template.pptx?v=${Date.now()}`);
@@ -824,58 +891,7 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   const buf = await res.arrayBuffer();
   const zip = await JSZip.loadAsync(buf);
 
-  // ── Inject map into slide 2 ────────────────────────────────────────────────
-  if (mapPng) {
-    const mapB64 = mapPng.split(",")[1];
-    const mapBytes = Uint8Array.from(atob(mapB64), c => c.charCodeAt(0));
-    zip.file("ppt/media/map_slide2.png", mapBytes);
-
-    // Register content type if not already present
-    const ctFile2 = zip.file("[Content_Types].xml");
-    if (ctFile2) {
-      let ctXml2 = await ctFile2.async("string");
-      if (!ctXml2.includes('Extension="png"')) {
-        ctXml2 = ctXml2.replace("</Types>", `<Default Extension="png" ContentType="image/png"/></Types>`);
-        zip.file("[Content_Types].xml", ctXml2);
-      }
-    }
-
-    // Add relationship to slide 2
-    const mapRid = "rId98";
-    const s2RelsPath = "ppt/slides/_rels/slide2.xml.rels";
-    const s2RelsFile = zip.file(s2RelsPath);
-    if (s2RelsFile) {
-      let relsXml = await s2RelsFile.async("string");
-      if (!relsXml.includes(mapRid)) {
-        relsXml = relsXml.replace(
-          "</Relationships>",
-          `<Relationship Id="${mapRid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/map_slide2.png"/></Relationships>`
-        );
-        zip.file(s2RelsPath, relsXml);
-      }
-    }
-
-    // Replace the map placeholder shape (id=5) in slide 2 with a <p:pic>
-    const s2File = zip.file("ppt/slides/slide2.xml");
-    if (s2File) {
-      let s2Xml = await s2File.async("string");
-      // id=5 is the map placeholder: x=867*9144, y=455*9144, w=419*9144, h=106*9144
-      // Use wider/taller bounds to show the map properly — keep same x,y but expand h
-      const MAP_X  = 7927848;   // 867pt
-      const MAP_Y  = 4160520;   // 455pt
-      const MAP_CX = 3831336;   // 419pt
-      const MAP_CY = 2743200;   // 300pt (taller than original 106pt for better map display)
-      const mapPicXml = `<p:pic><p:nvPicPr><p:cNvPr id="998" name="map_slide2"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${mapRid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${MAP_X}" y="${MAP_Y}"/><a:ext cx="${MAP_CX}" cy="${MAP_CY}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`;
-      // Remove old placeholder shape id=5
-      s2Xml = s2Xml.replace(
-        /<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="5"[^>]*>[\s\S]*?<\/p:sp>/,
-        mapPicXml
-      );
-      zip.file("ppt/slides/slide2.xml", s2Xml);
-    }
-  }
-
-  // ── Inject matrix PNG into slide 4 ────────────────────────────────────────
+  // ── Save matrix PNG to media (used in slide6) ────────────────────────────────
   if (matrixPng) {
     const mB64 = matrixPng.split(",")[1];
     const mBytes = Uint8Array.from(atob(mB64), c => c.charCodeAt(0));
@@ -890,21 +906,7 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
         zip.file("[Content_Types].xml", ctXmlM);
       }
     }
-
-    // Add relationship to slide 4
-    const matrixRid = "rId97";
-    const s4RelsPath = "ppt/slides/_rels/slide4.xml.rels";
-    const s4RelsFile = zip.file(s4RelsPath);
-    if (s4RelsFile) {
-      let relsXml = await s4RelsFile.async("string");
-      if (!relsXml.includes(matrixRid)) {
-        relsXml = relsXml.replace(
-          "</Relationships>",
-          `<Relationship Id="${matrixRid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/matrix_slide4.png"/></Relationships>`
-        );
-        zip.file(s4RelsPath, relsXml);
-      }
-    }
+    // The rId registration and picture rId update for slide6 are done in the slide loop below.
   }
 
   // ── Inject company logo into PPTX ──────────────────────────────────────────
@@ -932,8 +934,11 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       }
     }
 
-    // Add relationship to each slide's .rels file and replace logo placeholder shape
-    for (let i = 1; i <= 4; i++) {
+    // Add relationship to each slide's .rels file and replace logo placeholder shape.
+    // The new template has logo_placeholder shape (id=99) in slide1, and
+    // logo_company pictures (already embedded) in slides 5 and 6 — update their rId.
+    // Slides 2,3,4 don't have a logo placeholder in the new template.
+    for (const i of [1, 2, 5, 6]) {
       const relsPath = `ppt/slides/_rels/slide${i}.xml.rels`;
       const relsFile = zip.file(relsPath);
       if (!relsFile) continue;
@@ -941,7 +946,6 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
 
       // Add new relationship for logo
       const logoRid = "rId99";
-      const contentType = `image/${ext === "jpg" ? "jpeg" : ext}`;
       if (!relsXml.includes(logoRid)) {
         relsXml = relsXml.replace(
           "</Relationships>",
@@ -950,72 +954,107 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
         zip.file(relsPath, relsXml);
       }
 
-      // Replace the logo placeholder shape with a <p:pic>
-      // The placeholder shape has text "(qui il logo di nome azienda se caricato)"
-      // We replace the entire <p:sp> with a <p:pic> at the same position
       const slideFile = zip.file(`ppt/slides/slide${i}.xml`);
       if (!slideFile) continue;
       let slideXml = await slideFile.async("string");
 
-      // Find the logo sp and extract its position
-      const logoSpMatch = slideXml.match(
-        /<p:sp>(?:(?!<p:sp>)[\s\S])*?qui il logo di nome azienda[\s\S]*?<\/p:sp>/
-      );
-      if (logoSpMatch) {
-        const spXml = logoSpMatch[0];
-        const offM = spXml.match(/<a:off x="(\d+)" y="(\d+)"/);
-        const extM = spXml.match(/<a:ext cx="(\d+)" cy="(\d+)"/);
-        if (offM && extM) {
-          const lx = offM[1];
-          const ly = offM[2];
-          const lcx = extM[1];
-          const lcy = extM[2];
-          const picXml = `<p:pic><p:nvPicPr><p:cNvPr id="999" name="logo_company"/><p:cNvPicPr/><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${logoRid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${lx}" y="${ly}"/><a:ext cx="${lcx}" cy="${lcy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`;
-          slideXml = slideXml.replace(logoSpMatch[0], picXml);
-          zip.file(`ppt/slides/slide${i}.xml`, slideXml);
-        }
+      if (i === 1) {
+        // Slide1: the template already has a logo picture (id=109, rId4).
+        // Point its r:embed to the company logo and remove the empty logo_placeholder
+        // shape (id=99) to avoid having two overlapping logo elements.
+        slideXml = slideXml.replace(
+          /(<p:pic>(?:(?!<p:pic>)[\s\S])*?<p:cNvPr[^>]*\bid="109"[^>]*>[\s\S]*?r:embed=")([^"]+)(")/,
+          `$1${logoRid}$3`
+        );
+        slideXml = slideXml.replace(
+          /<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="99"[^>]*>[\s\S]*?<\/p:sp>/,
+          ""
+        );
+        zip.file(`ppt/slides/slide${i}.xml`, slideXml);
+      } else {
+        // Slides 2,5,6: replace existing logo_company picture's rId with the new one
+        // The picture is named "logo_company" in the template
+        slideXml = slideXml.replace(
+          /(<p:pic>(?:(?!<p:pic>)[\s\S])*?<p:cNvPr[^>]*\bname="logo_company"[^>]*>[\s\S]*?r:embed=")([^"]+)(")/,
+          `$1${logoRid}$3`
+        );
+        zip.file(`ppt/slides/slide${i}.xml`, slideXml);
       }
     }
   }
 
-  // Process each slide XML
-  for (let i = 1; i <= 4; i++) {
+  // Process each slide XML — new template has 7 slides:
+  //   slide1=cover, slide2=company profile, slide3=geo table (static),
+  //   slide4=frameworks (title has company name), slide5=priorities, slide6=needs list,
+  //   slide7=next steps (static)
+  // We process slides 1, 2, 3, 4, 5, 6 (the dynamic ones).
+  for (const i of [1, 2, 3, 4, 5, 6]) {
     const path = `ppt/slides/slide${i}.xml`;
     const file = zip.file(path);
     if (!file) continue;
     let xmlStr = await file.async("string");
-    // Slide 2: replace shape id=2 body (left block) and id=3 (right block)
+
+    // Slide 2: fix readiness label font size (id=23 has sz=2850 in template, align to sz=2025)
     if (i === 2) {
-      xmlStr = replaceSlide2Body(xmlStr, slide2Lines);
-      if (slide2RightLines.length > 0) {
-        xmlStr = replaceSlide2RightBlock(xmlStr, slide2RightLines);
-      }
+      xmlStr = fixSlide2ReadinessFont(xmlStr);
     }
-    // Slide 4: reduce title font + replace left-column needs list + inject matrix PNG
-    if (i === 4) {
-      xmlStr = reduceSlide4TitleFont(xmlStr);
-      xmlStr = replaceSlide4NeedsList(xmlStr, data.critItems, isIt);
-      // Remove all old matrix-area shapes (id=16,17,18,19,20,21,22,24,27,29,30,31,32,33,35,36)
-      xmlStr = removeShapesById(xmlStr, [16, 17, 18, 19, 20, 21, 22, 24, 27, 29, 30, 31, 32, 33, 36]);
-      // Also remove the connector (id=35) — it's a <p:cxnSp>, handle separately
-      xmlStr = xmlStr.replace(/<p:cxnSp>(?:(?!<p:cxnSp>)[\s\S])*?<p:cNvPr[^>]*\bid="35"[^>]*>[\s\S]*?<\/p:cxnSp>/, "");
-      // Inject matrix PNG if generated
+
+    // Slide 3: replace company name in subtitle (id=3) directly to avoid substring collision
+    // with the "54" stat-card placeholder which gets substituted first by replaceInSlideXml.
+    if (i === 3) {
+      const slide3Subtitle = isIt
+        ? `Evidenza raccolta sulle ${totalSedi} sedi di ${resolvedCompanyName}`
+        : `Evidence collected across ${totalSedi} sites of ${resolvedCompanyName}`;
+      xmlStr = xmlStr.replace(
+        /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="3"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
+        (_, pre, post) => {
+          const rPr = `<a:rPr sz="1200" b="0"><a:solidFill><a:srgbClr val="4D6D67"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+          const newTxBody = `<p:txBody><a:bodyPr><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(slide3Subtitle)}</a:t></a:r></a:p></p:txBody>`;
+          return `${pre}${newTxBody}${post}`;
+        }
+      );
+    }
+
+    // Slide 5: remap priority icons to match user priority order
+    if (i === 5) {
+      xmlStr = remapSlide5Icons(xmlStr);
+    }
+
+    // Slide 6: reduce title font, run text replacements, then write the needs list last
+    // so replaceInSlideXml cannot corrupt the already-built paragraph structure.
+    if (i === 6) {
+      xmlStr = reduceSlide6TitleFont(xmlStr);
+      // Update the matrix picture rId to point to the newly generated matrix PNG
       if (matrixPng) {
         const matrixRid = "rId97";
-        // Position = shape id=16 bounding box: x=4274289, y=1499190, cx=7176976, cy=4742121
-        const MX = 4274289, MY = 1499190, MCX = 7176976, MCY = 4742121;
-        const picXml = `<p:pic><p:nvPicPr><p:cNvPr id="997" name="matrix_slide4"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="${matrixRid}"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${MX}" y="${MY}"/><a:ext cx="${MCX}" cy="${MCY}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>`;
-        // Insert the pic before </p:spTree>
-        xmlStr = xmlStr.replace("</p:spTree>", picXml + "</p:spTree>");
+        // Add relationship for matrix to slide6
+        const s6RelsPath = "ppt/slides/_rels/slide6.xml.rels";
+        const s6RelsFile = zip.file(s6RelsPath);
+        if (s6RelsFile) {
+          let relsXml = await s6RelsFile.async("string");
+          if (!relsXml.includes(matrixRid)) {
+            relsXml = relsXml.replace(
+              "</Relationships>",
+              `<Relationship Id="${matrixRid}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/matrix_slide4.png"/></Relationships>`
+            );
+            zip.file(s6RelsPath, relsXml);
+          }
+        }
+        // Replace the existing matrix picture rId (rId4 in template) with rId97
+        xmlStr = xmlStr.replace(
+          /(<p:pic>(?:(?!<p:pic>)[\s\S])*?<p:cNvPr[^>]*\bname="matrix_slide4"[^>]*>[\s\S]*?r:embed=")([^"]+)(")/,
+          `$1${matrixRid}$3`
+        );
       }
     }
-    // Slide 3: remove empty overlay rectangles + remap icons to match user priority order
-    if (i === 3) {
-      xmlStr = removeShapesById(xmlStr, [11, 13, 18, 20, 21, 22, 26, 38, 41, 43, 45, 47, 49]);
-      xmlStr = remapSlide3Icons(xmlStr);
-    }
+
+    // Run generic text replacements before needs list so the list paragraphs are written last
+    // and cannot be corrupted by replaceInSlideXml's txBody-level pass.
     const updated = replaceInSlideXml(xmlStr, replacements);
-    zip.file(path, updated);
+
+    // Slide 6: write needs list after replaceInSlideXml to preserve paragraph structure
+    const final = i === 6 ? replaceSlide6NeedsList(updated, data.critItems, isIt) : updated;
+    zip.file(path, final);
   }
 
   // Generate and download
