@@ -1000,9 +1000,23 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
 
     // ── Slide 4 (frameworks) ──
     "Erica usa più framework e vuole aggiungere una vista strutturata sul rischio climatico":
-      isIt
-        ? `${resolvedCompanyName} usa più framework e vuole aggiungere una vista strutturata sul rischio climatico`
-        : `${resolvedCompanyName} uses multiple frameworks and wants to add a structured view on climate risk`,
+      (() => {
+        const fwChecks = data.frameworkChecks ?? {};
+        const inUsoCount = Object.values(fwChecks).filter(f => f.inUso).length;
+        if (inUsoCount === 0) {
+          return isIt
+            ? `${resolvedCompanyName} non usa ancora framework ESG strutturati e vuole iniziare a impostare una base di riferimento`
+            : `${resolvedCompanyName} does not yet use structured ESG frameworks and wants to start building a reference baseline`;
+        } else if (inUsoCount === 1) {
+          return isIt
+            ? `${resolvedCompanyName} usa un framework ESG e vuole allineare le risposte in modo coerente`
+            : `${resolvedCompanyName} uses one ESG framework and wants to align responses in a coherent way`;
+        } else {
+          return isIt
+            ? `${resolvedCompanyName} usa più framework ESG e vuole allineare le risposte in modo coerente`
+            : `${resolvedCompanyName} uses multiple ESG frameworks and wants to align responses in a coherent way`;
+        }
+      })(),
 
     // ── Slide 5 (priorities) ──
     // Intro title
