@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import * as ReactDOM from "react-dom/client";
 import { SummarySlideViewer } from "./screens/SummarySlideViewer";
 import { generateTemplatePptx, generateTemplatePptxBuffer } from "./generateTemplatePptx";
 import type { Language, Profile, Screen, Market, EsgReadiness, SectorKey, Priority, Outcome, DFRating } from "./types";
@@ -321,8 +322,6 @@ export default function Home(){
   const reset=()=>{setScreenState("onboarding");setScreenHistory([]);setProfile(null);setTrustScore(30);localStorage.removeItem("envizi-quest-trust-score")};
   useEffect(()=>{let button=document.getElementById("envizi-global-back") as HTMLButtonElement|null;if(!button){button=document.createElement("button");button.id="envizi-global-back";button.className="globalBack";button.type="button";document.body.appendChild(button)}button.innerHTML=`← <span>${language==="it"?"Indietro":"Back"}</span>`;button.disabled=!screenHistory.length;button.setAttribute("aria-label",language==="it"?"Torna alla pagina precedente":"Go back one page");const handleBack=()=>goBack();button.addEventListener("click",handleBack);return()=>button?.removeEventListener("click",handleBack)},[language,screenHistory]);
   useEffect(()=>()=>{document.getElementById("envizi-global-back")?.remove()},[]);
-  useEffect(()=>{let badge=document.getElementById("envizi-bob-badge");if(!badge){badge=document.createElement("div");badge.id="envizi-bob-badge";badge.className="bobBadge";badge.innerHTML=`<img src="./ibm-bob-logo.svg" alt="IBM Bob"/><span>Sviluppato con IBM Bob</span>`;document.body.appendChild(badge)}return()=>{};},[]);
-  useEffect(()=>()=>{document.getElementById("envizi-bob-badge")?.remove()},[]);
   const ALL_SCREENS:Screen[]=["cover","welcome","onboarding","approach","chapterMap","sectionIntro1","questIntro","blank1","p10Slideshow","approachIntro","approachSteps","approachData","approachDecisions","approachRoadmap","approachTrust","approachReport","intro","separatorNext","approachStepsCopy","companySetup","company","priorities","approachDataCopy","priorityData","priorityMatrix","ilTuoReport","chapterOneSummary","esgStrategist","challengeSeparator1","missionCard1","introCopy","roadmapPreview","bridge","missions","briefing","missionIntro","introCopy2","asis","compare","trust","tobe","negative","success","milestone","dataFoundation","dfConclusion","challengeComplete1","challengeSeparator2","missionCard2","energyFoundation","energyConclusion","challengeComplete2","challengeSeparator3","missionCard3","supplyFoundation","supplyConclusion","challengeComplete3","challengeSeparator4","missionCard4","planningFoundation","planningConclusion","challengeComplete4","challengeSeparator5","missionCard5","frameworkFoundation","frameworkConclusion","challengeComplete5","challengeSeparator6","missionCard6","reportingFoundation","reportingConclusion","challengeComplete6","summary","nextStep","thankYou"];
   const currentPageNum=ALL_SCREENS.indexOf(screen)+1||1;
   useEffect(()=>{let el=document.getElementById("envizi-page-num");if(!el){el=document.createElement("div");el.id="envizi-page-num";el.className="pageNum";document.body.appendChild(el)}el.textContent=`${String(currentPageNum).padStart(2,"0")} · ${screen}`;el.style.display="flex";},[screen,currentPageNum]);
@@ -346,14 +345,56 @@ export default function Home(){
   const [csrdNoteDraft,setCsrdNoteDraft]=useState("");
   const [prioExpMode,setPrioExpMode]=useState<"scratch"|"scenario">("scratch");
   const [saveBtnName,setSaveBtnName]=useState(questName);
-  const renderSaveBtn=(isIt:boolean)=>{
-    if(!saveBtnOpen)return <button className="saveBtnTrigger" onClick={()=>setSaveBtnOpen(true)}>{isIt?"💾 Salva progressi":"💾 Save progress"}</button>;
-    return <div className="saveBtnBox">
-      <input className="saveBtnInput" type="text" placeholder={isIt?"Nome sessione...":"Session name..."} value={saveBtnName} onChange={e=>setSaveBtnName(e.target.value)}/>
-      <button className="saveBtnConfirm" onClick={()=>{saveQuest(saveBtnName);setQuestName(saveBtnName);setSaveBtnOpen(false);}} disabled={!saveBtnName.trim()}>{isIt?"Salva":"Save"}</button>
-      <button className="saveBtnCancel" onClick={()=>setSaveBtnOpen(false)}>✕</button>
-    </div>;
-  };
+  // Sincronizza il nome con questName ogni volta che questName cambia (es. dopo load)
+  useEffect(()=>{ setSaveBtnName(questName); },[questName]);
+  const renderSaveBtn=(_isIt:boolean)=>null; // mantenuto per compatibilità — l'overlay è globale
+
+  // Overlay globale save — div fisso su document.body, fuori dal root scalato
+  // Viene montato/aggiornato via useEffect ogni volta che lo stato cambia
+  useEffect(()=>{
+    if(!profile) return;
+    let container=document.getElementById("envizi-save-overlay");
+    if(!container){
+      container=document.createElement("div");
+      container.id="envizi-save-overlay";
+      document.body.appendChild(container);
+    }
+    const root=(container as any).__saveRoot||(()=>{
+      const r=ReactDOM.createRoot(container!);
+      (container as any).__saveRoot=r;
+      return r;
+    })();
+    root.render(
+      <div className="globalSaveOverlay">
+        {!saveBtnOpen
+          ? <button className="globalSaveTrigger" onClick={()=>{setSaveBtnName(questName||"");setSaveBtnOpen(true);}}>Save</button>
+          : <div className="globalSaveBox">
+              <input
+                className="globalSaveInput"
+                type="text"
+                maxLength={20}
+                size={8}
+                value={saveBtnName}
+                onChange={e=>setSaveBtnName(e.target.value.slice(0,20))}
+                onKeyDown={e=>{if(e.key==="Enter"&&saveBtnName.trim()){saveQuest(saveBtnName);setQuestName(saveBtnName);setSaveBtnOpen(false);}if(e.key==="Escape")setSaveBtnOpen(false);}}
+                autoFocus
+              />
+              <button className="globalSaveConfirm" disabled={!saveBtnName.trim()} onClick={()=>{saveQuest(saveBtnName);setQuestName(saveBtnName);setSaveBtnOpen(false);}}>Save</button>
+              <button className="globalSaveCancel" onClick={()=>setSaveBtnOpen(false)}>✕</button>
+            </div>
+        }
+      </div>
+    );
+    return ()=>{};
+  },[profile,saveBtnOpen,saveBtnName,questName]);
+
+  // Rimuovi overlay quando il profilo viene rimosso (reset)
+  useEffect(()=>{
+    if(!profile){
+      const c=document.getElementById("envizi-save-overlay");
+      if(c){(c as any).__saveRoot?.unmount?.();c.remove();}
+    }
+  },[profile]);
   const move=(index:number,direction:-1|1)=>{const next=[...priorities];const target=index+direction;if(target<0||target>=next.length)return;[next[index],next[target]]=[next[target],next[index]];setPriorities(next)};
   const saveOutcome=(outcome:Outcome)=>{const next={...missionOutcomes,[selectedMission]:outcome};setMissionOutcomes(next);localStorage.setItem("envizi-quest-roadmap",JSON.stringify(next))};
   const moveMission=(position:number,direction:-1|1)=>{const target=position+direction;if(target<0||target>=missionOrder.length)return;const next=[...missionOrder];[next[position],next[target]]=[next[target],next[position]];setMissionOrder(next);localStorage.setItem("envizi-quest-mission-order",JSON.stringify(next))};
