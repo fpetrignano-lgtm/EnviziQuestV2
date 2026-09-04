@@ -1,8 +1,9 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { reportRefreshPlugin } from "./vite-plugin-report-refresh";
 
 export default defineConfig(({ command }) => ({
   base: command === "build" ? "/EnviziQuestV2/" : "/",
-  plugins: [react()],
+  plugins: [react(), reportRefreshPlugin()],
   build: { chunkSizeWarningLimit: 700 },
 }));

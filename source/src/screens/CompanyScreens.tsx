@@ -162,6 +162,8 @@ interface CompanySetupProps extends CommonProps {
   setParticipantRole: (v: string) => void;
   participantCompany: string;
   setParticipantCompany: (v: string) => void;
+  businessUnit: string;
+  setBusinessUnit: (v: string) => void;
   reportingPath: 0|1|2|3|4|5;
   setReportingPath: (v: 0|1|2|3|4|5) => void;
 }
@@ -174,6 +176,7 @@ export function CompanySetupScreen({
   workshopDate, setWorkshopDate, consultantName, setConsultantName,
   companyLogo, setCompanyLogo,
   participantRole, setParticipantRole, participantCompany, setParticipantCompany,
+  businessUnit, setBusinessUnit,
   reportingPath, setReportingPath,
 }: CompanySetupProps) {
   const isIt = language === "it";
@@ -276,7 +279,7 @@ export function CompanySetupScreen({
             <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
             <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
             <div className="csField"><label>{isIt?"Ruolo":"Role"}</label><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></div>
-            <div className="csField"><label>{isIt?"Società":"Company"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={participantCompany} onChange={e=>setParticipantCompany(e.target.value)}/></div>
+            <div className="csField"><label>Business Unit</label><input className="csInput" type="text" placeholder={isIt?"Es. Operations":"E.g. Operations"} value={businessUnit} onChange={e=>setBusinessUnit(e.target.value)}/></div>
           </div>
           <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
         </div>
@@ -440,12 +443,64 @@ export function CompanyScreen({
           nordamerica:"./mappe/nordamerica.png",sudamerica:"./mappe/sudamerica.png",
           asia:"./mappe/asia.png",africa:"./mappe/africa.png",australia:"./mappe/australia.png",
         };
+        const opsLabelIt = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
+        const opsLabelEn = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
         const siteRowDefs2:{key:SiteRowKey,label:{it:string,en:string},color:string}[] = [
-          {key:"uffici",   label:{it:"Uffici",en:"Offices"},       color:"#7ab8d8"},
-          {key:"ops",      label:{it:"Operativo",en:"Operational"},color:"#72c4a0"},
-          {key:"datacenter",label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
-          {key:"altro",    label:{it:"Altro",en:"Other"},          color:"#e8a84a"},
+          {key:"uffici",    label:{it:"Uffici",en:"Offices"},            color:"#7ab8d8"},
+          {key:"ops",       label:{it:opsLabelIt,en:opsLabelEn},         color:"#72c4a0"},
+          {key:"datacenter",label:{it:"Data center",en:"Data centres"},  color:"#b08adc"},
+          {key:"altro",     label:{it:"Altro",en:"Other"},               color:"#e8a84a"},
         ];
+
+        // Icone SVG inline per tipo sede (viewBox 0 0 20 20)
+        const GEO_ICON_PATH: Record<SiteRowKey, JSX.Element> = {
+          uffici: (
+            <svg viewBox="0 0 20 20" width="18" height="18">
+              {/* edificio uffici */}
+              <rect x="3" y="7" width="14" height="11" fill="currentColor" opacity=".25" rx="1"/>
+              <rect x="3" y="7" width="14" height="11" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/>
+              <polygon points="1,8 10,1 19,8" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+              <rect x="8" y="12" width="4" height="6" fill="currentColor" opacity=".5"/>
+              <rect x="4.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/>
+              <rect x="12.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/>
+            </svg>
+          ),
+          ops: (
+            <svg viewBox="0 0 20 20" width="18" height="18">
+              {/* capannone industriale */}
+              <rect x="2" y="9" width="16" height="9" fill="currentColor" opacity=".2" rx="1"/>
+              <rect x="2" y="9" width="16" height="9" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/>
+              <path d="M2,9 L10,3 L18,9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+              <rect x="4" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/>
+              <rect x="12.5" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/>
+              <rect x="8.5" y="4" width="3" height="2" fill="currentColor" opacity=".5" rx=".3"/>
+              {/* camino */}
+              <rect x="14" y="6" width="2" height="4" fill="currentColor" opacity=".6" rx=".3"/>
+            </svg>
+          ),
+          datacenter: (
+            <svg viewBox="0 0 20 20" width="18" height="18">
+              {/* rack server */}
+              <rect x="3" y="2" width="14" height="16" fill="currentColor" opacity=".15" rx="1.5"/>
+              <rect x="3" y="2" width="14" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1.5"/>
+              <rect x="4.5" y="4" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
+              <rect x="4.5" y="8.5" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
+              <rect x="4.5" y="13" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
+              <circle cx="14" cy="5.5" r="1" fill="currentColor" opacity=".8"/>
+              <circle cx="14" cy="10" r="1" fill="currentColor" opacity=".8"/>
+              <circle cx="14" cy="14.5" r="1" fill="currentColor" opacity=".8"/>
+            </svg>
+          ),
+          altro: (
+            <svg viewBox="0 0 20 20" width="18" height="18">
+              {/* pin mappa */}
+              <path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="currentColor" opacity=".25"/>
+              <path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="none" stroke="currentColor" strokeWidth="1.4"/>
+              <circle cx="10" cy="8" r="2.5" fill="currentColor" opacity=".7"/>
+            </svg>
+          ),
+        };
+
         const activeGeos = GEO_KEYS.filter(g=>
           (["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0)
         );
@@ -453,15 +508,44 @@ export function CompanyScreen({
         return (
           <div className="geoMapsGrid">
             {activeGeos.map(g=>{
-              const chips = siteRowDefs2.filter(d=>(siteTable[d.key][g]??0)>0);
+              const activeRows = siteRowDefs2.filter(d=>(siteTable[d.key][g]??0)>0);
+              const iconW = 32; // px per icona nel badge
               return (
                 <div key={g} className="geoMapCard">
-                  <div className="geoMapImgWrap">
+                  <div className="geoMapImgWrap" style={{position:"relative"}}>
                     <img className="geoMapSvg" src={GEO_IMGS[g]} alt={GEO_LABELS[g].it}/>
+                    {/* overlay icone — colonna verticale sul lato sinistro */}
+                    <div style={{
+                      position:"absolute",inset:0,
+                      display:"flex",alignItems:"center",justifyContent:"flex-start",
+                      padding:"0 0 0 6px",
+                      pointerEvents:"none",
+                    }}>
+                      <div style={{
+                        display:"flex",flexDirection:"column",gap:"3px",
+                        background:"rgba(7,17,14,.72)",
+                        borderRadius:"8px",
+                        padding:"5px 5px",
+                        border:"1px solid rgba(255,255,255,.12)",
+                        boxShadow:"0 2px 10px rgba(0,0,0,.5)",
+                      }}>
+                        {activeRows.map(d=>(
+                          <div key={d.key} style={{
+                            display:"flex",flexDirection:"row",alignItems:"center",gap:"4px",
+                            color:d.color,
+                          }}>
+                            {GEO_ICON_PATH[d.key]}
+                            <span style={{fontSize:"11px",fontWeight:700,lineHeight:1,fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".04em",minWidth:"12px"}}>
+                              {siteTable[d.key][g]}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                   <div className="geoMapLabel">{isIt?GEO_LABELS[g].it:GEO_LABELS[g].en}</div>
                   <div className="geoMapIcons">
-                    {chips.map(d=>(
+                    {activeRows.map(d=>(
                       <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color}}>
                         {isIt?d.label.it:d.label.en} · {siteTable[d.key][g]}
                       </span>
@@ -474,18 +558,25 @@ export function CompanyScreen({
         );
       })()}
       <div className="geoMapLegend">
-        {[
-          {key:"uffici"   as SiteRowKey,label:{it:"Uffici",en:"Offices"},       color:"#7ab8d8"},
-          {key:"ops"      as SiteRowKey,label:{it:"Operativo",en:"Operational"},color:"#72c4a0"},
-          {key:"datacenter" as SiteRowKey,label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
-          {key:"altro"    as SiteRowKey,label:{it:"Altro",en:"Other"},          color:"#e8a84a"},
-        ].filter(d=>(["italia","europa","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).some(g=>(siteTable[d.key][g]??0)>0))
-        .map(d=>(
-          <span key={d.key} className="geoMapLegendItem" style={{color:d.color}}>
-            <svg width={10} height={10} viewBox="0 0 10 10"><circle cx={5} cy={5} r={4} fill={d.color}/></svg>
-            {isIt?d.label.it:d.label.en}
-          </span>
-        ))}
+        {(()=>{
+          const opsLabelIt2 = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
+          const opsLabelEn2 = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
+          return [
+            {key:"uffici"    as SiteRowKey, label:{it:"Uffici",en:"Offices"},          color:"#7ab8d8"},
+            {key:"ops"       as SiteRowKey, label:{it:opsLabelIt2,en:opsLabelEn2},     color:"#72c4a0"},
+            {key:"datacenter"as SiteRowKey, label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
+            {key:"altro"     as SiteRowKey, label:{it:"Altro",en:"Other"},             color:"#e8a84a"},
+          ].filter(d=>(["italia","europa","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).some(g=>(siteTable[d.key][g]??0)>0))
+          .map(d=>(
+            <span key={d.key} className="geoMapLegendItem" style={{color:d.color}}>
+              <svg width={12} height={12} viewBox="0 0 12 12" style={{flexShrink:0}}>
+                <circle cx={6} cy={6} r={5} fill={d.color} opacity={.25}/>
+                <circle cx={6} cy={6} r={5} fill="none" stroke={d.color} strokeWidth={1.2}/>
+              </svg>
+              {isIt?d.label.it:d.label.en}
+            </span>
+          ));
+        })()}
       </div>
     </section>
   </main>;

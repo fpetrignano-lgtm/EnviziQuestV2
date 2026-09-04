@@ -1028,3 +1028,27 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// Variante che restituisce il buffer invece di scaricarlo
+export async function generateTemplatePptxBuffer(data: SummaryPptxData): Promise<ArrayBuffer> {
+  // Esegui la stessa logica ma cattura il buffer prima del download
+  // Usiamo un trick: monkey-patch temporaneo di document.createElement per intercettare il click
+  let capturedBuffer: ArrayBuffer | null = null;
+  const origClick = HTMLAnchorElement.prototype.click;
+  HTMLAnchorElement.prototype.click = function(this: HTMLAnchorElement) {
+    // intercetta: leggi il blob dal href
+    const url = this.href;
+    if (url.startsWith("blob:")) {
+      fetch(url).then(r => r.arrayBuffer()).then(buf => { capturedBuffer = buf; });
+    }
+    // NON chiamare origClick — non scaricare
+  };
+  await generateTemplatePptx(data);
+  HTMLAnchorElement.prototype.click = origClick;
+  // Attendi che il fetch del blob completi
+  for (let i = 0; i < 50 && !capturedBuffer; i++) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+  if (!capturedBuffer) throw new Error("Buffer non catturato");
+  return capturedBuffer;
+}

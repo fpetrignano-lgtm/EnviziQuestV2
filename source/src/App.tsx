@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { SummarySlideViewer } from "./screens/SummarySlideViewer";
-import { generateTemplatePptx } from "./generateTemplatePptx";
+import { generateTemplatePptx, generateTemplatePptxBuffer } from "./generateTemplatePptx";
 import type { Language, Profile, Screen, Market, EsgReadiness, SectorKey, Priority, Outcome, DFRating } from "./types";
 import { copy } from "./copy";
 import { energyModule, supplyChainModule, reportingModule, planningModule, frameworkModule } from "./modules";
 import { defaultPriorities, missionCatalog, imageFor, SECTORS, SECTOR_KEYS, DF_REQUIREMENTS, RF_REQUIREMENTS, EF_REQUIREMENTS, SC_REQUIREMENTS, PL_REQUIREMENTS, FR_REQUIREMENTS, ESG_READINESS_IT, ESG_READINESS_EN } from "./constants";
 import { ChapterMap } from "./screens/ChapterMap";
 import { QuestIntro } from "./screens/QuestIntro";
-import { Blank1 } from "./screens/Blank1";
+import { Blank1, IlTuoReport } from "./screens/Blank1";
 import { P10Slideshow } from "./screens/P10Slideshow";
 import { ApproachIntro, ApproachSteps, ApproachData, ApproachDecisions, ApproachRoadmap, ApproachTrust, ApproachReport } from "./screens/ApproachScreens";
 import { ChallengeSeparator1, ChallengeSeparator2, ChallengeSeparator3, ChallengeSeparator4, ChallengeSeparator5, ChallengeSeparator6, ChallengeComplete1, ChallengeComplete2, ChallengeComplete3, ChallengeComplete4, ChallengeComplete5, ChallengeComplete6, SectionIntroSlide } from "./screens/ChallengeScreens";
@@ -18,6 +18,8 @@ import { Compare } from "./screens/Compare";
 import { CompanySetupScreen, CompanyScreen } from "./screens/CompanyScreens";
 import { DataFoundationScreen, DFConclusionScreen, EnergyFoundationScreen, EnergyConclusionScreen, SupplyFoundationScreen, SupplyConclusionScreen, ReportingFoundationScreen, ReportingConclusionScreen, PlanningFoundationScreen, PlanningConclusionScreen, FrameworkFoundationScreen, FrameworkConclusionScreen } from "./screens/FoundationScreens";
 import { SummaryScreen, NextStepScreen, ThankYouScreen, MilestoneScreen } from "./screens/SummaryScreens";
+import { ReportSlideshow } from "./screens/ReportSlideshow";
+import type { ReportData } from "./screens/ReportSlideshow";
 import { ApproachDataCopyScreen, PrioritiesScreen, PriorityDataScreen, PriorityMatrixScreen } from "./screens/PriorityScreens";
 import { MissionFlowScreen } from "./screens/MissionFlowScreens";
 
@@ -28,6 +30,7 @@ export default function Home(){
   const [consultantName,setConsultantName]=useState("");
   const [participantRole,setParticipantRole]=useState("");
   const [participantCompany,setParticipantCompany]=useState("");
+  const [businessUnit,setBusinessUnit]=useState("");
   const [companyLogo,setCompanyLogo]=useState<string>("");
   const [companySector,setCompanySector]=useState<SectorKey>("manifatturiero");
   const [companyMarket,setCompanyMarket]=useState<Market>("mondo");
@@ -165,8 +168,8 @@ export default function Home(){
   const [userName,setUserName]=useState("");
   const [questName,setQuestName]=useState("");
   const getSavedQuestKeys=():string[]=>{const keys:string[]=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k?.startsWith("envizi-quest-save-"))keys.push(k.replace("envizi-quest-save-",""));}return keys.sort();};
-  const saveQuest=(name:string)=>{if(!name.trim())return;const data={userName,language,profile,priorities,prioExperience,missionOrder,missionOutcomes,missionParameters,trustScore,companyName,companySector,companyDims,companyMarket,esgReadiness,asIsRatings,dataNeeds,screen,companyLogo,workshopDate,consultantName,participantRole,participantCompany,siteTable};localStorage.setItem(`envizi-quest-save-${name.trim()}`,JSON.stringify(data));};
-  const loadQuest=(name:string)=>{const raw=localStorage.getItem(`envizi-quest-save-${name}`);if(!raw)return;try{const d=JSON.parse(raw);if(d.userName)setUserName(d.userName);if(d.language)setLanguage(d.language);if(d.profile)setProfile(d.profile);if(d.priorities)setPriorities(d.priorities);if(d.prioExperience)setPrioExperience(d.prioExperience);if(d.missionOrder)setMissionOrder(d.missionOrder);if(d.missionOutcomes)setMissionOutcomes(d.missionOutcomes);if(d.missionParameters)setMissionParameters(d.missionParameters);if(d.trustScore!=null)setTrustScore(d.trustScore);if(d.companyName!=null)setCompanyName(d.companyName);if(d.companySector)setCompanySector(d.companySector);if(d.companyDims)setCompanyDims(d.companyDims);if(d.companyMarket)setCompanyMarket(d.companyMarket);if(d.siteTable)setSiteTable(d.siteTable);if(d.esgReadiness)setEsgReadiness(d.esgReadiness);if(d.asIsRatings)setAsIsRatings(d.asIsRatings);if(d.dataNeeds)setDataNeeds(d.dataNeeds);if(d.companyLogo!=null)setCompanyLogo(d.companyLogo);if(d.workshopDate)setWorkshopDate(d.workshopDate);if(d.consultantName)setConsultantName(d.consultantName);if(d.participantRole!=null)setParticipantRole(d.participantRole);if(d.participantCompany!=null)setParticipantCompany(d.participantCompany);setQuestName(name);if(d.screen)setScreenState(d.screen);}catch(e){}};
+  const saveQuest=(name:string)=>{if(!name.trim())return;const data={userName,language,profile,priorities,prioExperience,missionOrder,missionOutcomes,missionParameters,trustScore,companyName,companySector,companyDims,companyMarket,esgReadiness,asIsRatings,dataNeeds,screen,companyLogo,workshopDate,consultantName,participantRole,participantCompany,businessUnit,siteTable};localStorage.setItem(`envizi-quest-save-${name.trim()}`,JSON.stringify(data));};
+  const loadQuest=(name:string)=>{const raw=localStorage.getItem(`envizi-quest-save-${name}`);if(!raw)return;try{const d=JSON.parse(raw);if(d.userName)setUserName(d.userName);if(d.language)setLanguage(d.language);if(d.profile)setProfile(d.profile);if(d.priorities)setPriorities(d.priorities);if(d.prioExperience)setPrioExperience(d.prioExperience);if(d.missionOrder)setMissionOrder(d.missionOrder);if(d.missionOutcomes)setMissionOutcomes(d.missionOutcomes);if(d.missionParameters)setMissionParameters(d.missionParameters);if(d.trustScore!=null)setTrustScore(d.trustScore);if(d.companyName!=null)setCompanyName(d.companyName);if(d.companySector)setCompanySector(d.companySector);if(d.companyDims)setCompanyDims(d.companyDims);if(d.companyMarket)setCompanyMarket(d.companyMarket);if(d.siteTable)setSiteTable(d.siteTable);if(d.esgReadiness)setEsgReadiness(d.esgReadiness);if(d.asIsRatings)setAsIsRatings(d.asIsRatings);if(d.dataNeeds)setDataNeeds(d.dataNeeds);if(d.companyLogo!=null)setCompanyLogo(d.companyLogo);if(d.workshopDate)setWorkshopDate(d.workshopDate);if(d.consultantName)setConsultantName(d.consultantName);if(d.participantRole!=null)setParticipantRole(d.participantRole);if(d.participantCompany!=null)setParticipantCompany(d.participantCompany);if(d.businessUnit!=null)setBusinessUnit(d.businessUnit);setQuestName(name);if(d.screen)setScreenState(d.screen);}catch(e){}};
   const deleteQuest=(name:string)=>{localStorage.removeItem(`envizi-quest-save-${name}`);};
   const downloadQuest=(name:string)=>{
     const raw=localStorage.getItem(`envizi-quest-save-${name}`);
@@ -320,7 +323,7 @@ export default function Home(){
   useEffect(()=>()=>{document.getElementById("envizi-global-back")?.remove()},[]);
   useEffect(()=>{let badge=document.getElementById("envizi-bob-badge");if(!badge){badge=document.createElement("div");badge.id="envizi-bob-badge";badge.className="bobBadge";badge.innerHTML=`<img src="./ibm-bob-logo.svg" alt="IBM Bob"/><span>Sviluppato con IBM Bob</span>`;document.body.appendChild(badge)}return()=>{};},[]);
   useEffect(()=>()=>{document.getElementById("envizi-bob-badge")?.remove()},[]);
-  const ALL_SCREENS:Screen[]=["cover","welcome","onboarding","approach","chapterMap","sectionIntro1","questIntro","blank1","p10Slideshow","approachIntro","approachSteps","approachData","approachDecisions","approachRoadmap","approachTrust","approachReport","intro","separatorNext","approachStepsCopy","companySetup","company","priorities","approachDataCopy","priorityData","priorityMatrix","chapterOneSummary","esgStrategist","challengeSeparator1","missionCard1","introCopy","roadmapPreview","bridge","missions","briefing","missionIntro","introCopy2","asis","compare","trust","tobe","negative","success","milestone","dataFoundation","dfConclusion","challengeComplete1","challengeSeparator2","missionCard2","energyFoundation","energyConclusion","challengeComplete2","challengeSeparator3","missionCard3","supplyFoundation","supplyConclusion","challengeComplete3","challengeSeparator4","missionCard4","planningFoundation","planningConclusion","challengeComplete4","challengeSeparator5","missionCard5","frameworkFoundation","frameworkConclusion","challengeComplete5","challengeSeparator6","missionCard6","reportingFoundation","reportingConclusion","challengeComplete6","summary","nextStep","thankYou"];
+  const ALL_SCREENS:Screen[]=["cover","welcome","onboarding","approach","chapterMap","sectionIntro1","questIntro","blank1","p10Slideshow","approachIntro","approachSteps","approachData","approachDecisions","approachRoadmap","approachTrust","approachReport","intro","separatorNext","approachStepsCopy","companySetup","company","priorities","approachDataCopy","priorityData","priorityMatrix","ilTuoReport","chapterOneSummary","esgStrategist","challengeSeparator1","missionCard1","introCopy","roadmapPreview","bridge","missions","briefing","missionIntro","introCopy2","asis","compare","trust","tobe","negative","success","milestone","dataFoundation","dfConclusion","challengeComplete1","challengeSeparator2","missionCard2","energyFoundation","energyConclusion","challengeComplete2","challengeSeparator3","missionCard3","supplyFoundation","supplyConclusion","challengeComplete3","challengeSeparator4","missionCard4","planningFoundation","planningConclusion","challengeComplete4","challengeSeparator5","missionCard5","frameworkFoundation","frameworkConclusion","challengeComplete5","challengeSeparator6","missionCard6","reportingFoundation","reportingConclusion","challengeComplete6","summary","nextStep","thankYou"];
   const currentPageNum=ALL_SCREENS.indexOf(screen)+1||1;
   useEffect(()=>{let el=document.getElementById("envizi-page-num");if(!el){el=document.createElement("div");el.id="envizi-page-num";el.className="pageNum";document.body.appendChild(el)}el.textContent=`${String(currentPageNum).padStart(2,"0")} · ${screen}`;el.style.display="flex";},[screen,currentPageNum]);
   useEffect(()=>()=>{document.getElementById("envizi-page-num")?.remove()},[]);
@@ -330,6 +333,10 @@ export default function Home(){
   const P10_SLIDES_IT=["./p10-slide-1.png","./p10-slide-2.png","./p10-slide-3.png","./p10-slide-4.png","./p10-slide-5.png","./p10-slide-6.png","./p10-slide-7.png"];
   const P10_SLIDES_EN=["./p10-slide-en-1.png","./p10-slide-en-2.png","./p10-slide-en-3.png","./p10-slide-en-4.png","./p10-slide-en-5.png","./p10-slide-en-6.png","./p10-slide-en-7.png"];
   const P10_SLIDES=language==="it"?P10_SLIDES_IT:P10_SLIDES_EN;
+  const [reportSlideIdx,setReportSlideIdx]=useState(0);
+  const [pngCacheBust,setPngCacheBust]=useState(()=>Date.now());
+  const REPORT_SLIDES=["./report-slide-1.png","./report-slide-2.png","./report-slide-3.png","./report-slide-4.png"];
+  const REPORT_SLIDES_BUSTED=REPORT_SLIDES.map(s=>`${s}?v=${pngCacheBust}`);
   // 0 = mostra Sì/No iniziale  1 = mostra Sicuro?  2 = confermato definitivamente
   const [reportingPath,setReportingPath]=useState<0|1|2|3|4|5>(0);
   const [csrdConfirmStep,setCsrdConfirmStep]=useState<0|1|2>(0);
@@ -449,6 +456,7 @@ export default function Home(){
 
   if(screen==="p10Slideshow"&&profile)return <P10Slideshow language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} p10SlideIdx={p10SlideIdx} setP10SlideIdx={setP10SlideIdx} P10_SLIDES={P10_SLIDES}/>;
 
+
   if(screen==="approachIntro"&&profile)return <ApproachIntro language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} t={t}/>;
   if(screen==="approachSteps"&&profile)return <ApproachSteps language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} t={t}/>;
   if(screen==="approachData"&&profile)return <ApproachData language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} t={t}/>;
@@ -463,57 +471,88 @@ export default function Home(){
 
   if(screen==="roadmapPreview"&&profile)return renderMissionHub(true);
 
-  if(screen==="chapterOneSummary"&&profile){
-    const isIt=language==="it";
-    const sec=SECTORS[companySector];
-    const sectorLabel=isIt?sec.label.it:sec.label.en;
-    const readinessList=isIt?ESG_READINESS_IT:ESG_READINESS_EN;
-    const activeReadiness=readinessList.find(r=>r.key===esgReadiness)!;
-    const isCsrd=companyDims[4]>=1000&&companyDims[0]>=450;
-    const includedPrios=priorities.filter(p=>priorityIncluded[p]);
-    const top7=dataNeeds.filter(n=>isNeedIncluded(n.id)).map(n=>{
+  // ── buildPptxData — riutilizzato da ilTuoReport e chapterOneSummary ─────────
+  const buildPptxData=(isIt:boolean)=>{
+    const sec2=SECTORS[companySector];
+    const sectorLabel2=isIt?sec2.label.it:sec2.label.en;
+    const readinessList2=isIt?ESG_READINESS_IT:ESG_READINESS_EN;
+    const activeReadiness2=readinessList2.find(r=>r.key===esgReadiness)!;
+    const isCsrd2=companyDims[4]>=1000&&companyDims[0]>=450;
+    const includedPrios2=priorities.filter(p=>priorityIncluded[p]);
+    const top72=dataNeeds.filter(n=>isNeedIncluded(n.id)).map(n=>{
       const rel=needRelevance[n.id]??5;
       const crit=needCriticality[n.id]??5;
       const tier=rel>7&&crit>7?"high":rel>4||crit>4?"medium":"low";
       return{...n,rel,crit,score:rel+crit,tier};
     }).sort((a,b)=>b.score-a.score).slice(0,7);
-    const prioDescIt=(()=>{
-      const names=includedPrios.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
+    const prioDescIt2=(()=>{
+      const names=includedPrios2.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
       if(names.length===0)return"Non sono stati selezionati obiettivi per l'analisi.";
       const topName=names[0];const restNames=names.slice(1);const company=companyName.trim()||questName.trim()||displayCompanyName;
-      const matLabel=activeReadiness.label.split("—")[0].trim();
+      const matLabel=activeReadiness2.label.split("—")[0].trim();
       let txt=`${company} ha definito ${names.length} obiettiv${names.length>1?"i":"o"} prioritari${names.length>1?"":"o"} per la propria strategia ESG. `;
       txt+=`In particolare, la priorità principale è <strong>${topName}</strong>`;
       if(restNames.length>0)txt+=`, seguita da ${restNames.slice(0,-1).join(", ")}${restNames.length>1?" e ":""}<strong>${restNames[restNames.length-1]}</strong>`;
-      txt+=`. Il livello di maturità attuale — <em>${matLabel}</em> — indica che ${activeReadiness.desc.charAt(0).toLowerCase()+activeReadiness.desc.slice(1)}`;
+      txt+=`. Il livello di maturità attuale — <em>${matLabel}</em> — indica che ${activeReadiness2.desc.charAt(0).toLowerCase()+activeReadiness2.desc.slice(1)}`;
       return txt;
     })();
-    const prioDescEn=(()=>{
-      const names=includedPrios.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
+    const prioDescEn2=(()=>{
+      const names=includedPrios2.map(p=>(t.priorityNames as Record<Priority,string>)[p]);
       if(names.length===0)return"No objectives were selected for the analysis.";
       const topName=names[0];const restNames=names.slice(1);const company=companyName.trim()||questName.trim()||displayCompanyName;
-      const matLabel=activeReadiness.label.split("—")[0].trim().replace("–","—").split("—")[0].trim();
+      const matLabel=activeReadiness2.label.split("—")[0].trim().replace("–","—").split("—")[0].trim();
       let txt=`${company} has defined ${names.length} priority objective${names.length>1?"s":""} for its ESG strategy. `;
       txt+=`The main priority is <strong>${topName}</strong>`;
       if(restNames.length>0)txt+=`, followed by ${restNames.slice(0,-1).join(", ")}${restNames.length>1?" and ":""}<strong>${restNames[restNames.length-1]}</strong>`;
-      txt+=`. The current maturity level — <em>${matLabel}</em> — means that ${activeReadiness.desc.charAt(0).toLowerCase()+activeReadiness.desc.slice(1)}`;
+      txt+=`. The current maturity level — <em>${matLabel}</em> — means that ${activeReadiness2.desc.charAt(0).toLowerCase()+activeReadiness2.desc.slice(1)}`;
       return txt;
     })();
-    const pptxData={
+    return {
       companyName:companyName.trim()||questName.trim()||displayCompanyName,
-      sectorLabel,
+      sectorLabel:sectorLabel2,
       marketLabel:isIt?(companyMarket==="italia"?"Solo Italia":companyMarket==="europa"?"Europa":"Globale"):(companyMarket==="italia"?"Italy only":companyMarket==="europa"?"Europe":"Global"),
-      revenue:companyDims[0],dimUnit:isIt?sec.dimUnit.it:sec.dimUnit.en,
+      revenue:companyDims[0],dimUnit:isIt?sec2.dimUnit.it:sec2.dimUnit.en,
       employees:companyDims[4],plants:companyDims[1],offices:companyDims[2],dataCenters:companyDims[3],
-      maturityTitle:activeReadiness.label,maturityDesc:activeReadiness.desc,
-      csrdLabel:isCsrd?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
-      csrdSub:isCsrd?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
+      maturityTitle:activeReadiness2.label,maturityDesc:activeReadiness2.desc,
+      csrdLabel:isCsrd2?(isIt?"Soggetta a CSRD":"Subject to CSRD"):(isIt?"Non soggetta a CSRD":"Not subject to CSRD"),
+      csrdSub:isCsrd2?(isIt?"Oltre 1.000 dipendenti e €450M di fatturato":"Over 1,000 employees and €450M revenue"):(isIt?"Sotto le soglie CSRD":"Below CSRD thresholds"),
       csrdNote:csrdNote||"",
-      prioIntroText:isIt?prioDescIt:prioDescEn,
-      prioItems:includedPrios.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})).sort((a,b)=>a.rank-b.rank),
-      critItems:top7.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
+      prioIntroText:isIt?prioDescIt2:prioDescEn2,
+      prioItems:includedPrios2.map((p,i)=>({rank:i+1,name:(t.priorityNames as Record<Priority,string>)[p],detail:(t.priorityDetails as Record<Priority,string>)[p],note:prioExperience[p]||undefined})).sort((a,b)=>a.rank-b.rank),
+      critItems:top72.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier})),
       isIt,geoDistrib,siteTable,workshopDate,consultantName,companyLogo,participantRole,participantCompany,reportingPath,
     };
+  };
+
+  if(screen==="reportSlideshow"&&profile){
+    const rd:ReportData=buildPptxData(language==="it");
+    return <ReportSlideshow language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} data={rd}/>;
+  }
+
+  if(screen==="reportSlideshowPng"&&profile)return <P10Slideshow language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} p10SlideIdx={reportSlideIdx} setP10SlideIdx={setReportSlideIdx} P10_SLIDES={REPORT_SLIDES_BUSTED} backScreen="ilTuoReport"/>;
+
+  const refreshAndViewReport=async(lang:"it"|"en")=>{
+    const buf=await generateTemplatePptxBuffer(buildPptxData(lang==="it"));
+    // btoa(String.fromCharCode(...spread)) crasha con file >~1MB — usiamo chunks
+    const bytes=new Uint8Array(buf);
+    let b64="";
+    const CHUNK=8192;
+    for(let i=0;i<bytes.length;i+=CHUNK){
+      b64+=String.fromCharCode(...bytes.subarray(i,i+CHUNK));
+    }
+    const pptxBase64=btoa(b64);
+    const res=await fetch("/api/refresh-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pptxBase64})});
+    if(!res.ok){const j=await res.json().catch(()=>({}));throw new Error(j.error||"Server error");}
+    // aggiorna cache-buster e resetta indice — la navigazione avviene nel componente
+    setPngCacheBust(Date.now());
+    setReportSlideIdx(0);
+  };
+
+  if(screen==="ilTuoReport"&&profile)return <IlTuoReport language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} p10SlideIdx={p10SlideIdx} setP10SlideIdx={setP10SlideIdx} P10_SLIDES={P10_SLIDES} onDownloadPptx={(lang)=>generateTemplatePptx(buildPptxData(lang==="it"))} onRefreshAndView={refreshAndViewReport}/>;
+
+  if(screen==="chapterOneSummary"&&profile){
+    const isIt=language==="it";
+    const pptxData=buildPptxData(isIt);
     return <main style={{display:"flex",flexDirection:"column",height:"1080px",background:"var(--bg)",overflow:"hidden",position:"relative"}}>
       <div style={{position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
       <header className="missionNav">
@@ -700,7 +739,7 @@ export default function Home(){
 
 
 
-  if(screen==="companySetup"&&profile)return <CompanySetupScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companyName={companyName} setCompanyName={setCompanyName} questName={questName} companySector={companySector} setCompanySector={setCompanySector} companyMarket={companyMarket} setCompanyMarket={setCompanyMarket} esgReadiness={esgReadiness} setEsgReadiness={setEsgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} siteTable={siteTable} updateSiteCell={updateSiteCell} siteTotalAll={siteTotalAll} name={name} workshopDate={workshopDate} setWorkshopDate={setWorkshopDate} consultantName={consultantName} setConsultantName={setConsultantName} companyLogo={companyLogo} setCompanyLogo={setCompanyLogo} participantRole={participantRole} setParticipantRole={setParticipantRole} participantCompany={participantCompany} setParticipantCompany={setParticipantCompany} reportingPath={reportingPath} setReportingPath={setReportingPath}/>;
+  if(screen==="companySetup"&&profile)return <CompanySetupScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companyName={companyName} setCompanyName={setCompanyName} questName={questName} companySector={companySector} setCompanySector={setCompanySector} companyMarket={companyMarket} setCompanyMarket={setCompanyMarket} esgReadiness={esgReadiness} setEsgReadiness={setEsgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} siteTable={siteTable} updateSiteCell={updateSiteCell} siteTotalAll={siteTotalAll} name={name} workshopDate={workshopDate} setWorkshopDate={setWorkshopDate} consultantName={consultantName} setConsultantName={setConsultantName} companyLogo={companyLogo} setCompanyLogo={setCompanyLogo} participantRole={participantRole} setParticipantRole={setParticipantRole} participantCompany={participantCompany} setParticipantCompany={setParticipantCompany} businessUnit={businessUnit} setBusinessUnit={setBusinessUnit} reportingPath={reportingPath} setReportingPath={setReportingPath}/>;
 
 
   if(screen==="company"&&profile)return <CompanyScreen language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} companySector={companySector} companyMarket={companyMarket} esgReadiness={esgReadiness} companyDims={companyDims} updateCompanyDim={updateCompanyDim} geoDistrib={geoDistrib} siteTable={siteTable} displayCompanyName={displayCompanyName} csrdConfirmStep={csrdConfirmStep} setCsrdConfirmStep={setCsrdConfirmStep} csrdPendingChoice={csrdPendingChoice} setCsrdPendingChoice={setCsrdPendingChoice} csrdNote={csrdNote} setCsrdNote={setCsrdNote} csrdNoteOpen={csrdNoteOpen} setCsrdNoteOpen={setCsrdNoteOpen} csrdNoteDraft={csrdNoteDraft} setCsrdNoteDraft={setCsrdNoteDraft} t={t} name={name} companyName={companyName} companyLogo={companyLogo} reportingPath={reportingPath} setReportingPath={setReportingPath} questName={questName} onSave={(n)=>{saveQuest(n);setQuestName(n);}} renderSaveBtn={renderSaveBtn}/>;
