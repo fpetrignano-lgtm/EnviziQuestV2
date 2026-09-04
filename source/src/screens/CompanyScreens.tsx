@@ -4,7 +4,7 @@ import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
 
 
-type SiteGeoKey="italia"|"europa"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
+type SiteGeoKey="italia"|"europa"|"uk"|"nordamerica"|"sudamerica"|"asia"|"africa"|"australia";
 type SiteRowKey="uffici"|"ops"|"datacenter"|"altro";
 type SiteTable=Record<SiteRowKey,Record<SiteGeoKey,number>>;
 
@@ -13,6 +13,7 @@ type SiteTable=Record<SiteRowKey,Record<SiteGeoKey,number>>;
 const GEO_ANCHORS: Record<SiteGeoKey,{cx:number,cy:number}> = {
   italia:     {cx:52,  cy:38},
   europa:     {cx:49,  cy:33},
+  uk:         {cx:44,  cy:28},
   nordamerica:{cx:19,  cy:36},
   sudamerica: {cx:28,  cy:63},
   asia:       {cx:72,  cy:37},
@@ -164,6 +165,8 @@ interface CompanySetupProps extends CommonProps {
   setParticipantCompany: (v: string) => void;
   businessUnit: string;
   setBusinessUnit: (v: string) => void;
+  revenueYear: number;
+  setRevenueYear: (v: number) => void;
   reportingPath: 0|1|2|3|4|5;
   setReportingPath: (v: 0|1|2|3|4|5) => void;
 }
@@ -177,6 +180,7 @@ export function CompanySetupScreen({
   companyLogo, setCompanyLogo,
   participantRole, setParticipantRole, participantCompany, setParticipantCompany,
   businessUnit, setBusinessUnit,
+  revenueYear, setRevenueYear,
   reportingPath, setReportingPath,
 }: CompanySetupProps) {
   const isIt = language === "it";
@@ -184,9 +188,20 @@ export function CompanySetupScreen({
   const readinessList = isIt ? ESG_READINESS_IT : ESG_READINESS_EN;
   const activeReadiness = readinessList.find(r => r.key === esgReadiness)!;
   const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); };
-  const geoColKeys: SiteGeoKey[] = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
+  const [copiedField,setCopiedField]=useState<string|null>(null);
+  const copyField=(fieldName:string,value:string)=>{if(!value)return;navigator.clipboard.writeText(value).then(()=>{setCopiedField(fieldName);setTimeout(()=>setCopiedField(null),1500);});};
+  const CopyWrap=({fieldName,value,children}:{fieldName:string,value:string,children:React.ReactNode})=>{
+    const copied=copiedField===fieldName;
+    return <div style={{position:"relative",display:"inline-flex",width:"100%"}} onClick={()=>copyField(fieldName,value)} title={fieldName}>
+      {children}
+      <span style={{position:"absolute",top:"-26px",left:"50%",transform:"translateX(-50%)",background:copied?"#0e2e22":"#1a3328",color:copied?"#72f7ca":"#39efb4",font:"700 10px var(--font-geist-mono,monospace)",letterSpacing:".1em",padding:"3px 8px",borderRadius:"5px",border:"1px solid rgba(57,239,180,.3)",whiteSpace:"nowrap",pointerEvents:"none",opacity:0,transition:"opacity .12s",zIndex:50}} className="csFieldTooltip">
+        {copied?(isIt?"copiato ✓":"copied ✓"):fieldName}
+      </span>
+    </div>;
+  };
+  const geoColKeys: SiteGeoKey[] = ["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"];
   const geoColLabels: Record<SiteGeoKey,{it:string,en:string}> = {
-    italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"},
+    italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"}, uk:{it:"UK",en:"UK"},
     nordamerica:{it:"N. Amer.",en:"N. Amer."}, sudamerica:{it:"S. Amer.",en:"S. Amer."},
     asia:{it:"Asia",en:"Asia"}, africa:{it:"Africa",en:"Africa"},
     australia:{it:"Australia",en:"Australia"},
@@ -208,7 +223,7 @@ export function CompanySetupScreen({
         <p className="eyebrow">{isIt?"RACCONTACI LA TUA AZIENDA":"TELL US ABOUT YOUR COMPANY"}</p>
         <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
         <div className="csFormOneCol">
-          <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
+        <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><CopyWrap fieldName="Organization Name" value={companyName||questName}><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></CopyWrap></div>
           <div className="csField">
             <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
             <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
@@ -237,8 +252,8 @@ export function CompanySetupScreen({
           <div className="csField">
             <label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
             <div className="csDimsGrid">
-              <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span></div>
-              <div className="csDimRow"><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
+              <div className="csDimRow"><CopyWrap fieldName="Revenue" value={String(companyDims[0]||"")}><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/></CopyWrap><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span><CopyWrap fieldName="Revenue Year" value={String(revenueYear)}><input className="csDimInput csDimInputYear" type="number" min={2000} max={2100} value={revenueYear} onChange={e=>setRevenueYear(parseInt(e.target.value)||revenueYear)}/></CopyWrap><span className="csDimUnit">{isIt?"anno":"year"}</span></div>
+              <div className="csDimRow"><CopyWrap fieldName="Number of Employees" value={String(companyDims[4]||"")}><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/></CopyWrap><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
             </div>
           </div>
           {/* Tabella sedi */}
@@ -276,10 +291,10 @@ export function CompanySetupScreen({
             <p className="csReadinessDesc">{activeReadiness.desc}</p>
           </div>
           <div className="csFourCol">
-            <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
-            <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
-            <div className="csField"><label>{isIt?"Ruolo":"Role"}</label><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></div>
-            <div className="csField"><label>Business Unit</label><input className="csInput" type="text" placeholder={isIt?"Es. Operations":"E.g. Operations"} value={businessUnit} onChange={e=>setBusinessUnit(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><CopyWrap fieldName="Workshop Date" value={workshopDate}><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></CopyWrap></div>
+            <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><CopyWrap fieldName="Consultant Name" value={consultantName}><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></CopyWrap></div>
+            <div className="csField"><label>{isIt?"Ruolo":"Role"}</label><CopyWrap fieldName="Participant Role" value={participantRole}><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></CopyWrap></div>
+            <div className="csField"><label>Business Unit</label><CopyWrap fieldName="Business Unit" value={businessUnit}><input className="csInput" type="text" placeholder={isIt?"Es. Operations":"E.g. Operations"} value={businessUnit} onChange={e=>setBusinessUnit(e.target.value)}/></CopyWrap></div>
           </div>
           <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
         </div>
@@ -317,6 +332,12 @@ interface CompanyScreenProps extends CommonProps {
   questName: string;
   onSave: (name: string) => void;
   renderSaveBtn: (isIt: boolean) => JSX.Element;
+  nextScreen?: string;
+  showGeo?: boolean;
+  frameworkChecks?: Record<string,{inUso:boolean,diInteresse:boolean}>;
+  toggleFw?: (id:string,col:"inUso"|"diInteresse")=>void;
+  sustainabilityReportSince?: number|"mai";
+  setSustainabilityReportSince?: (v:number|"mai")=>void;
 }
 
 export function CompanyScreen({
@@ -327,6 +348,12 @@ export function CompanyScreen({
   csrdNote, setCsrdNote, csrdNoteOpen, setCsrdNoteOpen, csrdNoteDraft, setCsrdNoteDraft,
   t, name, companyLogo, reportingPath, setReportingPath,
   questName, onSave, renderSaveBtn,
+  nextScreen = "priorities",
+  showGeo = false,
+  frameworkChecks,
+  toggleFw,
+  sustainabilityReportSince = 2024,
+  setSustainabilityReportSince,
 }: CompanyScreenProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -364,19 +391,197 @@ export function CompanyScreen({
     altro:      {color:"#e8a84a", path:"M10,2 C6.13,2 3,5.13 3,9 C3,14.25 10,22 10,22 C10,22 17,14.25 17,9 C17,5.13 13.87,2 10,2 Z M10,11.5 C8.62,11.5 7.5,10.38 7.5,9 C7.5,7.62 8.62,6.5 10,6.5 C11.38,6.5 12.5,7.62 12.5,9 C12.5,10.38 11.38,11.5 10,11.5 Z"},
   };
   const [rptOpen,setRptOpen]=useState(false);
+  const [fwOpen,setFwOpen]=useState(false);
+  const [copiedField,setCopiedField]=useState<string|null>(null);
+  const copyField=(fieldName:string,value:string)=>{if(!value)return;navigator.clipboard.writeText(value).then(()=>{setCopiedField(fieldName);setTimeout(()=>setCopiedField(null),1500);});};
+  const CopyChip=({fieldName,value,children}:{fieldName:string,value:string,children:React.ReactNode})=>{
+    const copied=copiedField===fieldName;
+    return <div style={{position:"relative",cursor:"copy"}} title={fieldName} onClick={()=>copyField(fieldName,value)}>
+      {children}
+      <span style={{position:"absolute",bottom:"calc(100% + 6px)",left:"50%",transform:"translateX(-50%)",background:copied?"#0e2e22":"#1a3328",color:copied?"#72f7ca":"#39efb4",font:"700 10px var(--font-geist-mono,monospace)",letterSpacing:".1em",padding:"3px 8px",borderRadius:"5px",border:"1px solid rgba(57,239,180,.3)",whiteSpace:"nowrap",pointerEvents:"none",opacity:0,transition:"opacity .12s",zIndex:50}} className="csFieldTooltip">
+        {copied?(isIt?"copiato ✓":"copied ✓"):fieldName}
+      </span>
+    </div>;
+  };
   return <main className="companyScreen">
-    <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
+    <div className="welcomeBlueBar"/>
+    <div style={{display:"flex",flexDirection:"column",minHeight:0,overflow:"hidden",position:"relative"}}>
+    <header className="missionNav missionNavTrust" style={{flexShrink:0}}><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
+    {showGeo ? (
+    <section className="geoMapsSection" style={{position:"relative",flex:1,minHeight:0}} aria-label={`${displayCompanyName} footprint`}>
+      {(()=>{
+        const GEO_META: Record<SiteGeoKey,{units:string,currencies:string}> = {
+          italia:      {units:"kWh · km · m³ · L",      currencies:"EUR · ..."},
+          europa:      {units:"kWh · km · m³ · L",      currencies:"EUR · ..."},
+          uk:          {units:"kWh · mi · ft³ · gal",   currencies:"GBP · ..."},
+          nordamerica: {units:"kWh · mi · ft³ · gal",   currencies:"USD · CAD · ..."},
+          sudamerica:  {units:"kWh · km · m³ · L",      currencies:"BRL · ARS · ..."},
+          asia:        {units:"kWh · km · m³ · L",      currencies:"CNY · JPY · ..."},
+          africa:      {units:"kWh · km · m³ · L",      currencies:"ZAR · NGN · ..."},
+          australia:   {units:"kWh · km · m³ · L",      currencies:"AUD · NZD · ..."},
+        };
+        const GEO_KEYS: SiteGeoKey[] = ["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"];
+        const GEO_LABELS: Record<SiteGeoKey,{it:string,en:string}> = {
+          italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},uk:{it:"UK",en:"UK"},
+          nordamerica:{it:"Nord America",en:"North America"},sudamerica:{it:"Sud America",en:"South America"},
+          asia:{it:"Asia",en:"Asia"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"},
+        };
+        const GEO_IMGS: Record<SiteGeoKey,string> = {
+          italia:"./mappe/italia.png",europa:"./mappe/europa.png",uk:"./mappe/uk.png",
+          nordamerica:"./mappe/nordamerica.png",sudamerica:"./mappe/sudamerica.png",
+          asia:"./mappe/asia.png",africa:"./mappe/africa.png",australia:"./mappe/australia.png",
+        };
+        const opsLabelIt = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
+        const opsLabelEn = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
+        const siteRowDefs2:{key:SiteRowKey,label:{it:string,en:string},color:string}[] = [
+          {key:"uffici",    label:{it:"Uffici",en:"Offices"},            color:"#7ab8d8"},
+          {key:"ops",       label:{it:opsLabelIt,en:opsLabelEn},         color:"#72c4a0"},
+          {key:"datacenter",label:{it:"Data center",en:"Data centres"},  color:"#b08adc"},
+          {key:"altro",     label:{it:"Altro",en:"Other"},               color:"#e8a84a"},
+        ];
+        const GEO_ICON_PATH: Record<SiteRowKey, JSX.Element> = {
+          uffici: (<svg viewBox="0 0 20 20" width="18" height="18"><rect x="3" y="7" width="14" height="11" fill="currentColor" opacity=".25" rx="1"/><rect x="3" y="7" width="14" height="11" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/><polygon points="1,8 10,1 19,8" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><rect x="8" y="12" width="4" height="6" fill="currentColor" opacity=".5"/><rect x="4.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/><rect x="12.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/></svg>),
+          ops:    (<svg viewBox="0 0 20 20" width="18" height="18"><rect x="2" y="9" width="16" height="9" fill="currentColor" opacity=".2" rx="1"/><rect x="2" y="9" width="16" height="9" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/><path d="M2,9 L10,3 L18,9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/><rect x="4" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/><rect x="12.5" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/><rect x="8.5" y="4" width="3" height="2" fill="currentColor" opacity=".5" rx=".3"/><rect x="14" y="6" width="2" height="4" fill="currentColor" opacity=".6" rx=".3"/></svg>),
+          datacenter: (<svg viewBox="0 0 20 20" width="18" height="18"><rect x="3" y="2" width="14" height="16" fill="currentColor" opacity=".15" rx="1.5"/><rect x="3" y="2" width="14" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1.5"/><rect x="4.5" y="4" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/><rect x="4.5" y="8.5" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/><rect x="4.5" y="13" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/><circle cx="14" cy="5.5" r="1" fill="currentColor" opacity=".8"/><circle cx="14" cy="10" r="1" fill="currentColor" opacity=".8"/><circle cx="14" cy="14.5" r="1" fill="currentColor" opacity=".8"/></svg>),
+          altro:  (<svg viewBox="0 0 20 20" width="18" height="18"><path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="currentColor" opacity=".25"/><path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="none" stroke="currentColor" strokeWidth="1.4"/><circle cx="10" cy="8" r="2.5" fill="currentColor" opacity=".7"/></svg>),
+        };
+        const hasAnySedes = GEO_KEYS.some(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
+        const extraGeos = GEO_KEYS.slice(4).filter(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
+        const visibleGeos = [...GEO_KEYS.slice(0,4), ...extraGeos];
+        const REF_UNITS = "kWh · km · m³ · L";
+        const REF_CURR  = "EUR · ...";
+        const activePop = GEO_KEYS.filter(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
+        const diffUnits = activePop.filter(g=>GEO_META[g].units !== REF_UNITS);
+        const diffCurr  = activePop.filter(g=>GEO_META[g].currencies !== REF_CURR);
+        const diffTotal = new Set([...diffUnits,...diffCurr]).size;
+        const complexity = diffTotal === 0 ? null : diffTotal <= 1 ? "low" : diffTotal <= 3 ? "medium" : "high";
+        const complexLabel:{[k:string]:{it:string,en:string,color:string}} = {
+          low:    {it:"bassa",   en:"low",    color:"#39efb4"},
+          medium: {it:"media",   en:"medium", color:"#ffc07c"},
+          high:   {it:"alta",    en:"high",   color:"#ff7777"},
+        };
+        return (
+          <>
+          <div className="geoMapsHeader">
+            <div style={{display:"flex",alignItems:"center",gap:"14px",minWidth:0}}>
+              <h1 className="geoMapsTitle">
+                {isIt
+                  ? <>{`Introduzione alla strategia ESG di `}<span className="geoMapsTitleName">{displayCompanyName}</span></>
+                  : <>{`Introduction to `}<span className="geoMapsTitleName">{displayCompanyName}</span>{`'s ESG strategy`}</>
+                }
+              </h1>
+              {companyLogo && <img src={companyLogo} alt="logo" style={{height:"40px",maxWidth:"120px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"3px",flexShrink:0}}/>}
+            </div>
+            {complexity && (
+              <div className="geoMapsComplexBadge" style={{borderColor:complexLabel[complexity].color,color:complexLabel[complexity].color}}>
+                <span className="geoMapsComplexBadgeLabel">{isIt?"Complessità mercati":"Market complexity"}</span>
+                <strong>{isIt?complexLabel[complexity].it:complexLabel[complexity].en}</strong>
+              </div>
+            )}
+          </div>
+          <div className="geoMapsWithPanel">
+          <div style={{display:"flex",flexDirection:"column",gap:"14px",flex:1,minWidth:0,overflow:"hidden"}}>
+            <div className="geoMapsGrid">
+              {visibleGeos.map(g=>{
+                const activeRows = siteRowDefs2.filter(d=>(siteTable[d.key][g]??0)>0);
+                return (
+                  <div key={g} className="geoMapCard">
+                    <div className="geoMapImgWrap" style={{position:"relative"}}>
+                      <img className="geoMapSvg" src={GEO_IMGS[g]} alt={GEO_LABELS[g].it}/>
+                      <div style={{position:"absolute",inset:0,display:"flex",alignItems:"center",justifyContent:"flex-start",padding:"0 0 0 6px",pointerEvents:"none"}}>
+                        <div style={{display:"flex",flexDirection:"column",gap:"3px",background:"rgba(7,17,14,.72)",borderRadius:"8px",padding:"5px 5px",border:"1px solid rgba(255,255,255,.12)",boxShadow:"0 2px 10px rgba(0,0,0,.5)"}}>
+                          {activeRows.map(d=>(
+                            <div key={d.key} style={{display:"flex",flexDirection:"row",alignItems:"center",gap:"4px",color:d.color}}>
+                              {GEO_ICON_PATH[d.key]}
+                              <span style={{fontSize:"11px",fontWeight:700,lineHeight:1,fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".04em",minWidth:"12px"}}>{siteTable[d.key][g]}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="geoMapLabel">{isIt?GEO_LABELS[g].it:GEO_LABELS[g].en}</div>
+                    <div className="geoMapIcons">{siteRowDefs2.map(d=>{
+                      const val=siteTable[d.key][g]??0;
+                      return <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color,opacity:val===0?0.35:1}}>{isIt?d.label.it:d.label.en} · {val}</span>;
+                    })}</div>
+                    <div className="geoMapMetaBox geoMapMetaBoxCurr">
+                      <span className="geoMapMetaBoxLabel">{isIt?"Valute":"Currencies"}</span>
+                      <span className="geoMapMetaBoxValue">{GEO_META[g].currencies}</span>
+                    </div>
+                    <div className="geoMapMetaBox geoMapMetaBoxUnits">
+                      <span className="geoMapMetaBoxLabel">{isIt?"Unità di misura":"Units"}</span>
+                      <span className="geoMapMetaBoxValue">{GEO_META[g].units}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            {complexity&&<div className="geoComplexTextCard" style={{display:"flex",flexDirection:"column",gap:"8px",padding:"10px 16px",border:"1px solid rgba(57,239,180,.15)",borderRadius:"12px",background:"rgba(57,239,180,.04)"}}>
+              <div className="geoMapIcons" style={{flexWrap:"nowrap",whiteSpace:"nowrap"}}>{siteRowDefs2.map(d=>{
+                const tot=(["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).reduce((s,g)=>s+(siteTable[d.key][g]??0),0);
+                if(tot===0) return null;
+                return <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color,flexShrink:0}}>{isIt?d.label.it:d.label.en} · {tot}</span>;
+              })}</div>
+              <p className="geoComplexText" style={{whiteSpace:"nowrap",margin:0}}>
+                {isIt
+                  ? <>{displayCompanyName} ha la necessità di convertire <strong>unità di misura</strong> e <strong>valute</strong> nel proprio reporting ESG, con un livello di complessità <span style={{color:complexLabel[complexity].color,fontWeight:700}}>{complexLabel[complexity].it}</span>.</>
+                  : <>{displayCompanyName} needs to convert <strong>measurement units</strong> and <strong>currencies</strong> in its ESG reporting, with a <span style={{color:complexLabel[complexity].color,fontWeight:700}}>{complexLabel[complexity].en}</span> level of complexity.</>
+                }
+              </p>
+            </div>}
+          </div>{/* end left column */}
+            <div className="geoComplexPanel">
+              {!hasAnySedes ? (
+                <p className="geoComplexEmpty">{isIt?"Inserisci sedi per vedere l'analisi di complessità.":"Add locations to see complexity analysis."}</p>
+              ) : complexity === null ? (
+                <p className="geoComplexEmpty">{isIt?"Tutte le sedi sono nell'area Euro — nessuna conversione necessaria.":"All locations are in the Euro area — no conversion needed."}</p>
+              ) : (
+                <>
+                  <div className="geoComplexBadge" style={{borderColor:complexLabel[complexity].color,color:complexLabel[complexity].color}}>
+                    {isIt?"Complessità":"Complexity"}: <strong>{isIt?complexLabel[complexity].it:complexLabel[complexity].en}</strong>
+                  </div>
+                  <div className="geoComplexDetail">
+                    {diffUnits.length>0&&<span>{isIt?"Unità diverse":"Different units"}: {diffUnits.map(g=>GEO_LABELS[g][isIt?"it":"en"]).join(", ")}</span>}
+                    {diffCurr.length>0&&<span>{isIt?"Valute diverse":"Different currencies"}: {diffCurr.map(g=>GEO_LABELS[g][isIt?"it":"en"]).join(", ")}</span>}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          </>
+        );
+      })()}
+      <div className="geoMapLegend">
+        {(()=>{
+          const GEO_KEYS: SiteGeoKey[] = ["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"];
+          const opsLabelIt2 = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
+          const opsLabelEn2 = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
+          return [
+            {key:"uffici"    as SiteRowKey, label:{it:"Uffici",en:"Offices"},          color:"#7ab8d8"},
+            {key:"ops"       as SiteRowKey, label:{it:opsLabelIt2,en:opsLabelEn2},     color:"#72c4a0"},
+            {key:"datacenter"as SiteRowKey, label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
+            {key:"altro"     as SiteRowKey, label:{it:"Altro",en:"Other"},             color:"#e8a84a"},
+          ].filter(d=>GEO_KEYS.some(g=>(siteTable[d.key][g]??0)>0))
+          .map(d=>(
+            <span key={d.key} className="geoMapLegendItem" style={{color:d.color}}>
+              <svg width={12} height={12} viewBox="0 0 12 12" style={{flexShrink:0}}><circle cx={6} cy={6} r={5} fill={d.color} opacity={.25}/><circle cx={6} cy={6} r={5} fill="none" stroke={d.color} strokeWidth={1.2}/></svg>
+              {isIt?d.label.it:d.label.en}
+            </span>
+          ));
+        })()}
+      </div>
+    </section>
+    ) : (
     <section className="companyCopy">
-      <p className="eyebrow">{t.companyIntro}</p>
       <div style={{display:"flex",alignItems:"center",gap:"14px"}}>
-        <h1 style={{margin:0}}>{displayCompanyName}</h1>
+        <h1 style={{margin:0,fontSize:"clamp(28px,3vw,44px)",fontWeight:520,letterSpacing:"-.05em",lineHeight:1,color:"#b5c9c1"}}>{isIt?`Introduzione alla strategia ESG di ${displayCompanyName}`:`Introduction to ${displayCompanyName}'s ESG strategy`}</h1>
         {companyLogo && <img src={companyLogo} alt="logo" style={{height:"48px",maxWidth:"140px",objectFit:"contain",borderRadius:"6px",border:"1px solid #d0e8d8",background:"#fff",padding:"4px"}}/>}
       </div>
       <p className="companyLead">{companyStoryGen}</p>
       <div className="companyStats">
-        <div><strong>{dimVal}</strong><span>{dimUnit}</span></div>
-        <div><strong>{totalSedi}</strong><span>{sediUnit}</span></div>
-        <div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div>
+        <CopyChip fieldName="Revenue" value={String(dimVal)}><div><strong>{dimVal}</strong><span>{dimUnit}</span></div></CopyChip>
+        <CopyChip fieldName="Total Locations" value={String(totalSedi)}><div><strong>{totalSedi}</strong><span>{sediUnit}</span></div></CopyChip>
+        <CopyChip fieldName="Number of Employees" value={String(peopleVal)}><div><strong>{peopleVal.toLocaleString()}</strong><span>{pepUnit}</span></div></CopyChip>
         <div style={{background:csrdAlert?"rgba(245,166,35,.10)":"rgba(57,239,180,.07)"}}>
           <strong style={{fontSize:"clamp(14px,1.4vw,20px)",color:csrdAlert?"#f5c855":"#39efb4",letterSpacing:"-.02em",lineHeight:1.1}}>
             {csrdAlert?(isIt?"Soggetta CSRD":"Subject to CSRD"):(isIt?"Indicativamente non soggetta CSRD":"Indicatively not subject to CSRD")}
@@ -386,7 +591,18 @@ export function CompanyScreen({
           </span>
         </div>
       </div>
-      <blockquote>{evolvingGen}</blockquote>
+      {setSustainabilityReportSince&&<div className="srRow">
+        {sustainabilityReportSince==="mai"
+          ? <span className="srSentence">{isIt?<>{displayCompanyName} <strong>non ha pubblicato</strong> un bilancio di sostenibilità.</>:<>{displayCompanyName} has <strong>not published</strong> a sustainability report.</>}</span>
+          : <span className="srSentence">{isIt?<>{displayCompanyName} redige il bilancio di sostenibilità dall'anno <strong>{sustainabilityReportSince}</strong>.</>:<>{displayCompanyName} has been publishing a sustainability report since <strong>{sustainabilityReportSince}</strong>.</>}</span>
+        }
+        <div className="srControls">
+          <button className="srBtn" onClick={()=>{if(sustainabilityReportSince==="mai")setSustainabilityReportSince(new Date().getFullYear()-1);else setSustainabilityReportSince(sustainabilityReportSince-1);}}>▼</button>
+          <button className="srBtn" onClick={()=>{if(typeof sustainabilityReportSince==="number")setSustainabilityReportSince(sustainabilityReportSince+1);}}>▲</button>
+          <button className={`srMaiBtn${sustainabilityReportSince==="mai"?" srMaiBtnOn":""}`} onClick={()=>setSustainabilityReportSince(sustainabilityReportSince==="mai"?2024:"mai")}>{isIt?"Mai":"Never"}</button>
+        </div>
+      </div>}
+      <CopyChip fieldName="ESG Readiness" value={evolvingGen}><blockquote style={{cursor:"copy"}}>{evolvingGen}</blockquote></CopyChip>
       {(()=>{
         const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
           {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
@@ -397,7 +613,6 @@ export function CompanyScreen({
         ];
         const chosen = paths.find(p=>p.num===reportingPath);
         return <>
-          {/* Trigger — paragrafo cliccabile */}
           <button className="companyRptTrigger" onClick={()=>setRptOpen(true)}>
             {chosen
               ? <><span className="companyRptTriggerNum">{chosen.num}</span><span className="companyRptTriggerChosen">{isIt?chosen.label.it:chosen.label.en}</span><span className="companyRptTriggerEdit">✎ {isIt?"modifica":"edit"}</span></>
@@ -405,7 +620,74 @@ export function CompanyScreen({
             }
           </button>
           {chosen&&<p className="companyRptDecision"><span>{isIt?"Decisione: ":"Decision: "}</span>{isIt?chosen.for.it:chosen.for.en}</p>}
-          {/* Popup modale */}
+          {frameworkChecks&&toggleFw&&(()=>{
+            const rows:[string,string,string][]=[
+              ["gresb",      "GRESB",                            isIt?"Globale – Real estate e infrastrutture":"Global – Real estate & infrastructure"],
+              ["cdp",        "CDP",                              isIt?"Globale":"Global"],
+              ["gri",        "GRI Standards",                    isIt?"Globale":"Global"],
+              ["sasb",       "SASB Standards",                   isIt?"Globale":"Global"],
+              ["tcfd",       "TCFD",                             isIt?"Globale":"Global"],
+              ["ghg",        "GHG Protocol – Scope 1, 2 e 3",   isIt?"Globale":"Global"],
+              ["sdg",        "UN Sustainable Development Goals", isIt?"Globale":"Global"],
+              ["sfdr",       "SFDR",                             isIt?"Unione europea – Servizi finanziari":"European Union – Financial services"],
+              ["secr",       "SECR",                             isIt?"Regno Unito":"United Kingdom"],
+              ["energystar", "ENERGY STAR",                      isIt?"Nord America":"North America"],
+              ["nabers",     "NABERS",                           isIt?"Australia":"Australia"],
+            ];
+            const selected = rows.filter(([id])=>frameworkChecks[id]?.inUso||frameworkChecks[id]?.diInteresse);
+            return <>
+              {/* Trigger */}
+              <button className="fwTrigger" onClick={()=>setFwOpen(true)}>
+                <span className="fwTriggerLabel">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</span>
+                <span className="fwTriggerEdit">✎ {isIt?"seleziona":"select"}</span>
+              </button>
+              {/* Summary: selected list or fallback */}
+              {selected.length>0
+                ? <div className="fwSummary">{selected.map(([id,label])=>{
+                    const c=frameworkChecks[id];
+                    return <span key={id} className="fwSummaryChip">
+                      {label}
+                      {c?.inUso&&<span className="fwSummaryTag fwSummaryTagUso">{isIt?"in uso":"in use"}</span>}
+                      {c?.diInteresse&&<span className="fwSummaryTag fwSummaryTagInt">{isIt?"di interesse":"of interest"}</span>}
+                    </span>;
+                  })}</div>
+                : <p className="fwSummaryEmpty">{isIt?"Nessun altro framework previsto.":"No other frameworks planned."}</p>
+              }
+              {/* Popup */}
+              {fwOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setFwOpen(false)}}>
+                <div className="companyRptModal" style={{maxWidth:"780px",width:"90vw"}}>
+                  <div className="companyRptModalHead">
+                    <p className="companyRptModalTitle">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</p>
+                    <button className="companyRptModalClose" onClick={()=>setFwOpen(false)}>✕</button>
+                  </div>
+                  <table className="fwTable">
+                    <thead>
+                      <tr>
+                        <th className="fwThLabel">{isIt?"Framework / requisito":"Framework / requirement"}</th>
+                        <th className="fwThArea">Area</th>
+                        <th className="fwThCheck">{isIt?"In uso":"In use"}</th>
+                        <th className="fwThCheck">{isIt?"Di interesse":"Of interest"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map(([id,label,area])=>(
+                        <tr key={id} className="fwRow">
+                          <td className="fwTdLabel">{label}</td>
+                          <td className="fwTdArea">{area}</td>
+                          <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.inUso?" fwCheckOn":""}`} onClick={()=>toggleFw(id,"inUso")}>{frameworkChecks[id]?.inUso?"☑":"☐"}</button></td>
+                          <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.diInteresse?" fwCheckOn":""}`} onClick={()=>toggleFw(id,"diInteresse")}>{frameworkChecks[id]?.diInteresse?"☑":"☐"}</button></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div style={{display:"flex",justifyContent:"flex-end",marginTop:"20px"}}>
+                    <button className="actionButton" onClick={()=>setFwOpen(false)}>{isIt?"Chiudi":"Close"}</button>
+                  </div>
+                </div>
+              </div>}
+            </>;
+          })()}
+
           {rptOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setRptOpen(false)}}>
             <div className="companyRptModal">
               <div className="companyRptModalHead">
@@ -428,156 +710,10 @@ export function CompanyScreen({
           </div>}
         </>;
       })()}
-      <button className="actionButton" onClick={()=>setScreen("priorities")}>{t.explore}<b>→</b></button>
     </section>
-    <section className="geoMapsSection" aria-label={`${displayCompanyName} footprint`}>
-      {(()=>{
-        const GEO_KEYS: SiteGeoKey[] = ["italia","europa","nordamerica","sudamerica","asia","africa","australia"];
-        const GEO_LABELS: Record<SiteGeoKey,{it:string,en:string}> = {
-          italia:{it:"Italia",en:"Italy"},europa:{it:"Europa",en:"Europe"},
-          nordamerica:{it:"Nord America",en:"North America"},sudamerica:{it:"Sud America",en:"South America"},
-          asia:{it:"Asia",en:"Asia"},africa:{it:"Africa",en:"Africa"},australia:{it:"Australia",en:"Australia"},
-        };
-        const GEO_IMGS: Record<SiteGeoKey,string> = {
-          italia:"./mappe/italia.png",europa:"./mappe/europa.png",
-          nordamerica:"./mappe/nordamerica.png",sudamerica:"./mappe/sudamerica.png",
-          asia:"./mappe/asia.png",africa:"./mappe/africa.png",australia:"./mappe/australia.png",
-        };
-        const opsLabelIt = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
-        const opsLabelEn = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
-        const siteRowDefs2:{key:SiteRowKey,label:{it:string,en:string},color:string}[] = [
-          {key:"uffici",    label:{it:"Uffici",en:"Offices"},            color:"#7ab8d8"},
-          {key:"ops",       label:{it:opsLabelIt,en:opsLabelEn},         color:"#72c4a0"},
-          {key:"datacenter",label:{it:"Data center",en:"Data centres"},  color:"#b08adc"},
-          {key:"altro",     label:{it:"Altro",en:"Other"},               color:"#e8a84a"},
-        ];
-
-        // Icone SVG inline per tipo sede (viewBox 0 0 20 20)
-        const GEO_ICON_PATH: Record<SiteRowKey, JSX.Element> = {
-          uffici: (
-            <svg viewBox="0 0 20 20" width="18" height="18">
-              {/* edificio uffici */}
-              <rect x="3" y="7" width="14" height="11" fill="currentColor" opacity=".25" rx="1"/>
-              <rect x="3" y="7" width="14" height="11" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/>
-              <polygon points="1,8 10,1 19,8" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
-              <rect x="8" y="12" width="4" height="6" fill="currentColor" opacity=".5"/>
-              <rect x="4.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/>
-              <rect x="12.5" y="9.5" width="3" height="2.5" fill="currentColor" opacity=".6" rx=".3"/>
-            </svg>
-          ),
-          ops: (
-            <svg viewBox="0 0 20 20" width="18" height="18">
-              {/* capannone industriale */}
-              <rect x="2" y="9" width="16" height="9" fill="currentColor" opacity=".2" rx="1"/>
-              <rect x="2" y="9" width="16" height="9" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1"/>
-              <path d="M2,9 L10,3 L18,9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
-              <rect x="4" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/>
-              <rect x="12.5" y="12" width="3.5" height="6" fill="currentColor" opacity=".5" rx=".5"/>
-              <rect x="8.5" y="4" width="3" height="2" fill="currentColor" opacity=".5" rx=".3"/>
-              {/* camino */}
-              <rect x="14" y="6" width="2" height="4" fill="currentColor" opacity=".6" rx=".3"/>
-            </svg>
-          ),
-          datacenter: (
-            <svg viewBox="0 0 20 20" width="18" height="18">
-              {/* rack server */}
-              <rect x="3" y="2" width="14" height="16" fill="currentColor" opacity=".15" rx="1.5"/>
-              <rect x="3" y="2" width="14" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" rx="1.5"/>
-              <rect x="4.5" y="4" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
-              <rect x="4.5" y="8.5" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
-              <rect x="4.5" y="13" width="11" height="3" fill="currentColor" opacity=".35" rx=".5"/>
-              <circle cx="14" cy="5.5" r="1" fill="currentColor" opacity=".8"/>
-              <circle cx="14" cy="10" r="1" fill="currentColor" opacity=".8"/>
-              <circle cx="14" cy="14.5" r="1" fill="currentColor" opacity=".8"/>
-            </svg>
-          ),
-          altro: (
-            <svg viewBox="0 0 20 20" width="18" height="18">
-              {/* pin mappa */}
-              <path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="currentColor" opacity=".25"/>
-              <path d="M10,2 C6.69,2 4,4.69 4,8 C4,12.5 10,18 10,18 C10,18 16,12.5 16,8 C16,4.69 13.31,2 10,2 Z" fill="none" stroke="currentColor" strokeWidth="1.4"/>
-              <circle cx="10" cy="8" r="2.5" fill="currentColor" opacity=".7"/>
-            </svg>
-          ),
-        };
-
-        const activeGeos = GEO_KEYS.filter(g=>
-          (["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0)
-        );
-        if(activeGeos.length===0) return <p className="geoMapsEmpty">{isIt?"Inserisci sedi nella tabella di setup per visualizzare la distribuzione geografica.":"Enter locations in the setup table to display the geographic distribution."}</p>;
-        return (
-          <div className="geoMapsGrid">
-            {activeGeos.map(g=>{
-              const activeRows = siteRowDefs2.filter(d=>(siteTable[d.key][g]??0)>0);
-              const iconW = 32; // px per icona nel badge
-              return (
-                <div key={g} className="geoMapCard">
-                  <div className="geoMapImgWrap" style={{position:"relative"}}>
-                    <img className="geoMapSvg" src={GEO_IMGS[g]} alt={GEO_LABELS[g].it}/>
-                    {/* overlay icone — colonna verticale sul lato sinistro */}
-                    <div style={{
-                      position:"absolute",inset:0,
-                      display:"flex",alignItems:"center",justifyContent:"flex-start",
-                      padding:"0 0 0 6px",
-                      pointerEvents:"none",
-                    }}>
-                      <div style={{
-                        display:"flex",flexDirection:"column",gap:"3px",
-                        background:"rgba(7,17,14,.72)",
-                        borderRadius:"8px",
-                        padding:"5px 5px",
-                        border:"1px solid rgba(255,255,255,.12)",
-                        boxShadow:"0 2px 10px rgba(0,0,0,.5)",
-                      }}>
-                        {activeRows.map(d=>(
-                          <div key={d.key} style={{
-                            display:"flex",flexDirection:"row",alignItems:"center",gap:"4px",
-                            color:d.color,
-                          }}>
-                            {GEO_ICON_PATH[d.key]}
-                            <span style={{fontSize:"11px",fontWeight:700,lineHeight:1,fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".04em",minWidth:"12px"}}>
-                              {siteTable[d.key][g]}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="geoMapLabel">{isIt?GEO_LABELS[g].it:GEO_LABELS[g].en}</div>
-                  <div className="geoMapIcons">
-                    {activeRows.map(d=>(
-                      <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color}}>
-                        {isIt?d.label.it:d.label.en} · {siteTable[d.key][g]}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        );
-      })()}
-      <div className="geoMapLegend">
-        {(()=>{
-          const opsLabelIt2 = sec.opsUnit.it.charAt(0).toUpperCase()+sec.opsUnit.it.slice(1);
-          const opsLabelEn2 = sec.opsUnit.en.charAt(0).toUpperCase()+sec.opsUnit.en.slice(1);
-          return [
-            {key:"uffici"    as SiteRowKey, label:{it:"Uffici",en:"Offices"},          color:"#7ab8d8"},
-            {key:"ops"       as SiteRowKey, label:{it:opsLabelIt2,en:opsLabelEn2},     color:"#72c4a0"},
-            {key:"datacenter"as SiteRowKey, label:{it:"Data center",en:"Data centres"},color:"#b08adc"},
-            {key:"altro"     as SiteRowKey, label:{it:"Altro",en:"Other"},             color:"#e8a84a"},
-          ].filter(d=>(["italia","europa","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).some(g=>(siteTable[d.key][g]??0)>0))
-          .map(d=>(
-            <span key={d.key} className="geoMapLegendItem" style={{color:d.color}}>
-              <svg width={12} height={12} viewBox="0 0 12 12" style={{flexShrink:0}}>
-                <circle cx={6} cy={6} r={5} fill={d.color} opacity={.25}/>
-                <circle cx={6} cy={6} r={5} fill="none" stroke={d.color} strokeWidth={1.2}/>
-              </svg>
-              {isIt?d.label.it:d.label.en}
-            </span>
-          ));
-        })()}
-      </div>
-    </section>
+    )}
+    <button className="actionButton" style={{position:"absolute",bottom:"28px",right:"3vw",zIndex:10}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
+    </div>{/* end content wrapper */}
+    <div className="welcomeBlueBar"/>
   </main>;
 }

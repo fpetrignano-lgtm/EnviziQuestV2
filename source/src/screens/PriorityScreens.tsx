@@ -106,23 +106,6 @@ export function PrioritiesScreen({
             </div>
           ))}
         </div>
-        {onSave && (
-          <div style={{display:"flex",alignItems:"center",gap:"8px",marginBottom:"8px"}}>
-            <input
-              value={saveName}
-              onChange={e=>{setSaveName(e.target.value);setSaved(false);}}
-              placeholder={isIt?"Nome quest…":"Quest name…"}
-              style={{fontSize:"14px",padding:"6px 10px",borderRadius:"6px",border:"1px solid #3a6a50",background:"#fff",color:"#0d3a2a",outline:"none",flex:1}}
-            />
-            <button
-              disabled={!saveName.trim()}
-              onClick={()=>{if(saveName.trim()){onSave(saveName.trim());setSaved(true);}}}
-              style={{fontSize:"14px",padding:"6px 14px",borderRadius:"6px",border:"none",background:saved?"#3a9a60":"#0d3a2a",color:"#fff",cursor:saveName.trim()?"pointer":"not-allowed",opacity:saveName.trim()?1:0.5,fontWeight:700,whiteSpace:"nowrap"}}
-            >
-              {saved?(isIt?"✓ Salvata":"✓ Saved"):(isIt?"💾 Salva quest":"💾 Save quest")}
-            </button>
-          </div>
-        )}
         <button className="actionButton prioCardsConfirmBtn" onClick={()=>{localStorage.setItem("envizi-quest-priorities",JSON.stringify(priorities));setScreen("approachDataCopy")}}>{t.confirm}<b>→</b></button>
       </div>
     </div>
@@ -703,11 +686,18 @@ export function PriorityMatrixScreen({
       </div>
       <div className="pmPlotWrap">
         <h2 className="pmMatrixTitle">{isIt?"Esigenze di gestione dei dati ESG: Priorità di intervento":"ESG data management needs: Intervention priorities"}</h2>
-        <div className="pmMatrixSpacer"><div className="pmMatrixSpacerLine"/><div className="pmMatrixSpacerLine"/><div className="pmMatrixSpacerLine"/></div>
-        {pmFromBriefing
-          ? <button className="actionButton pmCta" onClick={()=>{setPmFromBriefing(false);setScreen("compare");}}>{isIt?"Continua verso l'AS-IS →":"Continue to AS-IS →"}</button>
-          : <button className="actionButton pmCta" onClick={()=>setScreen("ilTuoReport")}>{isIt?"Inizia le sfide →":"Start challenges →"}<b>→</b></button>
-        }
+        <div className="pmFocusBar">
+          <span className="pmFocusLabel">{isIt?"Focalizza su elementi con":"Focus on needs with"}</span>
+          <span className="pmFocusGroup">
+            <span className="pmFocusKey">R ≥ &amp; C ≥</span>
+            <span className="pmFocusStepper">
+              <button className="pmFocusBtn" onClick={()=>{const v=Math.min(10,focusMinR+1);setFocusMinR(v);setFocusMinC(v);}} disabled={focusMinR>=10}>▲</button>
+              <span className="pmFocusVal">{focusMinR}</span>
+              <button className="pmFocusBtn" onClick={()=>{const v=Math.max(1,focusMinR-1);setFocusMinR(v);setFocusMinC(v);}} disabled={focusMinR<=1}>▼</button>
+            </span>
+          </span>
+          <span className="pmFocusHint">{isIt?"(1 = nessun filtro · 10 = solo il massimo)":"(1 = no filter · 10 = max only)"}</span>
+        </div>
         <svg className="pmSvg" viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`} preserveAspectRatio="xMidYMid meet" style={{transition:"viewBox .35s"}}>
           {gridVals.map(v=><g key={v}>
             <line x1={toX(v)} y1={0} x2={toX(v)} y2={MATRIX_H} stroke="rgba(255,255,255,.55)" strokeWidth="1.5" strokeDasharray="5 5"/>
@@ -781,6 +771,12 @@ export function PriorityMatrixScreen({
             });
           })()}
         </svg>
+        <div style={{display:"flex",justifyContent:"flex-end",padding:"8px 0 4px",width:"100%"}}>
+          {pmFromBriefing
+            ? <button className="actionButton" onClick={()=>{setPmFromBriefing(false);setScreen("compare");}}>{isIt?"Continua verso l'AS-IS":"Continue to AS-IS"}<b> →</b></button>
+            : <button className="actionButton" onClick={()=>setScreen("ilTuoReport")}>{isIt?"Inizia le sfide":"Start challenges"}<b> →</b></button>
+          }
+        </div>
         {pmSelected&&<div className="pmPopoverOverlay" onClick={()=>setPmSelected(null)}>
           <div className="pmPopover" onClick={e=>e.stopPropagation()}>
             <button className="pmPopoverClose" onClick={()=>setPmSelected(null)}>✕</button>
@@ -791,19 +787,7 @@ export function PriorityMatrixScreen({
             </div>
           </div>
         </div>}
-        <div className="pmFocusBar">
-          <span className="pmFocusLabel">{isIt?"Focalizza su elementi con":"Focus on needs with"}</span>
-          <span className="pmFocusGroup">
-            <span className="pmFocusKey">R ≥ &amp; C ≥</span>
-            <span className="pmFocusStepper">
-              <button className="pmFocusBtn" onClick={()=>{const v=Math.min(10,focusMinR+1);setFocusMinR(v);setFocusMinC(v);}} disabled={focusMinR>=10}>▲</button>
-              <span className="pmFocusVal">{focusMinR}</span>
-              <button className="pmFocusBtn" onClick={()=>{const v=Math.max(1,focusMinR-1);setFocusMinR(v);setFocusMinC(v);}} disabled={focusMinR<=1}>▼</button>
-            </span>
-          </span>
-          <span className="pmFocusHint">{isIt?"(1 = nessun filtro · 10 = solo il massimo)":"(1 = no filter · 10 = max only)"}</span>
         </div>
-      </div>
     </div>
   </main>;
 }
