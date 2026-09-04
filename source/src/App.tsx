@@ -368,7 +368,8 @@ export default function Home(){
   const P10_SLIDES=language==="it"?P10_SLIDES_IT:P10_SLIDES_EN;
   const [reportSlideIdx,setReportSlideIdx]=useState(0);
   const [pngCacheBust,setPngCacheBust]=useState(()=>Date.now());
-  const REPORT_SLIDES=["./report-slide-1.png","./report-slide-2.png","./report-slide-3.png","./report-slide-4.png"];
+  const [reportSlideCount,setReportSlideCount]=useState(7);
+  const REPORT_SLIDES=Array.from({length:reportSlideCount},(_,i)=>`./report-slide-${i+1}.png`);
   const REPORT_SLIDES_BUSTED=REPORT_SLIDES.map(s=>`${s}?v=${pngCacheBust}`);
   // 0 = mostra Sì/No iniziale  1 = mostra Sicuro?  2 = confermato definitivamente
   const [reportingPath,setReportingPath]=useState<0|1|2|3|4|5>(0);
@@ -620,7 +621,9 @@ export default function Home(){
     const pptxBase64=btoa(b64);
     const res=await fetch("/api/refresh-report",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({pptxBase64})});
     if(!res.ok){const j=await res.json().catch(()=>({}));throw new Error(j.error||"Server error");}
-    // aggiorna cache-buster e resetta indice — la navigazione avviene nel componente
+    const j=await res.json();
+    // aggiorna conteggio slide, cache-buster e resetta indice
+    if(j.count&&j.count>0)setReportSlideCount(j.count);
     setPngCacheBust(Date.now());
     setReportSlideIdx(0);
   };
