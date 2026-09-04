@@ -597,6 +597,7 @@ export default function Home(){
       critItems:top72.map((n,i)=>({rank:i+1,label:n.label,priority:(t.priorityNames as Record<Priority,string>)[n.priority],rel:n.rel,crit:n.crit,tier:n.tier,needId:n.id})),
       isIt,geoDistrib,siteTable,workshopDate,consultantName,companyLogo,participantRole,participantCompany,businessUnit,reportingPath,
       needCapabilities:needIdToCapability,
+      frameworkChecks,
     };
   };
 

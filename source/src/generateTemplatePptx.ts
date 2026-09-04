@@ -283,6 +283,66 @@ function reduceSlide6TitleFont(xml: string): string {
   );
 }
 
+// ── Slide 4 framework visibility ─────────────────────────────────────────────
+// Each framework in the "IN USO" grid has a check mark shape (✓) and a name shape.
+// If the user did not select a framework (neither inUso nor diInteresse), blank its name
+// and replace the ✓ with an em dash so the slot reads as empty.
+// If diInteresse only, replace ✓ with ◦ to visually distinguish it.
+// The TCFD block is in the "DI INTERESSE" column — hide name+desc if not selected.
+function processSlide4Frameworks(
+  xml: string,
+  frameworkChecks: Record<string, { inUso: boolean; diInteresse: boolean }> | undefined
+): string {
+  if (!frameworkChecks) return xml;
+
+  // fw key → { checkId, labelId } for the IN USO grid
+  const FW_MAP: Record<string, { checkId: number; labelId: number }> = {
+    gri:   { checkId:  8, labelId:  9 },
+    sasb:  { checkId: 12, labelId: 13 },
+    ghg:   { checkId: 16, labelId: 17 },
+    sdg:   { checkId: 20, labelId: 21 },
+    sfdr:  { checkId: 24, labelId: 25 },
+    secr:  { checkId: 28, labelId: 29 },
+    nabers:{ checkId: 32, labelId: 33 },
+  };
+
+  // Helper: replace all <a:t> text content inside a shape by id
+  const setShapeText = (xml: string, shapeId: number, text: string): string =>
+    xml.replace(
+      new RegExp(`(<p:sp>(?:(?!<p:sp>)[\\s\\S])*?<p:cNvPr[^>]*\\bid="${shapeId}"[^>]*>[\\s\\S]*?)<p:txBody>[\\s\\S]*?<\\/p:txBody>(<\\/p:sp>)`),
+      (match, pre, post) => {
+        const origBody = match.match(/<p:txBody>([\s\S]*?)<\/p:txBody>/)?.[1] || "";
+        const bodyPr   = origBody.match(/(<a:bodyPr[\s\S]*?<\/a:bodyPr>|<a:bodyPr[^/]*\/>)/)?.[0] || "<a:bodyPr/>";
+        const rPr      = origBody.match(/(<a:rPr[\s\S]*?<\/a:rPr>|<a:rPr[^/]*\/>)/)?.[0] || "";
+        const newBody  = `<p:txBody>${bodyPr}<a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(text)}</a:t></a:r></a:p></p:txBody>`;
+        return `${pre}${newBody}${post}`;
+      }
+    );
+
+  for (const [fwKey, { checkId, labelId }] of Object.entries(FW_MAP)) {
+    const state = frameworkChecks[fwKey] ?? { inUso: false, diInteresse: false };
+    if (state.inUso) {
+      // keep ✓ and name as-is
+    } else if (state.diInteresse) {
+      // replace ✓ with ◦ to signal "of interest"
+      xml = setShapeText(xml, checkId, "◦");
+    } else {
+      // not selected — blank out both check and label
+      xml = setShapeText(xml, checkId, "");
+      xml = setShapeText(xml, labelId, "");
+    }
+  }
+
+  // TCFD is in the "DI INTERESSE" right column (id=36 name, id=37 desc)
+  const tcfd = frameworkChecks["tcfd"] ?? { inUso: false, diInteresse: false };
+  if (!tcfd.inUso && !tcfd.diInteresse) {
+    xml = setShapeText(xml, 36, "");
+    xml = setShapeText(xml, 37, "");
+  }
+
+  return xml;
+}
+
 // ── Slide 3 geo table replacement ─────────────────────────────────────────────
 // Updates the "SEDI" column in the geo table of slide3 with actual siteTable values.
 // Table row order: Italia, Europa, UK, Nord America, Sud America, Asia, Africa, Australia.
@@ -1192,6 +1252,11 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
           return `${pre}${newTxBody}${post}`;
         }
       );
+    }
+
+    // Slide 4: show only the frameworks the user actually selected
+    if (i === 4) {
+      xmlStr = processSlide4Frameworks(xmlStr, data.frameworkChecks);
     }
 
     // Slide 5: remap priority icons + nudge reputazione note downward
