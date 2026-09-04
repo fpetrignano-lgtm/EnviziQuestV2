@@ -214,15 +214,12 @@ function Slide2({ d }: { d: ReportData }) {
     <Slide bg="#fff">
       {d.companyLogo && <img src={d.companyLogo} alt="logo" style={{position:"absolute",top:24,right:32,height:48,maxWidth:140,objectFit:"contain"}}/>}
       <div style={{padding:"40px 48px 0"}}>
-        <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:32,flexWrap:"wrap"}}>
-          <div style={{fontSize:32,fontWeight:600,color:"#1a7a4a",maxWidth:700,lineHeight:1.3}}>
+        <div style={{marginBottom:32}}>
+          <div style={{fontSize:32,fontWeight:600,color:"#1a7a4a",maxWidth:700,lineHeight:1.3,marginBottom:8}}>
             {isIt?`${d.companyName} ha avviato il percorso ESG`:`${d.companyName} has started its ESG journey`}
           </div>
-          {/* Complexity badge */}
-          <div style={{display:"inline-flex",alignItems:"center",gap:6,padding:"5px 14px",background:complexityBg,borderRadius:20,flexShrink:0}}>
-            <span style={{fontSize:12,fontWeight:700,color:"#fff",letterSpacing:".04em"}}>
-              {isIt?`Complessità di reporting: ${complexityLabel}`:`Reporting complexity: ${complexityLabel}`}
-            </span>
+          <div style={{fontSize:15,fontWeight:600,color:complexityBg,letterSpacing:".01em"}}>
+            {isIt?`Complessità di reporting per ${d.companyName}: ${complexityLabel}`:`Reporting complexity for ${d.companyName}: ${complexityLabel}`}
           </div>
         </div>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"0 60px"}}>

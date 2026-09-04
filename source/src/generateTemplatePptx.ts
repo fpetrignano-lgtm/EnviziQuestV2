@@ -1181,27 +1181,17 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
       xmlStr = replaceSlide7Recommendations(xmlStr, data.critItems, data.needCapabilities, isIt);
     }
 
-    // Slide 3: replace company name in subtitle (id=3) directly to avoid substring collision
-    // with the "54" stat-card placeholder which gets substituted first by replaceInSlideXml.
-    // Also inject a complexity badge below the subtitle.
+    // Slide 3: replace subtitle (id=3) with the complexity sentence directly.
+    // Avoids substring collision with the "54" stat-card placeholder in replaceInSlideXml.
     if (i === 3) {
-      const slide3Subtitle = isIt
-        ? `Evidenza raccolta sulle ${totalSedi} sedi di ${resolvedCompanyName}`
-        : `Evidence collected across ${totalSedi} sites of ${resolvedCompanyName}`;
       xmlStr = xmlStr.replace(
         /(<p:sp>(?:(?!<p:sp>)[\s\S])*?<p:cNvPr[^>]*\bid="3"[^>]*>[\s\S]*?)<p:txBody>[\s\S]*?<\/p:txBody>(<\/p:sp>)/,
         (_, pre, post) => {
-          const rPr = `<a:rPr sz="1200" b="0"><a:solidFill><a:srgbClr val="4D6D67"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
-          const newTxBody = `<p:txBody><a:bodyPr><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(slide3Subtitle)}</a:t></a:r></a:p></p:txBody>`;
+          const rPr = `<a:rPr sz="1200" b="0"><a:solidFill><a:srgbClr val="${geoComplexityColor}"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
+          const newTxBody = `<p:txBody><a:bodyPr><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:r>${rPr}<a:t>${escapeXml(slide3ComplexityText)}</a:t></a:r></a:p></p:txBody>`;
           return `${pre}${newTxBody}${post}`;
         }
       );
-
-      // Inject complexity badge as a new shape just below the subtitle (id=3 bottom ≈ y=1047750).
-      // Placed at y=1090000; uses a coloured background pill matching the complexity level.
-      const badgeRPr = `<a:rPr lang="it-IT" sz="1100" b="1" dirty="0"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill><a:latin typeface="Calibri"/><a:ea typeface="Calibri"/><a:cs typeface="Calibri"/></a:rPr>`;
-      const badgeShapeXml = `<p:sp><p:nvSpPr><p:cNvPr id="998" name="complexity_badge"/><p:cNvSpPr><a:spLocks noGrp="1"/></p:cNvSpPr><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="419100" y="1090000"/><a:ext cx="4000000" cy="304800"/></a:xfrm><a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 16667"/></a:avLst></a:prstGeom><a:solidFill><a:srgbClr val="${geoComplexityColor}"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr anchor="ctr"><a:normAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="l" marL="180000" marR="0" indent="0"/><a:r>${badgeRPr}<a:t>${escapeXml(slide3ComplexityText)}</a:t></a:r></a:p></p:txBody></p:sp>`;
-      xmlStr = xmlStr.replace("</p:spTree>", badgeShapeXml + "</p:spTree>");
     }
 
     // Slide 5: remap priority icons + nudge reputazione note downward
