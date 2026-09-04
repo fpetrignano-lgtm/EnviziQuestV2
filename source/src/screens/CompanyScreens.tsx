@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Market, SectorKey, EsgReadiness } from "../types";
 import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
@@ -188,17 +188,19 @@ export function CompanySetupScreen({
   const readinessList = isIt ? ESG_READINESS_IT : ESG_READINESS_EN;
   const activeReadiness = readinessList.find(r => r.key === esgReadiness)!;
   const handleSectorChange = (sk: SectorKey) => { setCompanySector(sk); };
-  const [copiedField,setCopiedField]=useState<string|null>(null);
-  const copyField=(fieldName:string,value:string)=>{if(!value)return;navigator.clipboard.writeText(value).then(()=>{setCopiedField(fieldName);setTimeout(()=>setCopiedField(null),1500);});};
-  const CopyWrap=({fieldName,value,children}:{fieldName:string,value:string,children:React.ReactNode})=>{
-    const copied=copiedField===fieldName;
-    return <div style={{position:"relative",display:"inline-flex",width:"100%"}} onClick={()=>copyField(fieldName,value)} title={fieldName}>
-      {children}
-      <span style={{position:"absolute",top:"-26px",left:"50%",transform:"translateX(-50%)",background:copied?"#0e2e22":"#1a3328",color:copied?"#72f7ca":"#39efb4",font:"700 10px var(--font-geist-mono,monospace)",letterSpacing:".1em",padding:"3px 8px",borderRadius:"5px",border:"1px solid rgba(57,239,180,.3)",whiteSpace:"nowrap",pointerEvents:"none",opacity:0,transition:"opacity .12s",zIndex:50}} className="csFieldTooltip">
-        {copied?(isIt?"copiato ✓":"copied ✓"):fieldName}
-      </span>
-    </div>;
-  };
+  const [zoomWarnOpen, setZoomWarnOpen] = useState(false);
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (!mod) return;
+      if (e.key === "+" || e.key === "=" || e.key === "-" || e.key === "0") {
+        e.preventDefault();
+        setZoomWarnOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
   const geoColKeys: SiteGeoKey[] = ["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"];
   const geoColLabels: Record<SiteGeoKey,{it:string,en:string}> = {
     italia:{it:"Italia",en:"Italy"}, europa:{it:"Europa",en:"Europe"}, uk:{it:"UK",en:"UK"},
@@ -215,7 +217,18 @@ export function CompanySetupScreen({
   const siteTotal = siteTotalAll();
   const dimLabelRevenue = sec.dimUnit;
   const dimLabelEmployees:{it:string,en:string}={it:"dipendenti",en:"employees"};
-  return <main className="csScreen" style={{position:"relative"}}><div className="welcomeBlueBar"/>
+  return <main className="csScreen" style={{position:"relative"}}>
+  {zoomWarnOpen&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
+    <div style={{background:"#0d1f19",border:"1px solid rgba(57,239,180,.3)",borderRadius:"14px",padding:"28px 32px",maxWidth:"380px",width:"90vw",textAlign:"center",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}} onClick={e=>e.stopPropagation()}>
+      <p style={{margin:"0 0 8px",fontSize:"13px",fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".14em",textTransform:"uppercase",color:"#39efb4"}}>{isIt?"Attenzione":"Warning"}</p>
+      <p style={{margin:"0 0 20px",fontSize:"15px",color:"#e8f5ef",lineHeight:1.5}}>{isIt?"Il rapporto di visualizzazione è ottimizzato per questa schermata. Sei sicuro di voler cambiare lo zoom?":"The display ratio is optimised for this screen. Are you sure you want to change the zoom?"}</p>
+      <div style={{display:"flex",gap:"10px",justifyContent:"center"}}>
+        <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid rgba(57,239,180,.35)",background:"transparent",color:"#39efb4",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{isIt?"Annulla":"Cancel"}</button>
+        <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid #c84040",background:"rgba(200,64,64,.12)",color:"#ff8080",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{isIt?"Continua comunque":"Continue anyway"}</button>
+      </div>
+    </div>
+  </div>}
+  <div className="welcomeBlueBar"/>
     <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> {isIt?"LA TUA AZIENDA":"YOUR COMPANY"}</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <div className="csBody">
       <div className="csLeft"><img className="csProfileImg" src={`./characters/${profile}-neutral.png`} alt={name}/><div className="csProfileTag"><span className="statusDot"/><div><small>ESG MANAGER</small><strong>{name}</strong></div></div></div>
@@ -223,7 +236,7 @@ export function CompanySetupScreen({
         <p className="eyebrow">{isIt?"RACCONTACI LA TUA AZIENDA":"TELL US ABOUT YOUR COMPANY"}</p>
         <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
         <div className="csFormOneCol">
-        <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><CopyWrap fieldName="Organization Name" value={companyName||questName}><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></CopyWrap></div>
+        <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
           <div className="csField">
             <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
             <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
@@ -252,8 +265,7 @@ export function CompanySetupScreen({
           <div className="csField">
             <label>{isIt?"Dimensioni organizzazione":"Organisation size"}</label>
             <div className="csDimsGrid">
-              <div className="csDimRow"><CopyWrap fieldName="Revenue" value={String(companyDims[0]||"")}><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/></CopyWrap><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span><CopyWrap fieldName="Revenue Year" value={String(revenueYear)}><input className="csDimInput csDimInputYear" type="number" min={2000} max={2100} value={revenueYear} onChange={e=>setRevenueYear(parseInt(e.target.value)||revenueYear)}/></CopyWrap><span className="csDimUnit">{isIt?"anno":"year"}</span></div>
-              <div className="csDimRow"><CopyWrap fieldName="Number of Employees" value={String(companyDims[4]||"")}><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/></CopyWrap><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
+              <div className="csDimRow"><input className="csDimInput csDimInputYear" type="number" min={2000} max={2100} value={revenueYear} onChange={e=>setRevenueYear(parseInt(e.target.value)||revenueYear)}/><span className="csDimUnit">{isIt?"anno":"year"}</span><input className="csDimInput" type="number" min={0} value={companyDims[0]===0?"":companyDims[0]} onChange={e=>updateCompanyDim(0,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelRevenue.it:dimLabelRevenue.en}</span><input className="csDimInput" type="number" min={0} value={companyDims[4]===0?"":companyDims[4]} onChange={e=>updateCompanyDim(4,parseFloat(e.target.value))}/><span className="csDimUnit">{isIt?dimLabelEmployees.it:dimLabelEmployees.en}</span></div>
             </div>
           </div>
           {/* Tabella sedi */}
@@ -284,23 +296,19 @@ export function CompanySetupScreen({
               </table>
             </div>
           </div>
-          <div className="csField"><label>{isIt?"Seleziona il tuo stato attuale dati ESG":"Select your current ESG data status"}</label>
-            <select className="csSelect" value={esgReadiness} onChange={e=>setEsgReadiness(e.target.value as EsgReadiness)}>
-              {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
-            </select>
-            <p className="csReadinessDesc">{activeReadiness.desc}</p>
-          </div>
           <div className="csFourCol">
-            <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><CopyWrap fieldName="Workshop Date" value={workshopDate}><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></CopyWrap></div>
-            <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><CopyWrap fieldName="Consultant Name" value={consultantName}><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></CopyWrap></div>
-            <div className="csField"><label>{isIt?"Ruolo":"Role"}</label><CopyWrap fieldName="Participant Role" value={participantRole}><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></CopyWrap></div>
-            <div className="csField"><label>Business Unit</label><CopyWrap fieldName="Business Unit" value={businessUnit}><input className="csInput" type="text" placeholder={isIt?"Es. Operations":"E.g. Operations"} value={businessUnit} onChange={e=>setBusinessUnit(e.target.value)}/></CopyWrap></div>
+            <div className="csField"><label>{isIt?"Data workshop":"Workshop date"}</label><input className="csInput" type="date" value={workshopDate} onChange={e=>setWorkshopDate(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Nome autore":"Author name"}</label><input className="csInput" type="text" placeholder={isIt?"Es. Mario Rossi":"E.g. John Smith"} value={consultantName} onChange={e=>setConsultantName(e.target.value)}/></div>
+            <div className="csField"><label>{isIt?"Ruolo":"Role"}</label><input className="csInput" type="text" placeholder={isIt?"Es. ESG Manager":"E.g. ESG Manager"} value={participantRole} onChange={e=>setParticipantRole(e.target.value)}/></div>
+            <div className="csField"><label>Business Unit</label><input className="csInput" type="text" placeholder={isIt?"Es. Operations":"E.g. Operations"} value={businessUnit} onChange={e=>setBusinessUnit(e.target.value)}/></div>
           </div>
-          <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Entra nell'azienda":"Enter the company"}<b>→</b></button>
+          <div style={{display:"flex",justifyContent:"flex-end",marginTop:"auto"}}>
+            <button className="actionButton csConfirmBtn" onClick={()=>setScreen("company")}>{isIt?"Avanti":"Next"}<b>→</b></button>
+          </div>
         </div>
       </div>
     </div>
-  <div className="welcomeBlueBar"/></main>;
+  <div className="welcomeBlueBar" style={{background:"#39efb4"}}/></main>;
 }
 
 interface CompanyScreenProps extends CommonProps {
@@ -338,6 +346,7 @@ interface CompanyScreenProps extends CommonProps {
   toggleFw?: (id:string,col:"inUso"|"diInteresse")=>void;
   sustainabilityReportSince?: number|"mai";
   setSustainabilityReportSince?: (v:number|"mai")=>void;
+  setEsgReadiness?: (v: EsgReadiness) => void;
 }
 
 export function CompanyScreen({
@@ -354,6 +363,7 @@ export function CompanyScreen({
   toggleFw,
   sustainabilityReportSince = 2024,
   setSustainabilityReportSince,
+  setEsgReadiness,
 }: CompanyScreenProps) {
   const isIt = language === "it";
   const sec = SECTORS[companySector];
@@ -398,6 +408,16 @@ export function CompanyScreen({
   };
   const [rptOpen,setRptOpen]=useState(false);
   const [fwOpen,setFwOpen]=useState(false);
+  const [zoomWarnOpen,setZoomWarnOpen]=useState(false);
+  useEffect(()=>{
+    const handler=(e:KeyboardEvent)=>{
+      const mod=e.metaKey||e.ctrlKey;
+      if(!mod)return;
+      if(e.key==="+"||e.key==="="||e.key==="-"||e.key==="0"){e.preventDefault();setZoomWarnOpen(true);}
+    };
+    window.addEventListener("keydown",handler);
+    return ()=>window.removeEventListener("keydown",handler);
+  },[]);
   const [copiedField,setCopiedField]=useState<string|null>(null);
   const copyField=(fieldName:string,value:string)=>{if(!value)return;navigator.clipboard.writeText(value).then(()=>{setCopiedField(fieldName);setTimeout(()=>setCopiedField(null),1500);});};
   const CopyChip=({fieldName,value,children}:{fieldName:string,value:string,children:React.ReactNode})=>{
@@ -410,6 +430,16 @@ export function CompanyScreen({
     </div>;
   };
   return <main className="companyScreen">
+  {zoomWarnOpen&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
+    <div style={{background:"#0d1f19",border:"1px solid rgba(57,239,180,.3)",borderRadius:"14px",padding:"28px 32px",maxWidth:"380px",width:"90vw",textAlign:"center",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}} onClick={e=>e.stopPropagation()}>
+      <p style={{margin:"0 0 8px",fontSize:"13px",fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".14em",textTransform:"uppercase",color:"#39efb4"}}>{isIt?"Attenzione":"Warning"}</p>
+      <p style={{margin:"0 0 20px",fontSize:"15px",color:"#e8f5ef",lineHeight:1.5}}>{isIt?"Il rapporto di visualizzazione è ottimizzato per questa schermata. Sei sicuro di voler cambiare lo zoom?":"The display ratio is optimised for this screen. Are you sure you want to change the zoom?"}</p>
+      <div style={{display:"flex",gap:"10px",justifyContent:"center"}}>
+        <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid rgba(57,239,180,.35)",background:"transparent",color:"#39efb4",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{isIt?"Annulla":"Cancel"}</button>
+        <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid #c84040",background:"rgba(200,64,64,.12)",color:"#ff8080",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{isIt?"Continua comunque":"Continue anyway"}</button>
+      </div>
+    </div>
+  </div>}
     <div className="welcomeBlueBar"/>
     <header className="missionNav missionNavTrust"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> COMPANY PROFILE</div>{renderTrustBar()}<div style={{display:"flex",alignItems:"center",gap:"8px",marginRight:"8px"}}><img src={`./characters/${profile}-neutral.png`} alt={name} style={{width:"36px",height:"36px",borderRadius:"50%",objectFit:"cover",border:"2px solid rgba(57,239,180,.35)",flexShrink:0}}/><div style={{display:"flex",flexDirection:"column",lineHeight:1.2}}><small style={{font:"700 8px var(--font-geist-mono,monospace)",letterSpacing:".12em",textTransform:"uppercase",color:"#39efb4"}}>ESG MANAGER</small><strong style={{fontSize:"12px",color:"#f2fff9",fontWeight:700}}>{name}</strong></div></div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     {showGeo ? (
@@ -575,6 +605,9 @@ export function CompanyScreen({
           ));
         })()}
       </div>
+      <div style={{display:"flex",justifyContent:"flex-end",padding:"8px 24px 12px",flexShrink:0}}>
+        <button className="actionButton" style={{marginTop:0,width:"auto"}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
+      </div>
     </section>
     ) : (
     <section className="companyCopy">
@@ -599,7 +632,13 @@ export function CompanyScreen({
           }
         </span>
       </div>}
-      <CopyChip fieldName="ESG Readiness" value={evolvingGen}><blockquote style={{cursor:"copy"}}>{evolvingGen}</blockquote></CopyChip>
+      {setEsgReadiness&&<div className="csField" style={{marginTop:"12px"}}>
+        <label style={{fontSize:"13px",fontWeight:600,color:"#7ab3a5",letterSpacing:".05em"}}>{isIt?"Seleziona il tuo stato attuale dati ESG":"Select your current ESG data status"}</label>
+        <select className="csSelect" value={esgReadiness} onChange={e=>setEsgReadiness(e.target.value as EsgReadiness)}>
+          {readinessList.map(r=><option key={r.key} value={r.key}>{r.label}</option>)}
+        </select>
+        <p className="csReadinessDesc">{activeReadiness.desc}</p>
+      </div>}
       {(()=>{
         const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
           {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
@@ -612,11 +651,11 @@ export function CompanyScreen({
         return <>
           <button className="companyRptTrigger" onClick={()=>setRptOpen(true)}>
             {chosen
-              ? <><span className="companyRptTriggerNum">{chosen.num}</span><span className="companyRptTriggerChosen">{isIt?chosen.label.it:chosen.label.en}</span><span className="companyRptTriggerEdit">✎ {isIt?"modifica":"edit"}</span></>
+              ? <><span className="companyRptTriggerChosen">{isIt?`L'azienda ha deciso di adottare ${chosen.label.it}`:`The company has decided to adopt ${chosen.label.en}`}</span><span className="companyRptTriggerEdit">✎ {isIt?"modifica":"edit"}</span></>
               : <span className="companyRptTriggerPrompt">{isIt?"✎ Seleziona il percorso di rendicontazione ESG più adatto per l'azienda":"✎ Select the most appropriate ESG reporting path for the company"}</span>
             }
           </button>
-          {chosen&&<p className="companyRptDecision"><span>{isIt?"Decisione: ":"Decision: "}</span>{isIt?chosen.for.it:chosen.for.en}</p>}
+          {chosen&&<p className="companyRptDecision"><span>{isIt?"Motivo: ":"Reason: "}</span>{isIt?chosen.for.it:chosen.for.en}</p>}
           {frameworkChecks&&toggleFw&&(()=>{
             const rows:[string,string,string][]=[
               ["gresb",      "GRESB",                            isIt?"Globale – Real estate e infrastrutture":"Global – Real estate & infrastructure"],
@@ -701,7 +740,7 @@ export function CompanyScreen({
                     <div className="csReportingCardBody">
                       <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
                       <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
-                      <p className="csReportingCardFor"><span>{isIt?"Decisione: ":"Decision: "}</span>{isIt?p.for.it:p.for.en}</p>
+                      <p className="csReportingCardFor"><span>{isIt?"Motivo: ":"Reason: "}</span>{isIt?p.for.it:p.for.en}</p>
                     </div>
                   </button>
                 ))}
@@ -712,6 +751,6 @@ export function CompanyScreen({
       })()}
     </section>
     )}
-    <div className="welcomeBlueBar"/>
+    <div className="welcomeBlueBar" style={{background:"#39efb4"}}/>
   </main>;
 }

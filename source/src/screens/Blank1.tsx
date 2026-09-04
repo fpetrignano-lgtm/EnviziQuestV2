@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CommonProps } from "./types";
 
 interface Props extends CommonProps {
@@ -10,8 +10,28 @@ interface Props extends CommonProps {
 }
 
 export function Blank1({language,profile,setLanguage,setScreen,reset,renderTrustBar,p10SlideIdx,setP10SlideIdx,P10_SLIDES}:Props){
+  const [zoomWarnOpen,setZoomWarnOpen]=useState(false);
+  useEffect(()=>{
+    const handler=(e:KeyboardEvent)=>{
+      const mod=e.metaKey||e.ctrlKey;
+      if(!mod)return;
+      if(e.key==="+"||e.key==="="||e.key==="-"||e.key==="0"){e.preventDefault();setZoomWarnOpen(true);}
+    };
+    window.addEventListener("keydown",handler);
+    return ()=>window.removeEventListener("keydown",handler);
+  },[]);
   return(
     <main style={{display:"flex",flexDirection:"column",height:"1080px",background:"var(--bg)",overflow:"hidden",position:"relative"}}>
+      {zoomWarnOpen&&<div style={{position:"fixed",inset:0,zIndex:99999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
+        <div style={{background:"#0d1f19",border:"1px solid rgba(57,239,180,.3)",borderRadius:"14px",padding:"28px 32px",maxWidth:"380px",width:"90vw",textAlign:"center",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}} onClick={e=>e.stopPropagation()}>
+          <p style={{margin:"0 0 8px",fontSize:"13px",fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".14em",textTransform:"uppercase",color:"#39efb4"}}>{language==="it"?"Attenzione":"Warning"}</p>
+          <p style={{margin:"0 0 20px",fontSize:"15px",color:"#e8f5ef",lineHeight:1.5}}>{language==="it"?"Il rapporto di visualizzazione è ottimizzato per questa schermata. Sei sicuro di voler cambiare lo zoom?":"The display ratio is optimised for this screen. Are you sure you want to change the zoom?"}</p>
+          <div style={{display:"flex",gap:"10px",justifyContent:"center"}}>
+            <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid rgba(57,239,180,.35)",background:"transparent",color:"#39efb4",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{language==="it"?"Annulla":"Cancel"}</button>
+            <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid #c84040",background:"rgba(200,64,64,.12)",color:"#ff8080",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{language==="it"?"Continua comunque":"Continue anyway"}</button>
+          </div>
+        </div>
+      </div>}
       <div style={{position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
@@ -29,7 +49,7 @@ export function Blank1({language,profile,setLanguage,setScreen,reset,renderTrust
           <button className="actionButton approachIntroCta" onClick={()=>setScreen("approach")}>{language==="it"?"Avanti":"Next"} <b>→</b></button>
         </div>
       </section>
-      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
+      <div style={{position:"absolute",bottom:0,left:0,right:0,height:"4px",background:"#39efb4",zIndex:100}}/>
     </main>
   );
 }
@@ -59,12 +79,12 @@ export function IlTuoReport({language,profile,setLanguage,setScreen,reset,render
       <div style={{position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
-        <div className="missionProgress"><span className="activeDot"/> {isIt?"IL TUO REPORT":"YOUR REPORT"}</div>
+        <div className="missionProgress"><span className="activeDot"/> REP</div>
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
       <section style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px",padding:"12px 0 20px",width:"100%",flex:1,minHeight:0}}>
         <h1 style={{margin:"0 0 4px",fontSize:"clamp(28px,3vw,44px)",fontWeight:520,letterSpacing:"-.05em",color:"#b5c9c1",flexShrink:0}}>
-          {isIt?"Il tuo report":"Your report"}
+          Rep
         </h1>
         <div style={{position:"relative",width:"100%",maxWidth:"none",flex:1,minHeight:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <img src="./logica-report-finale.png" alt={isIt?"Anteprima report":"Report preview"} style={{width:"100%",height:"100%",objectFit:"contain",borderRadius:"10px",boxShadow:"0 4px 32px rgba(0,0,0,.5)",display:"block"}}/>
@@ -97,7 +117,7 @@ export function IlTuoReport({language,profile,setLanguage,setScreen,reset,render
             </button>
           </>}
 
-          <button className="actionButton approachIntroCta" onClick={()=>setScreen("chapterOneSummary")}>{isIt?"Avanti":"Next"} <b>→</b></button>
+          <button className="actionButton approachIntroCta" onClick={()=>setScreen("esgStrategist")}>{isIt?"Avanti":"Next"} <b>→</b></button>
         </div>
       </section>
       <div style={{position:"absolute",bottom:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>

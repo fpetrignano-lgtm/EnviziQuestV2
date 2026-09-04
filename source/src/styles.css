@@ -875,7 +875,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .esgStrPersonaTag small{font:700 10px var(--font-geist-mono);letter-spacing:.14em;color:#39efb4;text-transform:uppercase}
 .esgStrPersonaTag strong{font-size:15px;color:#f2fff9}
 .esgStrContent{display:flex;flex-direction:column;justify-content:center;gap:22px;padding:5vw 7vw 5vw 4vw;position:relative;overflow:hidden}
-.esgStrBadgeImg{width:clamp(432px,48vw,720px);height:auto;display:block;position:absolute;top:-20px;right:-20px;opacity:.92;pointer-events:none}
+.esgStrBadgeImg{width:clamp(345.6px,38.4vw,576px);height:auto;display:block;position:absolute;top:-20px;right:-20px;opacity:.92;pointer-events:none}
 .esgStrBadgeLocked{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border:2px dashed rgba(156,163,175,.4);border-radius:14px;background:rgba(156,163,175,.05);font:700 22px var(--font-geist-mono);letter-spacing:.16em;color:#6a8e82;text-transform:uppercase;width:fit-content}
 .esgStrTitle{font-size:clamp(26px,3.2vw,52px);line-height:1.08;letter-spacing:-.03em;margin:0;color:#39efb4}
 .esgStrTitleLocked{color:#9db3aa}
@@ -1065,12 +1065,12 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csField{display:flex;flex-direction:column;gap:5px}
 .csField [title]:hover .csFieldTooltip,.csField [title]:focus-within .csFieldTooltip{opacity:1!important}
 [title]:hover>.csFieldTooltip{opacity:1!important}
-.csField>label{font:700 16px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#72c4a8}
-.csFieldName>label{font:700 20px var(--font-geist-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--teal);text-shadow:0 0 18px rgba(57,239,180,.35);display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
-.csNameHint{font:400 13px var(--font-geist-mono);letter-spacing:.06em;text-transform:none;color:#4a7a68;text-shadow:none}
-.csInputName{font-size:clamp(18px,2vw,28px)!important;font-weight:700!important;padding:10px 14px!important;border-color:rgba(57,239,180,.28)!important;color:#f2fff9!important;letter-spacing:-.01em}
+.csField>label{font:700 22px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#72c4a8}
+.csFieldName>label{font:700 22px var(--font-geist-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--teal);text-shadow:0 0 18px rgba(57,239,180,.35);display:flex;align-items:baseline;flex-wrap:wrap;gap:8px}
+.csNameHint{font:400 16px var(--font-geist-mono);letter-spacing:.06em;text-transform:none;color:#4a7a68;text-shadow:none}
+.csInputName{font-size:clamp(22px,2vw,32px)!important;font-weight:700!important;padding:10px 14px!important;border-color:rgba(57,239,180,.28)!important;color:#f2fff9!important;letter-spacing:-.01em}
 .csInputName:focus{border-color:var(--teal)!important;box-shadow:0 0 0 3px rgba(57,239,180,.15),0 0 24px rgba(57,239,180,.08)!important}
-.csInput,.csSelect{background:#0a1a14;border:1px solid #1e3a2e;border-radius:8px;color:#f2fff9;font:inherit;font-size:16px;padding:8px 12px;outline:none;transition:.18s;width:100%}
+.csInput,.csSelect{background:#0a1a14;border:1px solid #1e3a2e;border-radius:8px;color:#f2fff9;font:inherit;font-size:22px;padding:8px 12px;outline:none;transition:.18s;width:100%}
 .csInput:focus,.csSelect:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}
 .csSelect{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2339efb4' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:40px}
 .csTwoCol{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -1080,10 +1080,10 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csDimRow{display:flex;align-items:center;gap:8px}
 .csDimTotalRow{display:flex;align-items:center;gap:8px;margin-top:4px;padding-top:6px;border-top:1px solid #1e3a2e}
 .csDimInputYear{width:68px!important;margin-left:10px}.csDimInputTotal{opacity:.7;cursor:not-allowed;border-color:rgba(57,239,180,.3)!important;color:var(--teal)!important}
-.csDimInput{width:90px;background:#0a1a14;border:1px solid #1e3a2e;border-radius:6px;color:#f2fff9;font:700 16px var(--font-geist-mono);padding:7px 8px;outline:none;transition:.18s;-moz-appearance:textfield;appearance:textfield;text-align:right}
+.csDimInput{width:90px;background:#0a1a14;border:1px solid #1e3a2e;border-radius:6px;color:#f2fff9;font:700 22px var(--font-geist-mono);padding:7px 8px;outline:none;transition:.18s;-moz-appearance:textfield;appearance:textfield;text-align:right}
 .csDimInput::-webkit-inner-spin-button,.csDimInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .csDimInput:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}
-.csDimUnit{font-size:14px;color:#9db3aa}
+.csDimUnit{font-size:22px;color:#9db3aa}
 .csGeoGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
 .csGeoRow{display:flex;align-items:center;gap:8px;background:#0a1a14;border:1px solid #1a3028;border-radius:8px;padding:10px 14px}
 .csGeoRowItalia{border-color:rgba(57,239,180,.35);background:rgba(57,239,180,.06)}
@@ -1098,8 +1098,8 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csGeoRow span:first-child{font-size:22px;color:#9db3aa;flex:1}
 .csGeoRow span:last-child{font-size:22px;color:#72c4a8;flex-shrink:0}
 .csGeoRow .csDimInput{width:68px;padding:6px 10px;font-size:22px}
-.csReadinessDesc{margin:4px 0 0;font-size:15px;line-height:1.5;color:#7a9e92;padding:8px 12px;background:rgba(57,239,180,.05);border:1px solid rgba(57,239,180,.18);border-radius:6px}
-.csConfirmBtn{align-self:stretch;margin-top:6px;font-size:18px!important;padding:12px 20px!important}
+.csReadinessDesc{margin:4px 0 0;font-size:22px;line-height:1.5;color:#7a9e92;padding:8px 12px;background:rgba(57,239,180,.05);border:1px solid rgba(57,239,180,.18);border-radius:6px}
+.csConfirmBtn{margin-top:auto;font-size:18px!important;padding:12px 20px!important}
 
 /* Reporting path cards */
 .csReportingBlock{margin:10px 0 18px;padding:0 5vw 0 calc(5vw + 8px)}
@@ -1116,7 +1116,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .srRow{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 1.2vh;padding:10px 16px;border:1px solid #1e3a2e;border-radius:10px;background:rgba(57,239,180,.04)}.srSentence{font-size:clamp(15px,1.35vw,20px);color:#b6cac2;line-height:1.5}.srSentence strong{color:#effbf6;font-weight:700}.srControls{display:flex;align-items:center;gap:6px;flex-shrink:0}.srInlineYear{display:inline-flex;align-items:center;gap:4px;vertical-align:middle}.srBtn{width:30px;height:30px;border-radius:6px;border:1px solid #2a5045;background:#0c1e18;color:#39efb4;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;line-height:1;padding:0}.srBtn:hover{background:rgba(57,239,180,.12);border-color:#39efb4}.srMaiBtn{padding:6px 14px;border-radius:6px;border:1px solid #2a5045;background:transparent;color:#5a9e88;font:600 clamp(12px,1vw,14px) inherit;cursor:pointer;transition:.15s;white-space:nowrap}.srMaiBtn:hover{border-color:#39efb4;color:#39efb4}.srMaiBtnOn{border-color:#f5a623!important;color:#f5c855!important;background:rgba(245,166,35,.08)!important}
 .companyRptDecision{margin:0 0 1.5vh;padding:6px 0 6px 20px;border-left:3px solid var(--teal);font-size:clamp(16px,1.4vw,22px);line-height:1.6;color:#9fb6ad}.companyRptDecision span{color:#39efb4;font-weight:700}
 .fwTrigger{background:none;border:none;padding:0;text-align:left;cursor:pointer;display:inline-flex;align-items:center;gap:10px;margin:1.2vh 0 6px;font:inherit;transition:.15s}.fwTriggerLabel{font-size:clamp(18px,1.6vw,26px);color:#5a9e88;font-weight:600;letter-spacing:.02em}.fwTrigger:hover .fwTriggerLabel{color:#39efb4}.fwTriggerEdit{font-size:clamp(12px,1vw,15px);color:#5a9e88;font-weight:400;opacity:.8}.fwTrigger:hover .fwTriggerEdit{opacity:1;color:#39efb4}.fwSummary{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 1vh}.fwSummaryChip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid #2a4a3c;border-radius:8px;background:rgba(57,239,180,.06);font-size:clamp(13px,1.15vw,17px);color:#c9e8dc;font-weight:600}.fwSummaryTag{font-size:.8em;padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.04em}.fwSummaryTagUso{background:rgba(57,239,180,.18);color:#39efb4}.fwSummaryTagInt{background:rgba(168,216,200,.15);color:#a8d8c8}.fwSummaryEmpty{margin:0 0 1vh;font-size:clamp(14px,1.25vw,18px);color:#4a7a68;font-style:italic}
-.fwTable{width:100%;border-collapse:collapse;margin:1vh 0 0;font-size:clamp(13px,1.15vw,17px)}.fwTable thead tr{border-bottom:2px solid #1e3a2e}.fwThLabel{text-align:left;padding:6px 12px 6px 0;font:700 clamp(11px,1vw,14px) var(--font-geist-mono,monospace);letter-spacing:.12em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap}.fwThArea{text-align:left;padding:6px 12px 6px 0;font:700 clamp(11px,1vw,14px) var(--font-geist-mono,monospace);letter-spacing:.12em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap}.fwThCheck{text-align:center;padding:6px 8px;font:700 clamp(11px,1vw,14px) var(--font-geist-mono,monospace);letter-spacing:.1em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap;min-width:72px}.fwRow{border-bottom:1px solid #0f1f19;transition:.12s}.fwRow:last-child{border-bottom:none}.fwRow:hover{background:rgba(57,239,180,.03)}.fwTdLabel{padding:7px 12px 7px 0;color:#e8f5ef;font-weight:600;white-space:nowrap}.fwTdArea{padding:7px 12px 7px 0;color:#7a9e92;font-size:.9em;white-space:nowrap}.fwTdCheck{text-align:center;padding:4px 8px}.fwCheck{background:none;border:none;padding:0;font-size:clamp(16px,1.5vw,22px);cursor:pointer;color:#4a7060;line-height:1;transition:.12s}.fwCheck:hover{color:#39efb4;transform:scale(1.15)}.fwCheckOn{color:#39efb4}
+.fwTable{width:100%;border-collapse:collapse;margin:1vh 0 0;font-size:29px}.fwTable thead tr{border-bottom:2px solid #1e3a2e}.fwThLabel{text-align:left;padding:6px 12px 6px 0;font:700 29px var(--font-geist-mono,monospace);letter-spacing:.12em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap}.fwThArea{text-align:left;padding:6px 12px 6px 0;font:700 29px var(--font-geist-mono,monospace);letter-spacing:.12em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap}.fwThCheck{text-align:center;padding:6px 8px;font:700 29px var(--font-geist-mono,monospace);letter-spacing:.1em;text-transform:uppercase;color:#7ecfb8;white-space:nowrap;min-width:72px}.fwRow{border-bottom:1px solid #0f1f19;transition:.12s}.fwRow:last-child{border-bottom:none}.fwRow:hover{background:rgba(57,239,180,.03)}.fwTdLabel{padding:7px 12px 7px 0;color:#e8f5ef;font-weight:600;white-space:nowrap;font-size:29px}.fwTdArea{padding:7px 12px 7px 0;color:#7a9e92;white-space:nowrap;font-size:29px}.fwTdCheck{text-align:center;padding:4px 8px}.fwCheck{background:none;border:none;padding:0;font-size:29px;cursor:pointer;color:#4a7060;line-height:1;transition:.12s}.fwCheck:hover{color:#39efb4;transform:scale(1.15)}.fwCheckOn{color:#39efb4}
 
 .companyRptOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:500;display:flex;align-items:center;justify-content:center;padding:40px}
 .companyRptModal{background:#0a1c15;border:1px solid #2a4a3c;border-radius:18px;padding:28px 28px 24px;max-width:96vw;width:96vw;max-height:80vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,.5)}
@@ -1144,17 +1144,17 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .csReportingCardFor span{color:#39efb4;font-weight:700}
 
 /* Site table */
-.csSiteTotal{font-size:15px;color:#72c4a8;font-weight:700;letter-spacing:.06em;margin-bottom:6px}
-.csSiteTotal strong{color:#39efb4;font-size:18px}
+.csSiteTotal{font-size:22px;color:#72c4a8;font-weight:700;letter-spacing:.06em;margin-bottom:6px}
+.csSiteTotal strong{color:#39efb4;font-size:22px}
 .csSiteTableWrap{overflow-x:auto}
 .csSiteTable{width:100%;border-collapse:collapse;table-layout:fixed}
-.csSiteTable thead th{padding:4px 2px;font:700 10px var(--font-geist-mono);letter-spacing:.04em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
+.csSiteTable thead th{padding:4px 2px;font:700 14px var(--font-geist-mono);letter-spacing:.04em;text-transform:uppercase;color:#72c4a8;border-bottom:1px solid #1e3a2e;text-align:center}
 .csSiteThRow{text-align:left!important;width:22%}
-.csSiteThGeo{font-size:8px;letter-spacing:0}
+.csSiteThGeo{font-size:12px;letter-spacing:0}
 .csSiteTable tbody tr{border-bottom:1px solid #121f19}
-.csSiteRowLabel{font-size:14px;color:#9db3aa;padding:5px 4px 5px 0;white-space:nowrap;vertical-align:middle}
+.csSiteRowLabel{font-size:22px;color:#9db3aa;padding:5px 4px 5px 0;white-space:nowrap;vertical-align:middle}
 .csSiteCell{padding:3px 2px;text-align:center;vertical-align:middle}
-.csSiteInput{width:100%;box-sizing:border-box;background:#0a1a14;border:1px solid #1e3a2e;border-radius:5px;color:#f2fff9;font:700 14px var(--font-geist-mono);padding:5px 4px;outline:none;text-align:right;-moz-appearance:textfield;appearance:textfield;transition:.15s}
+.csSiteInput{width:100%;box-sizing:border-box;background:#0a1a14;border:1px solid #1e3a2e;border-radius:5px;color:#f2fff9;font:700 22px var(--font-geist-mono);padding:5px 4px;outline:none;text-align:right;-moz-appearance:textfield;appearance:textfield;transition:.15s}
 .csSiteInput::-webkit-inner-spin-button,.csSiteInput::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 .csSiteInput:focus{border-color:var(--teal);box-shadow:0 0 0 2px rgba(57,239,180,.12)}
 
@@ -1475,7 +1475,7 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .geoMapMetaBoxUnits .geoMapMetaBoxSub{color:rgba(168,216,200,.55)}
 
 /* ── Global Save Overlay — fixed su document.body, fuori dal root scalato ── */
-.globalSaveOverlay{position:fixed;bottom:18px;right:20px;z-index:99999;display:flex;align-items:center;gap:0}
+.globalSaveOverlay{position:fixed;bottom:80px;right:20px;z-index:99999;display:flex;align-items:center;gap:0}
 .globalSaveTrigger{background:transparent;color:rgba(57,239,180,.75);border:1px solid rgba(57,239,180,.35);border-radius:6px;padding:5px 11px;font-size:13px;font-weight:700;letter-spacing:.08em;cursor:pointer;font-family:var(--font-geist-mono,monospace);line-height:1;transition:color .15s,border-color .15s}
 .globalSaveTrigger:hover{color:#39efb4;border-color:#39efb4}
 .globalSaveBox{display:flex;align-items:center;gap:4px;background:#0d1f18;border:1px solid rgba(57,239,180,.5);border-radius:8px;padding:5px 8px}

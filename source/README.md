@@ -93,6 +93,14 @@ Quando l'utente scrive **IDEAL `<slide>`**, esegui in sequenza automatica senza 
 
 ---
 
+## Convenzione VidPlus
+
+Quando l'utente scrive **VidPlus**, significa: applicare su `20 · companySetup` il comportamento di blocco zoom attuale — intercettare `cmd+`/`cmd-`/`cmd=`/`cmd+0` (e varianti `ctrl`) via `useEffect` + `keydown`, `e.preventDefault()`, e mostrare un popup modale di conferma con **Annulla** e **Continua comunque**.
+
+Il popup è in `position:fixed`, `zIndex:9999`, sfondo `rgba(7,18,15,.82)`, card con bordo `rgba(57,239,180,.3)`, bilingue `it`/`en`.
+
+---
+
 ## Convenzione layout HF
 
 Quando l'utente scrive **HF**, significa: applicare il profilo viewport di **Missione 01 — Fotografia attuale**. La slide deve rimanere interamente visibile nello schermo, senza scroll verticale, scrollbar o overflow; mantenere il font leggibile e ridurre prima spaziature, padding e altezza degli elementi quando necessario.
@@ -132,24 +140,48 @@ JSX: primo e ultimo figlio del `<main>`:
 Quando l'utente scrive **CONG** seguito dal nome di una slide, quella slide è **congelata**: non verrà modificata in nessun caso senza un'esplicita richiesta di scongelare da parte dell'utente.
 Quando l'utente scrive **SCONG** seguito dal nome della slide, la slide torna modificabile.
 
-### Slide attualmente congelate
-- `ChapterMap.tsx` — "La tua esperienza Envizi Quest" 🔒
-- `App.tsx` → schermata onboarding — "Ogni dato cambia la tua storia" — **NON TOCCARE JSX NÉ CSS** (`.onboarding`, `.onboarding h1`, `.introPanel`, `.choicePanel`) senza SCONG esplicito
-- `App.tsx` → schermata welcome — "Benvenuto alla Envizi Quest" — **NON TOCCARE JSX NÉ CSS** (`.welcomeScreen`, `.welcomeTitle`, `.welcomePanel`, `.welcomeSubtitle`, `.welcomeBlueBar`) senza SCONG esplicito 🔒
-- `Blank1.tsx` — `08 · blank1` — "La presentazione Envizi" 🔒
-- `App.tsx` → `4 · approach` — "People & Data" 🔒
+### Procedura CONG (da eseguire in sequenza automatica)
 
-- `ApproachScreens.tsx` — tutte le slide approach (`10·approachIntro`, `11·approachSteps`, `12·approachData`, `13·approachDecisions`, `14·approachRoadmap`, `15·approachTrust`, `16·approachReport`) 🔒
-- `App.tsx` → `17 · intro` — "Guadagna la fiducia" 🔒
+1. Segnare la slide come 🔒 nell'elenco "Slide attualmente congelate" in questo README
+2. **Barra blu in fondo → verde**: sull'ultima `<div className="welcomeBlueBar"/>` del JSX della slide, aggiungere `style={{background:"#39efb4"}}` per indicare visivamente lo stato congelato
+   ```jsx
+   <div className="welcomeBlueBar" style={{background:"#39efb4"}}/>
+   ```
+
+### Procedura SCONG (da eseguire in sequenza automatica)
+
+1. Rimuovere 🔒 dall'elenco e aggiornare lo stato in README
+2. **Ripristinare la barra blu**: rimuovere `style={{background:"#39efb4"}}` dalla barra inferiore
+
+### Slide attualmente congelate
+- `App.tsx` → `01 · cover` — "Cover" 🔒
+- `ChapterMap.tsx` — `05 · chapterMap` — "La tua esperienza Envizi Quest" 🔒
+- `App.tsx` → `03 · onboarding` — "Ogni dato cambia la tua storia" — **NON TOCCARE JSX NÉ CSS** (`.onboarding`, `.onboarding h1`, `.introPanel`, `.choicePanel`) senza SCONG esplicito 🔒
+- `App.tsx` → `02 · welcome` — "Benvenuto alla Envizi Quest" — **NON TOCCARE JSX NÉ CSS** (`.welcomeScreen`, `.welcomeTitle`, `.welcomePanel`, `.welcomeSubtitle`, `.welcomeBlueBar`) senza SCONG esplicito 🔒
+- `Blank1.tsx` — `08 · blank1` — "La presentazione Envizi" 🔒 *(VidPlus + barra verde)*
+- `App.tsx` → `04 · approach` — "People & Data" 🔒
+- `ChallengeScreens.tsx` → `06 · sectionIntro1` — "Il percorso Envizi Quest" 🔒
+- `ChallengeScreens.tsx` → `sectionIntro2` — "Obiettivi e dati" 🔒 *(VidPlus integrato nel componente, prop frozen)*
+- `QuestIntro.tsx` → `07 · questIntro` — "Introduzione al Quest" 🔒
+
+- `ApproachScreens.tsx` → `10 · approachIntro` — "Il percorso" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `11 · approachSteps` — "Step 1 obiettivi" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `12 · approachData` — "Step 2 dati" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `13 · approachDecisions` — "Step 3 decisioni" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `14 · approachRoadmap` — "Step 4 roadmap" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `15 · approachTrust` — "Step 5 fiducia" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `16 · approachReport` — "Step 6 report" 🔒 *(VidPlus applicato)*
+- `App.tsx` → `17 · intro` — "Guadagna la fiducia" 🔒 *(VidPlus applicato)*
 - `App.tsx` → `18 · separatorNext` — "Partiamo dagli obiettivi" 🔒
 - `App.tsx` → `19 · approachStepsCopy` — "Il percorso" (step 1 obiettivi) 🔒
-- `CompanyScreens.tsx` → `20 · companySetup` — "La tua azienda" 🔒 *(congelata dall'utente)*
+- `CompanyScreens.tsx` → `20 · companySetup` — "La tua azienda" 🔒
 - `CompanyScreens.tsx` → `21 · company` — "Company Profile" 🔒
 - `PriorityScreens.tsx` → `22 · priorities` — "Business Priorities" 🔒
 - `PriorityScreens.tsx` → `23 · approachDataCopy` — "I dati al centro" 🔒
 - `PriorityScreens.tsx` → `24 · priorityData` — "Data Needs" 🔒 *(ricongelata)*
 - `PriorityScreens.tsx` → `25 · priorityMatrix` — "Priority Matrix" 🔒
 - `App.tsx` → `26 · chapterOneSummary` — "Il tuo report iniziale" 🔒 *(schema Blank1: SummarySlide in flex:1, nav+download fuori)*
+- `App.tsx` → `28 · esgStrategist` — "ESG Strategist" 🔒
 
 ---
 
