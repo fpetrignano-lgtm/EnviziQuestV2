@@ -1000,12 +1000,12 @@ export async function generateTemplatePptx(data: SummaryPptxData): Promise<void>
             : `${resolvedCompanyName} does not yet use structured ESG frameworks and wants to start building a reference baseline`;
         } else if (inUsoCount === 1) {
           return isIt
-            ? `${resolvedCompanyName} usa un framework ESG e vuole allineare le risposte in modo coerente`
-            : `${resolvedCompanyName} uses one ESG framework and wants to align responses in a coherent way`;
+            ? `${resolvedCompanyName} usa un unico framework ESG`
+            : `${resolvedCompanyName} uses a single ESG framework`;
         } else {
           return isIt
-            ? `${resolvedCompanyName} usa più framework ESG e vuole allineare le risposte in modo coerente`
-            : `${resolvedCompanyName} uses multiple ESG frameworks and wants to align responses in a coherent way`;
+            ? `${resolvedCompanyName} usa più framework ESG ed è necessario allineare le risposte in modo coerente`
+            : `${resolvedCompanyName} uses multiple ESG frameworks and responses need to be aligned in a coherent way`;
         }
       })(),
 
