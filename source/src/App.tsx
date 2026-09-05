@@ -614,6 +614,10 @@ export default function Home(){
   if(screen==="reportSlideshowPng"&&profile)return <P10Slideshow language={language} profile={profile} setLanguage={setLanguage} setScreen={setScreen} reset={reset} goBack={goBack} renderTrustBar={renderTrustBar} p10SlideIdx={reportSlideIdx} setP10SlideIdx={setReportSlideIdx} P10_SLIDES={REPORT_SLIDES_BUSTED} backScreen="ilTuoReport"/>;
 
   const refreshAndViewReport=async(lang:"it"|"en")=>{
+    // In produzione (GitHub Pages) non c'è il backend soffice/pdftoppm —
+    // apriamo direttamente lo slideshow con le slide statiche già presenti.
+    const isProd=import.meta.env.PROD;
+    if(isProd){setPngCacheBust(Date.now());setReportSlideIdx(0);return;}
     const buf=await generateTemplatePptxBuffer(buildPptxData(lang==="it"));
     // btoa(String.fromCharCode(...spread)) crasha con file >~1MB — usiamo chunks
     const bytes=new Uint8Array(buf);
@@ -1028,7 +1032,6 @@ export default function Home(){
         <div className="welcomeLeft">
           <p className="eyebrow">IBM ENVIZI · IMPACT QUEST</p>
           <h1 className="welcomeTitle">{isIt?"Benvenuto alla Envizi Quest":"Welcome to Envizi Quest"}</h1>
-          <p className="welcomeSubtitle">{isIt?"Inserisci il tuo nome o selezionane uno esistente per vedere le tue quest salvate.":"Enter your name or pick an existing one to see your saved quests."}</p>
           <div className="welcomeForm">
             {/* Campo nome con suggerimenti utenti */}
             <div className="welcomeField" style={{position:"relative"}}>
@@ -1076,10 +1079,6 @@ export default function Home(){
           <div className="welcomeNote">
             <span className="welcomeNoteIcon">ℹ</span>
             <p>{isIt?"Per recuperare utenti e Quest precedentemente registrati, collegati dal medesimo browser utilizzato in precedenza.":"To retrieve previously registered users and Quests, connect from the same browser used before."}</p>
-          </div>
-          <div className="welcomeWipNote">
-            <span className="welcomeWipIcon">⚠</span>
-            <p>{isIt?`Regola lo schermo in questa schermata: quando vedrai la linea blu in alto e la linea blu in basso avrai la dimensione corretta per usare l'app (risoluzione target: 1080p). ${/Mac|iPhone|iPad/.test(navigator.userAgent)?"Mac: ⌘+ / ⌘−":"Windows: Ctrl+ / Ctrl−"}`:`Adjust the screen zoom on this page: when you see the blue line at the top and the blue line at the bottom, you have the correct size to use the app (target resolution: 1080p). ${/Mac|iPhone|iPad/.test(navigator.userAgent)?"Mac: ⌘+ / ⌘−":"Windows: Ctrl+ / Ctrl−"}`}</p>
           </div>
         </div>
         {/* RIGHT: quest dell'utente corrente */}

@@ -79,13 +79,9 @@ export function IlTuoReport({language,profile,setLanguage,setScreen,reset,render
       <div style={{position:"absolute",top:0,left:0,right:0,height:"4px",background:"#3b82f4",zIndex:100}}/>
       <header className="missionNav">
         <button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button>
-        <div className="missionProgress"><span className="activeDot"/> REP</div>
         <button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button>
       </header>
       <section style={{display:"flex",flexDirection:"column",alignItems:"center",gap:"12px",padding:"12px 0 20px",width:"100%",flex:1,minHeight:0}}>
-        <h1 style={{margin:"0 0 4px",fontSize:"clamp(28px,3vw,44px)",fontWeight:520,letterSpacing:"-.05em",color:"#b5c9c1",flexShrink:0}}>
-          Rep
-        </h1>
         <div style={{position:"relative",width:"100%",maxWidth:"none",flex:1,minHeight:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
           <img src="./logica-report-finale.png" alt={isIt?"Anteprima report":"Report preview"} style={{width:"100%",height:"100%",objectFit:"contain",borderRadius:"10px",boxShadow:"0 4px 32px rgba(0,0,0,.5)",display:"block"}}/>
         </div>

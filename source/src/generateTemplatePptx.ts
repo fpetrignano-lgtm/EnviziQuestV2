@@ -292,8 +292,8 @@ function processSlide4Frameworks(
   xml: string,
   frameworkChecks: Record<string, { inUso: boolean; diInteresse: boolean }> | undefined
 ): string {
-  // Always remove the "DI INTERESSE" label + TCFD shapes.
-  xml = removeShapesById(xml, [35, 36, 37]);
+  // Always remove the "DI INTERESSE" label + TCFD shapes + their dark background rect.
+  xml = removeShapesById(xml, [34, 35, 36, 37]);
 
   // Remove the "Implicazione per il sistema dati" block (background rect + label + text)
   // unless the user has 2 or more frameworks in use.

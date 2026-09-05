@@ -581,6 +581,7 @@ export function CompanyScreen({
                   </div>
                 </>
               )}
+              <button className="actionButton" style={{marginTop:"16px",width:"auto",alignSelf:"flex-end"}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
             </div>
           </div>
           </>
@@ -604,9 +605,6 @@ export function CompanyScreen({
             </span>
           ));
         })()}
-      </div>
-      <div style={{display:"flex",justifyContent:"flex-end",padding:"8px 24px 12px",flexShrink:0}}>
-        <button className="actionButton" style={{marginTop:0,width:"auto"}} onClick={()=>setScreen(nextScreen as any)}>{t.explore}<b>→</b></button>
       </div>
     </section>
     ) : (
