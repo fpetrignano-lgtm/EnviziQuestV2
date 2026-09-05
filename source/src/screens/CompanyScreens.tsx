@@ -620,7 +620,15 @@ export function CompanyScreen({
         <div><strong>{name}</strong><small>ESG MANAGER</small></div>
       </div>
       <p className="companyLead" style={{margin:"1.5vh 0 0"}}>{companyStoryLine1}</p>
-      <p className="companyLead" style={{margin:"4px 0 1.5vh",color:csrdAlert?"#f5c855":"#7ab3a5"}}>{companyStoryLine2}</p>
+      <p className="companyLead" style={{margin:"4px 0 4px",color:csrdAlert?"#f5c855":"#7ab3a5"}}>{companyStoryLine2}</p>
+      <p style={{margin:"0 0 1.5vh",fontSize:"clamp(10px,0.9vw,13px)",color:"#5a8a78",lineHeight:1.4}}>
+        {isIt
+          ? <>⚠ Pre-screening indicativo — la valutazione definitiva dipende da struttura di gruppo, localizzazione delle entità e recepimento nazionale della direttiva.{" "}
+              <a href="https://www.consilium.europa.eu/en/press/press-releases/2026/02/24/council-signs-off-simplification-of-sustainability-reporting-and-due-diligence-requirements-to-boost-eu-competitiveness/" target="_blank" rel="noopener noreferrer" style={{color:"#7dd3fc",textDecoration:"underline"}}>Consiglio dell'UE</a></>
+          : <>⚠ Indicative pre-screening — the final assessment depends on group structure, entity location and national transposition of the directive.{" "}
+              <a href="https://www.consilium.europa.eu/en/press/press-releases/2026/02/24/council-signs-off-simplification-of-sustainability-reporting-and-due-diligence-requirements-to-boost-eu-competitiveness/" target="_blank" rel="noopener noreferrer" style={{color:"#7dd3fc",textDecoration:"underline"}}>EU Council</a></>
+        }
+      </p>
       {setSustainabilityReportSince&&<div className="srRow">
         <span className="srSentence">
           {sustainabilityReportSince==="mai"

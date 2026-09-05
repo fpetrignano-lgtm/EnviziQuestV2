@@ -195,7 +195,7 @@
 .pdSlideColHIncl{font:700 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#39efb4;text-align:center}
 .pdSlideColHScore{font:700 20px var(--font-geist-mono);letter-spacing:.1em;text-transform:uppercase;color:#b5c9c1;text-align:center;border-left:1px solid #0f2a1f;padding:0 14px}
 /* Each need row */
-.pdSlideRow{display:grid;grid-template-columns:1fr 64px 240px 240px;align-items:center;border-bottom:1px solid #0f1f19;min-height:88px;transition:.12s}
+.pdSlideRow{display:grid;grid-template-columns:1fr 64px 240px 240px;align-items:center;border-bottom:1px solid #0f1f19;min-height:88px;transition:.12s;position:relative}
 .pdSlideRow:hover{background:rgba(57,239,180,.025)}
 .pdSlideRow:last-child{border-bottom:none}
 .pdSlideRowDimmed .pdSlideRowScore{opacity:.2;pointer-events:none}
@@ -1384,6 +1384,16 @@ body{font-size:18px}.eyebrow{font-size:22px}.brand{font-size:14px}.step,.mission
 .pdSlideRowLabelClickable:hover{background:rgba(57,239,180,.06)}
 .pdSlideRowSelected .pdSlideRowLabelClickable{background:rgba(57,239,180,.1)}
 .pdSlideRowSelectHint{font-size:14px;margin-left:8px;opacity:.6;flex-shrink:0;align-self:center}
+
+/* ── inherited badge & tooltip ── */
+.pdInheritedBadge{font-size:13px;margin-left:8px;flex-shrink:0;align-self:center;color:#7dd3fc;cursor:pointer;background:rgba(125,211,252,.1);border:1px solid rgba(125,211,252,.3);border-radius:5px;padding:1px 6px;transition:.12s;user-select:none}
+.pdInheritedBadge:hover{background:rgba(125,211,252,.2);border-color:rgba(125,211,252,.6)}
+.pdInheritedTooltip{background:#071f17;border:1px solid rgba(125,211,252,.35);border-radius:10px;padding:10px 14px;font-size:clamp(11px,0.95vw,13px);color:#b5d8ce;line-height:1.5;display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 4px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.pdInheritedTooltip strong{color:#7dd3fc}
+.pdInheritedGoBtn{margin-left:auto;padding:4px 12px;background:rgba(125,211,252,.12);border:1px solid rgba(125,211,252,.4);border-radius:6px;color:#7dd3fc;font-size:12px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+.pdInheritedGoBtn:hover{background:rgba(125,211,252,.25)}
+.pdInheritedCloseBtn{padding:2px 8px;background:transparent;border:1px solid #2a4a3a;border-radius:6px;color:#7ecfb8;font-size:12px;cursor:pointer;flex-shrink:0}
+.pdInheritedCloseBtn:hover{border-color:#39efb4;color:#39efb4}
 
 /* ── priorityData need detail modal ── */
 .pdNeedModalOverlay{position:absolute;inset:0;z-index:200;background:rgba(3,12,9,.72);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:40px}

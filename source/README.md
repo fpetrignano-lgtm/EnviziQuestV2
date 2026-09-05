@@ -165,12 +165,7 @@ Quando l'utente scrive **SCONG** seguito dal nome della slide, la slide torna mo
 - `QuestIntro.tsx` → `07 · questIntro` — "Introduzione al Quest" 🔒
 
 - `ApproachScreens.tsx` → `10 · approachIntro` — "Il percorso" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `11 · approachSteps` — "Step 1 obiettivi" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `12 · approachData` — "Step 2 dati" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `13 · approachDecisions` — "Step 3 decisioni" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `14 · approachRoadmap` — "Step 4 roadmap" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `15 · approachTrust` — "Step 5 fiducia" 🔒 *(VidPlus applicato)*
-- `ApproachScreens.tsx` → `16 · approachReport` — "Step 6 report" 🔒 *(VidPlus applicato)*
+- `ApproachScreens.tsx` → `11 · approachReport` — "Porta con te il risultato" 🔒 *(VidPlus applicato)*
 - `App.tsx` → `17 · intro` — "Guadagna la fiducia" 🔒 *(VidPlus applicato)*
 - `App.tsx` → `18 · separatorNext` — "Partiamo dagli obiettivi" 🔒
 - `App.tsx` → `19 · approachStepsCopy` — "Il percorso" (step 1 obiettivi) 🔒

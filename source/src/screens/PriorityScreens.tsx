@@ -210,6 +210,10 @@ interface PriorityDataProps extends CommonProps {
   renderTrustBar: () => JSX.Element;
   t: Record<string, any>;
   name: string;
+  pdCustomLabels: Record<string, string>;
+  setPdCustomLabels: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  pdCustomMemos: Record<string, string>;
+  setPdCustomMemos: React.Dispatch<React.SetStateAction<Record<string, string>>>;
 }
 
 export function PriorityDataScreen({
@@ -217,12 +221,12 @@ export function PriorityDataScreen({
   priorities, dataNeeds, needRelevance, setNeedRelevance, needCriticality, setNeedCriticality,
   needIncluded, toggleNeedIncluded, isNeedIncluded, pdHelpOpen, setPdHelpOpen,
   needIdToMission, needIdToCapability, displayCompanyName, t, name,
+  pdCustomLabels: customLabels, setPdCustomLabels: setCustomLabels,
+  pdCustomMemos: customMemos, setPdCustomMemos: setCustomMemos,
 }: PriorityDataProps) {
   const isIt = language === "it";
   const [slideIdx, setSlideIdx] = React.useState(0);
   const [selectedNeedId, setSelectedNeedId] = React.useState<string|null>(null);
-  const [customLabels, setCustomLabels] = React.useState<Record<string,string>>({});
-  const [customMemos, setCustomMemos] = React.useState<Record<string,string>>({});
   const [customModalOpen, setCustomModalOpen] = React.useState<string|null>(null); // priority key
   const [customLabelDraft, setCustomLabelDraft] = React.useState("");
   const [customMemoDraft, setCustomMemoDraft] = React.useState("");
@@ -232,6 +236,22 @@ export function PriorityDataScreen({
 
   // id sintetico per la riga custom di questa priority
   const customId = `custom-${p}`;
+
+  // Tooltip stato per le righe ereditate
+  const [inheritedTooltip, setInheritedTooltip] = React.useState<string|null>(null);
+
+  // Per ogni item del slide corrente, cerca se la stessa label esiste in un obiettivo precedente già incluso
+  const getInheritedFrom = (item: {id:string, label:string}): {srcSlideIdx:number, srcId:string, priorityName:string} | null => {
+    for (let i = 0; i < slideIdx; i++) {
+      const prevPriority = priorities[i];
+      const prevItems = dataNeeds.filter(n => n.priority === prevPriority);
+      const match = prevItems.find(n => n.label === item.label);
+      if (match && isNeedIncluded(match.id)) {
+        return { srcSlideIdx: i, srcId: match.id, priorityName: (t.priorityNames as Record<string,string>)[prevPriority] };
+      }
+    }
+    return null;
+  };
 
   // Quando cambia slide, azzera la selezione
   React.useEffect(()=>{ setSelectedNeedId(null); }, [slideIdx]);
@@ -326,9 +346,9 @@ export function PriorityDataScreen({
           ))}
         </div>
         <div className="pdSlideNavBtns">
-          <button className="pdSlideNavBtn" onClick={()=>setSlideIdx(i=>Math.max(0,i-1))} disabled={slideIdx===0}>←</button>
+          <button className="pdSlideNavBtn" onClick={()=>{ if(slideIdx===0) goBack(); else setSlideIdx(i=>i-1); }}>←</button>
           <span className="pdSlideNavCount">{slideIdx+1} / {totalSlides}</span>
-          <button className="pdSlideNavBtn" onClick={()=>setSlideIdx(i=>Math.min(totalSlides-1,i+1))} disabled={slideIdx===totalSlides-1}>→</button>
+          <button className="pdSlideNavBtn" onClick={()=>{ if(slideIdx===totalSlides-1) setScreen("priorityMatrix"); else setSlideIdx(i=>i+1); }}>→</button>
         </div>
       </div>
     </div>
@@ -347,40 +367,56 @@ export function PriorityDataScreen({
         {colItems.map((item, posInGroup)=>{
           const rankLabel = `${slideIdx+1}.${posInGroup+1}`;
           const relMax = 10;
-          const rel = Math.min(needRelevance[item.id]??5, 10);
-          const crit = needCriticality[item.id]??5;
-          const included = isNeedIncluded(item.id);
+          const inherited = getInheritedFrom(item);
+          // se ereditato, usa i valori dell'item sorgente
+          const srcId = inherited ? inherited.srcId : item.id;
+          const rel = Math.min(needRelevance[srcId]??5, 10);
+          const crit = needCriticality[srcId]??5;
+          const included = isNeedIncluded(srcId);
           const tier = rel>7&&crit>7?"high":rel>4||crit>4?"mid":"low";
           const tierColor = tier==="high"?"#ff4d4d":tier==="mid"?"#7dd3fc":"#9ca3af";
           const isSelected = selectedNeedId === item.id;
-          return <div key={item.id} className={`pdSlideRow${included?"":" pdSlideRowDimmed"}${isSelected?" pdSlideRowSelected":""}`}>
+          const tooltipId = `inh-${item.id}`;
+          const showInheritedMsg = () => setInheritedTooltip(inheritedTooltip===tooltipId ? null : tooltipId);
+          return <div key={item.id} className={`pdSlideRow${included?"":" pdSlideRowDimmed"}${isSelected?" pdSlideRowSelected":""}`} style={inherited?{opacity:0.75}:undefined}>
             <div className="pdSlideRowLabel pdSlideRowLabelClickable" style={{color: included ? tierColor : "#c5d8d2"}}
-              onClick={()=>setSelectedNeedId(isSelected ? null : item.id)}
-              title={isIt?"Seleziona per vedere lo use case":"Select to see the use case"}>
+              onClick={()=>{ if(inherited) showInheritedMsg(); else setSelectedNeedId(isSelected ? null : item.id); }}>
               <span className="pdSlideRowCode">{rankLabel}</span>
               <span className="pdSlideRowText">{item.label}</span>
-              <span className="pdSlideRowSelectHint">{isSelected?"▾":"▸"}</span>
+              {inherited
+                ? <span className="pdInheritedBadge">↩</span>
+                : <span className="pdSlideRowSelectHint">{isSelected?"▾":"▸"}</span>
+              }
             </div>
+            {inherited && inheritedTooltip===tooltipId && (
+              <div className="pdInheritedTooltip" style={{gridColumn:"1 / -1"}} onClick={e=>e.stopPropagation()}>
+                {isIt
+                  ? <>Questa esigenza è già stata valutata nell'obiettivo <strong>{inherited.priorityName}</strong>. Per modificare la valutazione torna a quell'obiettivo.{" "}<button className="pdInheritedGoBtn" onClick={()=>{ setInheritedTooltip(null); setSlideIdx(inherited.srcSlideIdx); }}>Vai →</button></>
+                  : <>This need was already rated under objective <strong>{inherited.priorityName}</strong>. To change the rating, go back to that objective.{" "}<button className="pdInheritedGoBtn" onClick={()=>{ setInheritedTooltip(null); setSlideIdx(inherited.srcSlideIdx); }}>Go →</button></>
+                }
+                <button className="pdInheritedCloseBtn" onClick={()=>setInheritedTooltip(null)}>✕</button>
+              </div>
+            )}
             <div className="pdSlideRowIncl">
               <button
                 className={`pdInclBtn${included?" pdInclBtnOn":""}`}
                 style={{"--incl-color": tierColor} as React.CSSProperties}
-                onClick={()=>toggleNeedIncluded(item.id)}
+                onClick={()=>{ if(inherited) showInheritedMsg(); else toggleNeedIncluded(item.id); }}
                 aria-label={included?(isIt?"Escludi":"Exclude"):(isIt?"Includi":"Include")}
               />
             </div>
-            <div className="pdSlideRowScore">
+            <div className="pdSlideRowScore" onClick={()=>{ if(inherited) showInheritedMsg(); }}>
               <input type="range" min={1} max={relMax} value={rel}
                 style={{"--v":rel,"--vmax":relMax-1} as React.CSSProperties}
-                onChange={e=>setNeedRelevance(v=>({...v,[item.id]:Number(e.target.value)}))}
-                className="pdScoreSlider pdSliderRel" disabled={!included}/>
+                onChange={e=>{ if(!inherited) setNeedRelevance(v=>({...v,[item.id]:Number(e.target.value)})); }}
+                className="pdScoreSlider pdSliderRel" disabled={!included||!!inherited}/>
               <span className="pdBandVal pdBandValRel" style={{opacity:included?1:0.35}}>{rel}<span className="pdBandMax">/{relMax}</span></span>
             </div>
-            <div className="pdSlideRowScore">
+            <div className="pdSlideRowScore" onClick={()=>{ if(inherited) showInheritedMsg(); }}>
               <input type="range" min={1} max={10} value={crit}
                 style={{"--v":crit} as React.CSSProperties}
-                onChange={e=>setNeedCriticality(v=>({...v,[item.id]:Number(e.target.value)}))}
-                className="pdScoreSlider pdSliderCrit" disabled={!included}/>
+                onChange={e=>{ if(!inherited) setNeedCriticality(v=>({...v,[item.id]:Number(e.target.value)})); }}
+                className="pdScoreSlider pdSliderCrit" disabled={!included||!!inherited}/>
               <span className="pdBandVal pdBandValCrit" style={{opacity:included?1:0.35}}>{crit}</span>
             </div>
           </div>;

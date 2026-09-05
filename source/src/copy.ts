@@ -94,13 +94,13 @@ export const copy = {
     ],
     approachRoadmapExample:"Esempio · Abbiamo scelto un approccio alla soluzione. Ora individuiamo le capacità necessarie per rispondere alle esigenze emerse. Questa è la fase più analitica del percorso: confronteremo requisiti, priorità e stato attuale per identificare la soluzione più adeguata al contesto. IBM Envizi sarà utilizzato come soluzione di riferimento per valutare in che modo le sue capacità possano contribuire a rispondere alle esigenze individuate.",
     approachRoadmapCta:"Avanti →",
-    approachTrustTitle:"5. Costruisci la fiducia degli stakeholder",
+    approachTrustTitle:"Costruisci la fiducia degli stakeholder",
     approachTrustBody:[
       "Attraverso una dinamica di gamification, le tue decisioni costruiranno un percorso a punti verso la fiducia di banche, clienti, CdA e auditor. Il punteggio ha un valore narrativo e, pur non rappresentando una valutazione scientifica, intende aiutare a confrontare le conseguenze delle diverse scelte proposte.",
     ],
     approachTrustExample:"Esempio · Al termine della valutazione Obiettivi, Rilevanza e Valore gestione dati riceverai il badge ESG Strategist, e potrai progredire verso altri punti fiducia e badge al completamento degli scenari successivi.",
     approachTrustCta:"Avanti →",
-    approachReportTitle:"6. Porta con te il risultato",
+    approachReportTitle:"Porta con te il risultato",
     approachReportBody:[
       "Al termine della Quest riceverai un report complessivo con la sintesi delle priorità, delle criticità selezionate, delle decisioni assunte e dei requisiti individuati.",
       "Il tempo dedicato al percorso serve a trasformare percezioni spesso frammentate in una prima base di analisi condivisibile: non una roadmap definitiva, ma un punto di partenza più consapevole per decidere dove intervenire, con quale priorità e attraverso quali capacità.",
@@ -136,16 +136,16 @@ export const copy = {
     priorityDataKicker:"Le tue esigenze di dati", priorityDataTitle:"Esigenze di dati e sfide associate", priorityDataIntro:"Hai definito le priorità e le esigenze di business. Ora per ogni priorità di business seleziona quali fattori valutare (seleziona i cerchi in colonna includi) e per ognuno la rilevanza e la criticità attuale.", priorityDataCta:"Conferma priorità →",
     priorityDataNeeds:{
       credit:[
-        {id:"credit-1",label:"Emissioni Scope 1, 2 e 3 verificabili e auditabili"},
+        {id:"credit-1",label:"Emissioni e calcoli GHG Scope 1, 2 e 3 verificabili, tracciabili e riconciliabili"},
         {id:"credit-2",label:"KPI ESG strutturati per il dialogo con banche e investitori"},
         {id:"credit-3",label:"Tracciabilità completa dalla fonte al dato comunicato alla banca"},
         {id:"credit-4",label:"Dati e piano ESG utilizzabili nei processi di rating e confronto con i peer"},
         {id:"credit-5",label:"Disclosure allineata a ESRS e standard ISSB / IFRS S1 e S2"},
         {id:"credit-6",label:"Scenari previsionali che mostrino traiettorie, gap e impatto degli investimenti ESG"},
-        {id:"credit-7",label:"Business case delle iniziative con costi, risparmi ed emissioni evitate"}
+        {id:"credit-7",label:"Valutazione economica e ambientale delle iniziative: costi, risparmi ed emissioni evitate"}
       ],
       compliance:[
-        {id:"compliance-1",label:"Calcoli GHG Scope 1, 2 e 3 tracciabili e riconciliabili"},
+        {id:"compliance-1",label:"Emissioni e calcoli GHG Scope 1, 2 e 3 verificabili, tracciabili e riconciliabili"},
         {id:"compliance-2",label:"Workflow con assignee, scadenze, risposte ed evidenze per l'assurance"},
         {id:"compliance-3",label:"Framework CSRD / ESRS, GRI, IFRS S1/S2 e altri standard gestiti nel sistema"},
         {id:"compliance-4",label:"Registro delle modifiche e audit trail per ogni dato ESG"},
@@ -154,9 +154,9 @@ export const copy = {
         {id:"compliance-7",label:"Accesso rapido a dati, fattori, documenti ed evidenze richiesti dagli auditor"}
       ],
       customers:[
-        {id:"customers-1",label:"Dati Scope 3 per categoria GHG Protocol su acquisti, trasporti e prodotti"},
-        {id:"customers-2",label:"Risposte dei fornitori strutturate e integrabili nella contabilità GHG"},
-        {id:"customers-3",label:"Product Carbon Footprint forniti dai supplier per prodotti e acquisti rilevanti"},
+        {id:"customers-1",label:"Dati Scope 3 per acquisti, trasporti e prodotti per categoria GHG Protocol"},
+        {id:"customers-2",label:"Risposte dei fornitori strutturate su emissioni, target, conformità e continuità"},
+        {id:"customers-3",label:"Product Carbon Footprint verificabili dei prodotti forniti, per rispondere alle richieste ESG dei clienti"},
         {id:"customers-4",label:"Dashboard e KPI dedicati alle richieste ESG dei clienti strategici"},
         {id:"customers-5",label:"Evidenze su energia rinnovabile ed emissioni Scope 2 location-based e market-based"},
         {id:"customers-6",label:"Raccolta strutturata di questionari ESG specifici richiesti dai clienti strategici"},
@@ -169,16 +169,16 @@ export const copy = {
         {id:"efficiency-4",label:"Alert automatici su picchi, sprechi e consumi fuori andamento atteso"},
         {id:"efficiency-5",label:"Benchmark dei consumi tra stabilimenti e monitoraggio rispetto ai target"},
         {id:"efficiency-6",label:"Identificazione degli impianti con il maggiore potenziale di risparmio"},
-        {id:"efficiency-7",label:"Valutazione economica e ambientale degli interventi di efficienza"}
+        {id:"efficiency-7",label:"Valutazione economica e ambientale delle iniziative: costi, risparmi ed emissioni evitate"}
       ],
       supply:[
-        {id:"supply-1",label:"Dati Scope 3 cat. 1 (acquisti) e cat. 4 (trasporti upstream)"},
-        {id:"supply-2",label:"Risposte fornitori su emissioni, target, conformità e continuità"},
+        {id:"supply-1",label:"Dati Scope 3 per acquisti, trasporti e prodotti per categoria GHG Protocol"},
+        {id:"supply-2",label:"Risposte dei fornitori strutturate su emissioni, target, conformità e continuità"},
         {id:"supply-3",label:"Integrazione con i flussi ERP per elaborare ordini e transazioni di acquisto"},
         {id:"supply-4",label:"Identificazione degli hotspot emissivi per fornitore, prodotto e categoria di acquisto"},
         {id:"supply-5",label:"Tracciabilità delle azioni correttive e dei piani di miglioramento"},
         {id:"supply-6",label:"Monitoraggio dei tassi di risposta e della qualità dei dati ricevuti dai fornitori"},
-        {id:"supply-7",label:"Passaggio progressivo da stime spend-based a dati supplier-specific e PCF"}
+        {id:"supply-7",label:"Evoluzione della qualità dei dati di filiera: da stime spend-based a dati supplier-specific e PCF"}
       ],
       reputation:[
         {id:"reputation-1",label:"Report ESG chiari, coerenti e allineati ai framework riconosciuti"},
@@ -191,14 +191,14 @@ export const copy = {
       ]
     },
     needUseCases:{
-      "Dati Scope 3 per categoria GHG Protocol su acquisti, trasporti e prodotti":"Use case — Rispondere a clienti che chiedono l'impronta climatica di acquisti, trasporti o prodotti.\nRilevanza — Le emissioni indirette incidono spesso sulla valutazione ESG in gare e qualifiche.\nCriticità — Dati dispersi e metodi non omogenei possono generare stime poco difendibili.",
-      "Risposte dei fornitori strutturate e integrabili nella contabilità GHG":"Use case — Raccogliere dai fornitori dati e risposte utilizzabili direttamente nei calcoli GHG.\nRilevanza — Riduce le stime generiche e rende più solida la risposta alle richieste dei clienti.\nCriticità — Formati diversi, allegati incompleti e scadenze mancate rallentano il processo.",
-      "Product Carbon Footprint forniti dai supplier per prodotti e acquisti rilevanti":"Use case — Ottenere dai fornitori il Product Carbon Footprint dei prodotti acquistati.\nRilevanza — Permette di rispondere con dati più specifici su prodotto e catena del valore.\nCriticità — Metodologie, confini e qualità dei PCF possono non essere comparabili.",
+      "Dati Scope 3 per acquisti, trasporti e prodotti per categoria GHG Protocol":"Use case — Rispondere a clienti che chiedono l'impronta climatica di acquisti, trasporti o prodotti.\nRilevanza — Le emissioni indirette incidono spesso sulla valutazione ESG in gare e qualifiche.\nCriticità — Dati dispersi e metodi non omogenei possono generare stime poco difendibili.",
+      "Risposte dei fornitori strutturate su emissioni, target, conformità e continuità":"Use case — Raccogliere dai fornitori dati strutturati su emissioni, target, conformità e continuità.\nRilevanza — Riduce le stime generiche e rende più solida la risposta alle richieste dei clienti.\nCriticità — Formati diversi, allegati incompleti e scadenze mancate rallentano il processo.",
+      "Product Carbon Footprint verificabili dei prodotti forniti, per rispondere alle richieste ESG dei clienti":"Use case — Ottenere dai fornitori il Product Carbon Footprint dei prodotti acquistati.\nRilevanza — Permette di rispondere con dati più specifici su prodotto e catena del valore.\nCriticità — Metodologie, confini e qualità dei PCF possono non essere comparabili.",
       "Dashboard e KPI dedicati alle richieste ESG dei clienti strategici":"Use case — Preparare una vista sintetica dei KPI richiesti da clienti strategici o capitolati.\nRilevanza — Accelera le risposte e presenta informazioni coerenti tra clienti e periodi.\nCriticità — Dashboard costruite su fonti scollegate rischiano incoerenze e aggiornamenti manuali.",
       "Evidenze su energia rinnovabile ed emissioni Scope 2 location-based e market-based":"Use case — Documentare energia rinnovabile ed emissioni Scope 2 con i due metodi previsti.\nRilevanza — Le evidenze supportano dichiarazioni ambientali e richieste di clienti attenti al clima.\nCriticità — Contratti, certificati e fattori errati possono rendere i risultati non verificabili.",
       "Raccolta strutturata di questionari ESG specifici richiesti dai clienti strategici":"Use case — Gestire questionari ESG personalizzati inviati da clienti diversi.\nRilevanza — Centralizza risposte, responsabilità, allegati e scadenze in un processo ripetibile.\nCriticità — La gestione tramite email e file moltiplica duplicazioni, ritardi e versioni discordanti.",
       "Tracciabilità di metodologie, fattori ed evidenze utilizzate nelle risposte ESG ai clienti":"Use case — Ricostruire come è stato prodotto ogni dato ESG comunicato a un cliente.\nRilevanza — Rafforza la credibilità della risposta e facilita chiarimenti o verifiche successive.\nCriticità — Senza fonti, fattori ed evidenze collegate, il dato è difficile da spiegare e difendere.",
-      "Calcoli GHG Scope 1, 2 e 3 tracciabili e riconciliabili":"Use case — Calcolare e riconciliare le emissioni Scope 1, 2 e 3 partendo dai dati di attività.\nRilevanza — Crea una base coerente per disclosure, assurance e decisioni di decarbonizzazione.\nCriticità — Errori di unità, fattori o perimetro possono propagarsi in tutti i report.",
+      "Emissioni e calcoli GHG Scope 1, 2 e 3 verificabili, tracciabili e riconciliabili":"Use case — Calcolare e riconciliare le emissioni Scope 1, 2 e 3 partendo dai dati di attività, con tracciabilità verso banche, auditor e disclosure.\nRilevanza — Crea una base coerente per disclosure, assurance e decisioni di decarbonizzazione.\nCriticità — Errori di unità, fattori o perimetro possono propagarsi in tutti i report.",
       "Workflow con assignee, scadenze, risposte ed evidenze per l'assurance":"Use case — Coordinare owner, reviewer e approver nella preparazione delle disclosure ESG.\nRilevanza — Rende visibili responsabilità, stato, evidenze e scadenze per l'assurance.\nCriticità — Workflow informali generano colli di bottiglia e approvazioni non tracciate.",
       "Framework CSRD / ESRS, GRI, IFRS S1/S2 e altri standard gestiti nel sistema":"Use case — Gestire nello stesso processo CSRD/ESRS, GRI, ISSB e altri framework applicabili.\nRilevanza — Evita di ricostruire più volte dati e risposte molto simili.\nCriticità — File separati favoriscono duplicazioni, disallineamenti e perdita di controllo sulle versioni.",
       "Registro delle modifiche e audit trail per ogni dato ESG":"Use case — Conservare per ogni dato chi lo ha modificato, quando e con quale evidenza.\nRilevanza — Consente di ricostruire il percorso del dato durante controlli e assurance.\nCriticità — Modifiche non tracciate rendono difficile attribuire responsabilità e correggere gli errori.",
@@ -206,12 +206,11 @@ export const copy = {
       "Controlli di completezza su dati mancanti, sovrapposti o in ritardo":"Use case — Individuare tempestivamente dati ESG mancanti, duplicati o caricati in ritardo.\nRilevanza — Migliora completezza e puntualità prima del consolidamento e della pubblicazione.\nCriticità — Controlli manuali tardivi lasciano poco tempo per correggere anomalie e fonti.",
       "Accesso rapido a dati, fattori, documenti ed evidenze richiesti dagli auditor":"Use case — Recuperare rapidamente dati, documenti, fattori ed evidenze richiesti dagli auditor.\nRilevanza — Riduce il tempo delle verifiche e rende più fluido il dialogo con l'assurance provider.\nCriticità — Evidenze distribuite tra persone e cartelle aumentano tempi, costi e rischio di rilievi.",
       "Gestione controllata di fattori di emissione, versioni e periodi di validità":"Use case — Applicare il fattore di emissione corretto per fonte, area geografica e periodo.\nRilevanza — La scelta del fattore determina accuratezza e confrontabilità del calcolo GHG.\nCriticità — Versioni non controllate possono modificare retroattivamente risultati e dichiarazioni.",
-      "Emissioni Scope 1, 2 e 3 verificabili e auditabili":"Use case — Presentare a banche e investitori emissioni Scope 1, 2 e 3 verificabili.\nRilevanza — Dati solidi migliorano la qualità del dialogo su rischio climatico e finanziamento.\nCriticità — Stime opache o non riconciliabili possono ridurre fiducia e rallentare la valutazione.",
       "KPI ESG strutturati per il dialogo con banche e investitori":"Use case — Preparare un set stabile di KPI ESG per richieste di banche e investitori.\nRilevanza — Consente confronti nel tempo e risposte più rapide nelle istruttorie.\nCriticità — KPI definiti diversamente tra funzioni producono numeri incoerenti e poco credibili.",
       "Tracciabilità completa dalla fonte al dato comunicato alla banca":"Use case — Dimostrare il percorso dalla fonte operativa al dato ESG comunicato alla banca.\nRilevanza — Rende il dato spiegabile e facilita controlli, aggiornamenti e due diligence.\nCriticità — Trasformazioni manuali non documentate possono compromettere l'affidabilità del risultato.",
       "Disclosure allineata a ESRS e standard ISSB / IFRS S1 e S2":"Use case — Preparare disclosure coerenti con ESRS e standard ISSB richiesti dal mercato finanziario.\nRilevanza — Offre un linguaggio riconoscibile per descrivere rischi, impatti e performance ESG.\nCriticità — Interpretazioni isolate dei requisiti possono lasciare gap o creare informazioni discordanti.",
       "Scenari previsionali che mostrino traiettorie, gap e impatto degli investimenti ESG":"Use case — Simulare traiettorie ESG e mostrare come investimenti diversi riducono i gap.\nRilevanza — Aiuta a collegare obiettivi di sostenibilità, fabbisogni finanziari e tempi di attuazione.\nCriticità — Scenari senza ipotesi esplicite possono sembrare precisi ma guidare decisioni fragili.",
-      "Business case delle iniziative con costi, risparmi ed emissioni evitate":"Use case — Confrontare iniziative ESG attraverso costi, risparmi, tempi ed emissioni evitate.\nRilevanza — Supporta la priorità degli investimenti e il confronto con banche e CdA.\nCriticità — Benefici non misurati o baseline deboli possono sovrastimare il ritorno atteso.",
+      "Valutazione economica e ambientale delle iniziative: costi, risparmi ed emissioni evitate":"Use case — Confrontare iniziative ESG attraverso costi, risparmi, tempi ed emissioni evitate.\nRilevanza — Supporta la priorità degli investimenti e il confronto con banche e CdA.\nCriticità — Benefici non misurati o baseline deboli possono sovrastimare il ritorno atteso.",
       "Serie storiche ESG consolidate e confrontabili per periodo, società e stabilimento":"Use case — Analizzare trend ESG consolidati per periodo, società e stabilimento.\nRilevanza — Le serie storiche mostrano stabilità, progressi e aree che richiedono intervento.\nCriticità — Cambi di perimetro e dati ricostruiti rendono i periodi difficili da confrontare.",
       "Monitoraggio degli scostamenti tra target ESG e risultati effettivi":"Use case — Confrontare target ESG e risultati effettivi durante l'anno.\nRilevanza — Permette di intervenire prima che uno scostamento comprometta obiettivi o covenant.\nCriticità — Consuntivi tardivi trasformano il monitoraggio in una spiegazione a posteriori.",
       "Dati energetici e di intensità utili a valutare esposizione a costi e rischi di transizione":"Use case — Valutare consumi e intensità energetiche rispetto a costi e rischi di transizione.\nRilevanza — Evidenzia siti e attività più esposti a volatilità energetica e politiche climatiche.\nCriticità — Dati aggregati nascondono le cause e possono portare a valutazioni finanziarie imprecise.",
@@ -221,16 +220,13 @@ export const copy = {
       "Alert automatici su picchi, sprechi e consumi fuori andamento atteso":"Use case — Segnalare automaticamente picchi, sprechi o consumi fuori dal profilo atteso.\nRilevanza — Permette interventi rapidi prima che l'anomalia diventi un costo rilevante.\nCriticità — Soglie statiche o dati rumorosi generano falsi allarmi e perdita di attenzione.",
       "Benchmark dei consumi tra stabilimenti e monitoraggio rispetto ai target":"Use case — Confrontare stabilimenti simili e seguirne l'andamento rispetto ai target.\nRilevanza — Evidenzia differenze operative e diffonde le pratiche dei siti più efficienti.\nCriticità — Confronti senza normalizzazione possono penalizzare siti con condizioni diverse.",
       "Identificazione degli impianti con il maggiore potenziale di risparmio":"Use case — Classificare gli impianti in base al potenziale tecnico ed economico di risparmio.\nRilevanza — Concentra audit e investimenti dove l'impatto atteso è maggiore.\nCriticità — Dati incompleti o troppo aggregati possono indirizzare risorse verso priorità sbagliate.",
-      "Valutazione economica e ambientale degli interventi di efficienza":"Use case — Valutare ogni intervento per costo, risparmio, emissioni evitate e tempo di ritorno.\nRilevanza — Consente una roadmap equilibrata tra impatto ambientale e sostenibilità economica.\nCriticità — Ipotesi non aggiornate su prezzi e baseline possono alterare la graduatoria dei progetti.",
       "Ripartizione di consumi e costi tra siti, aree, contatori e centri di responsabilità":"Use case — Attribuire consumi e costi a siti, reparti, contatori e responsabili.\nRilevanza — Rende chiaro dove si genera il consumo e chi può intervenire.\nCriticità — Gerarchie o regole di allocazione errate trasferiscono costi alle unità sbagliate.",
       "Stima dei dati mancanti e controlli automatici sulla qualità delle letture":"Use case — Stimare letture mancanti e controllare automaticamente qualità e continuità dei dati.\nRilevanza — Mantiene utilizzabili analisi e report anche quando alcune fonti non arrivano.\nCriticità — Stime non riconoscibili possono essere scambiate per misure reali e distorcere le decisioni.",
       "Verifica dei risparmi effettivi rispetto a baseline e risultati attesi degli interventi":"Use case — Verificare che i risparmi ottenuti corrispondano alla baseline e alle attese del progetto.\nRilevanza — Dimostra il valore degli investimenti e migliora la selezione degli interventi futuri.\nCriticità — Senza una baseline coerente, risultati operativi e risparmi dichiarati non sono distinguibili.",
-      "Dati Scope 3 cat. 1 (acquisti) e cat. 4 (trasporti upstream)":"Use case — Quantificare emissioni da acquisti e trasporti upstream nelle categorie Scope 3 più rilevanti.\nRilevanza — Porta l'attenzione sulle parti della filiera con maggiore impatto climatico.\nCriticità — Dati di spesa e trasporto incompleti richiedono assunzioni che aumentano l'incertezza.",
-      "Risposte fornitori su emissioni, target, conformità e continuità":"Use case — Raccogliere dai fornitori informazioni su emissioni, target, conformità e continuità.\nRilevanza — Unisce rischio ESG, decarbonizzazione e resilienza in una vista comune.\nCriticità — Bassi tassi di risposta e autodichiarazioni non verificate limitano l'affidabilità.",
       "Integrazione con i flussi ERP per elaborare ordini e transazioni di acquisto":"Use case — Alimentare l'analisi ESG della filiera con ordini e transazioni provenienti dall'ERP.\nRilevanza — Riduce caricamenti manuali e mantiene l'analisi collegata agli acquisti effettivi.\nCriticità — Anagrafiche incoerenti e codifiche diverse impediscono di riconciliare fornitori e categorie.",
       "Tracciabilità delle azioni correttive e dei piani di miglioramento":"Use case — Assegnare, monitorare e chiudere azioni correttive concordate con i fornitori.\nRilevanza — Trasforma la valutazione ESG in un percorso concreto di miglioramento.\nCriticità — Azioni gestite fuori sistema perdono owner, scadenze, evidenze e continuità.",
       "Monitoraggio dei tassi di risposta e della qualità dei dati ricevuti dai fornitori":"Use case — Misurare partecipazione dei fornitori e qualità delle informazioni ricevute.\nRilevanza — Evidenzia dove intervenire con solleciti, supporto o controlli aggiuntivi.\nCriticità — Un alto tasso di risposta può nascondere dati incompleti, incoerenti o non documentati.",
-      "Passaggio progressivo da stime spend-based a dati supplier-specific e PCF":"Use case — Sostituire gradualmente stime da spesa con dati supplier-specific e PCF.\nRilevanza — Migliora precisione e capacità di premiare fornitori e prodotti a minore impatto.\nCriticità — Il passaggio crea discontinuità metodologiche che devono restare leggibili nel tempo.",
+      "Evoluzione della qualità dei dati di filiera: da stime spend-based a dati supplier-specific e PCF":"Use case — Sostituire gradualmente stime da spesa con dati supplier-specific e PCF.\nRilevanza — Migliora precisione e capacità di premiare fornitori e prodotti a minore impatto.\nCriticità — Il passaggio crea discontinuità metodologiche che devono restare leggibili nel tempo.",
       "Identificazione degli hotspot emissivi per fornitore, prodotto e categoria di acquisto":"Use case — Individuare fornitori, prodotti e categorie che concentrano le emissioni della filiera.\nRilevanza — Focalizza engagement e decarbonizzazione sui pochi hotspot che contano di più.\nCriticità — Dati incompleti o classificazioni errate possono spostare l'attenzione sulle aree sbagliate.",
       "Report ESG chiari, coerenti e allineati ai framework riconosciuti":"Use case — Produrre report ESG chiari e coerenti con framework riconosciuti.\nRilevanza — Rafforza la comprensione dei risultati da parte di persone, candidati e stakeholder.\nCriticità — Messaggi non allineati ai dati espongono l'azienda a incoerenze e accuse di greenwashing.",
       "Dati verificabili su diversity, sicurezza, formazione e benessere":"Use case — Raccogliere dati verificabili su diversity, sicurezza, formazione e benessere.\nRilevanza — Consente di capire l'esperienza delle persone e indirizzare politiche e investimenti.\nCriticità — Definizioni diverse e dati sensibili richiedono controlli, privacy e responsabilità chiare.",
@@ -242,14 +238,14 @@ export const copy = {
     } as Record<string,string>,
 
     needExamples:{
-      "Dati Scope 3 per categoria GHG Protocol su acquisti, trasporti e prodotti":"Alla vigilia di una gara, il cliente chiede le emissioni Scope 3 di acquisti e trasporti: se i dati non sono pronti, l'offerta rischia di perdere credibilità o punteggio.",
-      "Risposte dei fornitori strutturate e integrabili nella contabilità GHG":"I fornitori inviano risposte in formati diversi e il team deve ricostruire i calcoli GHG: se il processo resta manuale, consegna e qualità della risposta al cliente possono risentirne.",
-      "Product Carbon Footprint forniti dai supplier per prodotti e acquisti rilevanti":"Un cliente chiede il PCF del prodotto che sta acquistando: se i dati del supplier non sono confrontabili o verificati, il valore comunicato può essere contestato.",
+      "Dati Scope 3 per acquisti, trasporti e prodotti per categoria GHG Protocol":"Alla vigilia di una gara, il cliente chiede le emissioni Scope 3 di acquisti e trasporti: se i dati non sono pronti, l'offerta rischia di perdere credibilità o punteggio.",
+      "Risposte dei fornitori strutturate su emissioni, target, conformità e continuità":"I fornitori inviano risposte in formati diversi e il team deve ricostruire i calcoli GHG: se il processo resta manuale, consegna e qualità della risposta al cliente possono risentirne.",
+      "Product Carbon Footprint verificabili dei prodotti forniti, per rispondere alle richieste ESG dei clienti":"Un cliente chiede il PCF del prodotto che sta acquistando: se i dati del supplier non sono confrontabili o verificati, il valore comunicato può essere contestato.",
       "Dashboard e KPI dedicati alle richieste ESG dei clienti strategici":"Durante una negoziazione, il cliente richiede entro poche ore i KPI ESG aggiornati: se la dashboard dipende da file scollegati, la risposta può arrivare tardi o con numeri incoerenti.",
       "Evidenze su energia rinnovabile ed emissioni Scope 2 location-based e market-based":"Il cliente chiede prova dell'energia rinnovabile e delle emissioni Scope 2: se certificati, contratti e fattori non sono collegati, la dichiarazione può non superare la verifica.",
       "Raccolta strutturata di questionari ESG specifici richiesti dai clienti strategici":"Tre clienti strategici inviano questionari diversi sullo stesso tema: se ogni risposta viene ricostruita da zero, aumentano tempi, errori e rischio di fornire versioni discordanti.",
       "Tracciabilità di metodologie, fattori ed evidenze utilizzate nelle risposte ESG ai clienti":"Un cliente mette in discussione un dato ambientale già comunicato: se il team non ricostruisce fonte, fattore e metodologia, la relazione commerciale può perdere fiducia.",
-      "Calcoli GHG Scope 1, 2 e 3 tracciabili e riconciliabili":"Durante l'assurance, due report mostrano valori GHG diversi per la stessa fonte: se il calcolo non è riconciliabile, la chiusura può fermarsi e richiedere nuove verifiche.",
+      "Emissioni e calcoli GHG Scope 1, 2 e 3 verificabili, tracciabili e riconciliabili":"Durante l'assurance, due report mostrano valori GHG diversi per la stessa fonte: se il calcolo non è riconciliabile, la chiusura può fermarsi e richiedere nuove verifiche.",
       "Workflow con assignee, scadenze, risposte ed evidenze per l'assurance":"Una disclosure resta bloccata perché manca l'approvazione del responsabile: se owner e scadenze non sono visibili, il ritardo può compromettere l'intero calendario di reporting.",
       "Framework CSRD / ESRS, GRI, IFRS S1/S2 e altri standard gestiti nel sistema":"La stessa informazione compare con risposte diverse nei report ESRS e GRI: se i framework sono gestiti separatamente, incoerenze pubbliche possono generare rilievi e lavoro aggiuntivo.",
       "Registro delle modifiche e audit trail per ogni dato ESG":"Pochi giorni prima della pubblicazione, un valore viene modificato senza spiegazione: se manca l'audit trail, il team non sa chi coinvolgere e l'assurance può rallentare.",
@@ -257,12 +253,11 @@ export const copy = {
       "Controlli di completezza su dati mancanti, sovrapposti o in ritardo":"Alla chiusura mensile manca il dato di uno stabilimento: se l'anomalia viene scoperta solo nel consolidamento finale, restano poche ore per correggere o stimare il valore.",
       "Accesso rapido a dati, fattori, documenti ed evidenze richiesti dagli auditor":"L'auditor chiede un documento relativo a un dato di diciotto mesi prima: se l'evidenza è dispersa tra email e cartelle, aumentano tempi, costi e rischio di rilievo.",
       "Gestione controllata di fattori di emissione, versioni e periodi di validità":"Un fattore di emissione viene aggiornato ma un foglio continua a usare la vecchia versione: se il cambio non è controllato, le emissioni pubblicate possono dover essere rettificate.",
-      "Emissioni Scope 1, 2 e 3 verificabili e auditabili":"La banca chiede un inventario GHG verificabile per completare l'istruttoria: se emissioni e fonti non sono riconciliabili, il processo di finanziamento può rallentare.",
       "KPI ESG strutturati per il dialogo con banche e investitori":"Banca e investitore richiedono lo stesso KPI, ma ricevono numeri diversi da funzioni diverse: se la metrica non è governata, può aumentare la percezione di rischio.",
       "Tracciabilità completa dalla fonte al dato comunicato alla banca":"Il comitato crediti chiede da dove proviene la riduzione dichiarata: se il dato attraversa passaggi manuali non documentati, la spiegazione può risultare poco convincente.",
       "Disclosure allineata a ESRS e standard ISSB / IFRS S1 e S2":"Un investitore confronta il report con ESRS e ISSB e trova informazioni non allineate: se le disclosure non sono coordinate, la qualità della governance può essere messa in dubbio.",
       "Scenari previsionali che mostrino traiettorie, gap e impatto degli investimenti ESG":"Il CFO deve scegliere tra due investimenti ESG ma non vede l'effetto sulla traiettoria: se manca uno scenario credibile, una decisione importante può essere rinviata o basata sull'intuizione.",
-      "Business case delle iniziative con costi, risparmi ed emissioni evitate":"Due progetti promettono lo stesso beneficio ambientale, ma solo uno considera costi e risparmi: se il business case è incompleto, il capitale può essere destinato all'iniziativa meno efficace.",
+      "Valutazione economica e ambientale delle iniziative: costi, risparmi ed emissioni evitate":"Due progetti promettono lo stesso beneficio ambientale, ma solo uno considera costi e risparmi: se la valutazione è incompleta, il capitale può essere destinato all'iniziativa meno efficace.",
       "Serie storiche ESG consolidate e confrontabili per periodo, società e stabilimento":"La banca chiede tre anni di KPI per stabilimento, ma il perimetro è cambiato più volte: se le serie non sono riconciliate, il trend può apparire instabile o inattendibile.",
       "Monitoraggio degli scostamenti tra target ESG e risultati effettivi":"Uno scostamento dal target ESG emerge soltanto a fine anno: se non resta tempo per intervenire, l'azienda può mancare un impegno comunicato a banca o investitori.",
       "Dati energetici e di intensità utili a valutare esposizione a costi e rischi di transizione":"Un aumento dei prezzi energetici colpisce il sito più intensivo, ma l'esposizione non era visibile: se il rischio non è misurato, budget e capacità di rimborso possono subire sorprese.",
@@ -272,16 +267,13 @@ export const copy = {
       "Alert automatici su picchi, sprechi e consumi fuori andamento atteso":"Un compressore guasto provoca picchi ricorrenti durante il weekend: se nessun alert segnala lo scostamento, il costo può accumularsi fino alla fattura successiva.",
       "Benchmark dei consumi tra stabilimenti e monitoraggio rispetto ai target":"Uno stabilimento sembra meno efficiente perché produce un mix più complesso: se il confronto non considera le variabili operative, il management può imporre obiettivi sbagliati.",
       "Identificazione degli impianti con il maggiore potenziale di risparmio":"L'azienda distribuisce gli audit energetici in modo uniforme tra tutti i siti: se non identifica gli impianti con maggiore potenziale, investimenti e competenze possono essere dispersi.",
-      "Valutazione economica e ambientale degli interventi di efficienza":"Il CdA deve scegliere tra illuminazione efficiente e recupero di calore: se costi, risparmi ed emissioni non sono confrontabili, può prevalere il progetto più semplice ma meno utile.",
       "Ripartizione di consumi e costi tra siti, aree, contatori e centri di responsabilità":"I consumi sono ripartiti per metri quadrati, anche se i reparti lavorano su turni diversi: se l'allocazione è debole, costi e responsabilità possono finire sull'unità sbagliata.",
       "Stima dei dati mancanti e controlli automatici sulla qualità delle letture":"Un contatore smette di trasmettere nel fine settimana e lo zero viene trattato come misura reale: se il gap non è riconosciuto, costi ed emissioni risultano sottostimati.",
       "Verifica dei risparmi effettivi rispetto a baseline e risultati attesi degli interventi":"Un progetto dichiara forti risparmi proprio mentre la produzione diminuisce: se manca una baseline coerente, il payback può essere sovrastimato e l'investimento replicato erroneamente.",
-      "Dati Scope 3 cat. 1 (acquisti) e cat. 4 (trasporti upstream)":"Un cliente chiede le emissioni Scope 3 di acquisti e trasporti, ma dati di spesa e logistica non coincidono: se le stime restano fragili, la risposta può essere contestata.",
-      "Risposte fornitori su emissioni, target, conformità e continuità":"Un fornitore critico non fornisce dati su emissioni, conformità o continuità: se il vuoto informativo persiste, il rischio di filiera può emergere solo durante una crisi.",
       "Integrazione con i flussi ERP per elaborare ordini e transazioni di acquisto":"Nel sistema ERP lo stesso fornitore compare con codici diversi: se gli ordini non vengono riconciliati, spesa, emissioni e priorità di engagement possono risultare distorte.",
       "Tracciabilità delle azioni correttive e dei piani di miglioramento":"Un piano di miglioramento resta in una catena di email e il referente cambia ruolo: se azioni e scadenze non sono tracciate, il rischio segnalato può rimanere aperto per mesi.",
       "Monitoraggio dei tassi di risposta e della qualità dei dati ricevuti dai fornitori":"Il 90% dei fornitori risponde al questionario, ma metà non allega evidenze: se si guarda solo al tasso di risposta, il management può avere una falsa sensazione di copertura.",
-      "Passaggio progressivo da stime spend-based a dati supplier-specific e PCF":"La stima spend-based diminuisce perché cala il prezzo di acquisto, non l'impatto fisico: se il metodo non evolve, l'azienda può credere di aver decarbonizzato senza riduzioni reali.",
+      "Evoluzione della qualità dei dati di filiera: da stime spend-based a dati supplier-specific e PCF":"La stima spend-based diminuisce perché cala il prezzo di acquisto, non l'impatto fisico: se il metodo non evolve, l'azienda può credere di aver decarbonizzato senza riduzioni reali.",
       "Identificazione degli hotspot emissivi per fornitore, prodotto e categoria di acquisto":"Pochi fornitori concentrano gran parte delle emissioni, ma il team li coinvolge tutti allo stesso modo: se gli hotspot non emergono, tempo e risorse producono poco impatto.",
       "Report ESG chiari, coerenti e allineati ai framework riconosciuti":"Il report di sostenibilità dichiara un progresso che il sito web descrive diversamente: se dati e messaggi non sono allineati, dipendenti e stakeholder possono dubitare dell'intera comunicazione ESG.",
       "Dati verificabili su diversity, sicurezza, formazione e benessere":"Due stabilimenti calcolano l'indice di infortunio con regole diverse: se il confronto è errato, risorse e attenzione possono essere sottratte al sito che ne ha davvero bisogno.",
@@ -387,13 +379,13 @@ export const copy = {
     ],
     approachRoadmapExample:"Example · We have chosen an approach to the solution. Now we identify the capabilities needed to address the needs that emerged. This is the most analytical phase of the journey: we will compare requirements, priorities and current state to identify the most suitable solution for the context. IBM Envizi will be used as the reference solution to assess how its capabilities can contribute to addressing the identified needs.", // TODO-EN
     approachRoadmapCta:"Next →",
-    approachTrustTitle:"5. Build stakeholder trust",
+    approachTrustTitle:"Build stakeholder trust",
     approachTrustBody:[
       "Through a gamification dynamic, your decisions will build a point-based journey towards the trust of banks, clients, boards and auditors. The score has a narrative value and, while not representing a scientific assessment, is intended to help compare the consequences of the different choices proposed.",
     ],
     approachTrustExample:"Example · Upon completing the Objectives, Relevance and Data Management Value assessment you will receive the ESG Strategist badge, and you can progress towards further trust points and badges upon completing subsequent scenarios.",
     approachTrustCta:"Next →",
-    approachReportTitle:"6. Take the result with you",
+    approachReportTitle:"Take the result with you",
     approachReportBody:[
       "At the end of the Quest you will receive a comprehensive report summarising your priorities, the criticalities selected, the decisions taken and the requirements identified.",
       "The time invested in this journey serves to turn often fragmented perceptions into a first shareable basis for analysis: not a definitive roadmap, but a more informed starting point for deciding where to act, with what priority and through which capabilities.",
@@ -429,16 +421,16 @@ export const copy = {
     priorityDataKicker:"Your data needs", priorityDataTitle:"Data needs and associated challenges", priorityDataIntro:"You have defined your business priorities. Now for each business priority, select which factors to evaluate and assign a relevance and current criticality score to each one.", priorityDataCta:"Confirm priorities →",
     priorityDataNeeds:{
       credit:[
-        {id:"credit-1",label:"Verifiable and auditable Scope 1, 2 and 3 emissions"},
+        {id:"credit-1",label:"Scope 1, 2 and 3 GHG emissions and calculations — verifiable, traceable and reconcilable"},
         {id:"credit-2",label:"Structured ESG KPIs for dialogue with banks and investors"},
         {id:"credit-3",label:"Full traceability from source to the data communicated to the bank"},
         {id:"credit-4",label:"ESG data and plan usable in rating processes and peer benchmarking"},
         {id:"credit-5",label:"Disclosure aligned with ESRS and ISSB / IFRS S1 and S2 standards"},
         {id:"credit-6",label:"Forward-looking scenarios showing trajectories, gaps and the impact of ESG investments"},
-        {id:"credit-7",label:"Business case for initiatives with costs, savings and avoided emissions"}
+        {id:"credit-7",label:"Economic and environmental assessment of initiatives: costs, savings and avoided emissions"}
       ],
       compliance:[
-        {id:"compliance-1",label:"Traceable and reconcilable Scope 1, 2 and 3 GHG calculations"},
+        {id:"compliance-1",label:"Scope 1, 2 and 3 GHG emissions and calculations — verifiable, traceable and reconcilable"},
         {id:"compliance-2",label:"Workflows with assignees, deadlines, responses and evidence for assurance"},
         {id:"compliance-3",label:"CSRD / ESRS, GRI, IFRS S1/S2 and other standards managed in the system"},
         {id:"compliance-4",label:"Change log and audit trail for every ESG data point"},
@@ -447,9 +439,9 @@ export const copy = {
         {id:"compliance-7",label:"Quick access to data, factors, documents and evidence requested by auditors"}
       ],
       customers:[
-        {id:"customers-1",label:"Scope 3 data by GHG Protocol category for procurement, transport and products"},
-        {id:"customers-2",label:"Structured supplier responses integrable into GHG accounting"},
-        {id:"customers-3",label:"Product Carbon Footprints provided by suppliers for relevant products and purchases"},
+        {id:"customers-1",label:"Scope 3 data for procurement, transport and products by GHG Protocol category"},
+        {id:"customers-2",label:"Structured supplier responses on emissions, targets, compliance and continuity"},
+        {id:"customers-3",label:"Verifiable Product Carbon Footprints from suppliers, for responding to customer ESG requests"},
         {id:"customers-4",label:"Dashboards and KPIs dedicated to ESG requests from strategic customers"},
         {id:"customers-5",label:"Evidence on renewable energy and location-based and market-based Scope 2 emissions"},
         {id:"customers-6",label:"Structured collection of ESG questionnaires requested by strategic customers"},
@@ -462,16 +454,16 @@ export const copy = {
         {id:"efficiency-4",label:"Automatic alerts on peaks, waste and consumption outside expected trends"},
         {id:"efficiency-5",label:"Consumption benchmarking across plants and monitoring against targets"},
         {id:"efficiency-6",label:"Identification of facilities with the greatest savings potential"},
-        {id:"efficiency-7",label:"Economic and environmental assessment of efficiency interventions"}
+        {id:"efficiency-7",label:"Economic and environmental assessment of initiatives: costs, savings and avoided emissions"}
       ],
       supply:[
-        {id:"supply-1",label:"Scope 3 cat. 1 (purchased goods) and cat. 4 (upstream transport) data"},
-        {id:"supply-2",label:"Supplier responses on emissions, targets, compliance and continuity"},
+        {id:"supply-1",label:"Scope 3 data for procurement, transport and products by GHG Protocol category"},
+        {id:"supply-2",label:"Structured supplier responses on emissions, targets, compliance and continuity"},
         {id:"supply-3",label:"Integration with ERP flows to process purchase orders and transactions"},
         {id:"supply-4",label:"Identification of emission hotspots by supplier, product and procurement category"},
         {id:"supply-5",label:"Traceability of corrective actions and improvement plans"},
         {id:"supply-6",label:"Monitoring of response rates and data quality received from suppliers"},
-        {id:"supply-7",label:"Progressive transition from spend-based estimates to supplier-specific data and PCFs"}
+        {id:"supply-7",label:"Improving supply-chain data quality: from spend-based estimates to supplier-specific data and PCFs"}
       ],
       reputation:[
         {id:"reputation-1",label:"Clear, consistent ESG reports aligned with recognised frameworks"},

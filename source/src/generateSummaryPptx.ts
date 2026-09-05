@@ -61,11 +61,11 @@ function addSlide1(
   slide.background = { color: BG };
   headerBar(slide, companyName, isIt ? "01 · PROFILO AZIENDA" : "01 · COMPANY PROFILE");
 
-  // company name hero
+  // company name hero — single line, shrinks if too long
   slide.addText(companyName, {
     x: 0.35, y: 0.65, w: 9.3, h: 1,
     fontSize: 44, bold: true, color: WHITE, fontFace: "Arial",
-    charSpacing: -1,
+    charSpacing: -1, shrinkText: true, wrap: false,
   });
 
   // pill tags row
@@ -104,10 +104,19 @@ function addSlide1(
   slide.addText(csrdLabel, { x: 0.55, y: 3.63, w: 6, h: 0.22, fontSize: 11.5, bold: true, color: WHITE, fontFace: "Arial" });
   slide.addText(csrdSub,   { x: 0.55, y: 3.84, w: 8.8, h: 0.22, fontSize: 10,   color: WHITE, fontFace: "Arial" });
 
+  // pre-screening disclaimer (always shown)
+  const preScreeningText = isIt
+    ? "⚠  Pre-screening indicativo — la valutazione definitiva dipende da struttura di gruppo, localizzazione delle entità e recepimento nazionale della direttiva."
+    : "⚠  Indicative pre-screening — the final assessment depends on group structure, entity location and national transposition of the directive.";
+  slide.addText(preScreeningText, {
+    x: 0.35, y: 4.22, w: 9.3, h: 0.28,
+    fontSize: 9, color: MUTED, fontFace: "Arial", italic: true,
+  });
+
   // CSRD note if present
   if (csrdNote) {
     slide.addText(`✎  ${csrdNote}`, {
-      x: 0.35, y: 4.22, w: 9.3, h: 0.38,
+      x: 0.35, y: 4.56, w: 9.3, h: 0.38,
       fontSize: 10, color: WHITE, fontFace: "Arial", italic: true,
       line: { color: BORDER, width: 0.5 },
     });
