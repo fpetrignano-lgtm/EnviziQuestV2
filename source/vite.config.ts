@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import { reportRefreshPlugin } from "./vite-plugin-report-refresh";
 
 export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/EnviziQuestV3/" : "/",
+  base: command === "build" ? "/EnviziQuestV2/" : "/",
   server: { port: 5174, strictPort: true },
   plugins: [react(), reportRefreshPlugin()],
   build: {
