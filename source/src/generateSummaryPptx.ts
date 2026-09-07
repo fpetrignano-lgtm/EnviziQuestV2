@@ -293,6 +293,10 @@ export interface SummaryPptxData {
   reportingPath?: 0|1|2|3|4|5;
   needCapabilities?: Record<string, { it: string; en: string }>;
   frameworkChecks?: Record<string, { inUso: boolean; diInteresse: boolean }>;
+  revenueYear?: number;
+  sustainabilityReportSince?: number | "mai";
+  ucSelections?: Record<string, number[]>;
+  ucScenarios?: Record<string, string[]>;
 }
 
 export function generateSummaryPptx(data: SummaryPptxData) {

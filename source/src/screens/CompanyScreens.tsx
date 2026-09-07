@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import type { Market, SectorKey, EsgReadiness } from "../types";
 import type { CommonProps } from "./types";
 import { SECTORS, SECTOR_KEYS, ESG_READINESS_IT, ESG_READINESS_EN } from "../constants";
@@ -218,7 +218,7 @@ export function CompanySetupScreen({
   const dimLabelRevenue = sec.dimUnit;
   const dimLabelEmployees:{it:string,en:string}={it:"dipendenti",en:"employees"};
   return <main className="csScreen" style={{position:"relative"}}>
-  {zoomWarnOpen&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
+  {zoomWarnOpen&&<Portal><div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
     <div style={{background:"#0d1f19",border:"1px solid rgba(57,239,180,.3)",borderRadius:"14px",padding:"28px 32px",maxWidth:"380px",width:"90vw",textAlign:"center",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}} onClick={e=>e.stopPropagation()}>
       <p style={{margin:"0 0 8px",fontSize:"13px",fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".14em",textTransform:"uppercase",color:"#39efb4"}}>{isIt?"Attenzione":"Warning"}</p>
       <p style={{margin:"0 0 20px",fontSize:"15px",color:"#e8f5ef",lineHeight:1.5}}>{isIt?"Il rapporto di visualizzazione è ottimizzato per questa schermata. Sei sicuro di voler cambiare lo zoom?":"The display ratio is optimised for this screen. Are you sure you want to change the zoom?"}</p>
@@ -227,16 +227,20 @@ export function CompanySetupScreen({
         <button style={{padding:"8px 22px",borderRadius:"8px",border:"1px solid #c84040",background:"rgba(200,64,64,.12)",color:"#ff8080",fontSize:"14px",cursor:"pointer",fontFamily:"inherit"}} onClick={()=>setZoomWarnOpen(false)}>{isIt?"Continua comunque":"Continue anyway"}</button>
       </div>
     </div>
-  </div>}
+  </div></Portal>}
   <div className="welcomeBlueBar"/>
     <header className="missionNav"><button className="brand brandButton" onClick={reset}><span className="brandMark">e·</span><span>Envizi<br/>Impact Quest</span></button><div className="missionProgress"><span className="activeDot"/> {isIt?"LA TUA AZIENDA":"YOUR COMPANY"}</div><button className="langMini" onClick={()=>setLanguage(language==="it"?"en":"it")}>{language==="it"?"EN":"IT"}</button></header>
     <div className="csBody">
       <div className="csLeft"><img className="csProfileImg" src={`./characters/${profile}-neutral.png`} alt={name}/><div className="csProfileTag"><span className="statusDot"/><div><small>ESG MANAGER</small><strong>{name}</strong></div></div></div>
       <div className="csRight">
         <p className="eyebrow">{isIt?"RACCONTACI LA TUA AZIENDA":"TELL US ABOUT YOUR COMPANY"}</p>
-        <h1 className="csTitle">{isIt?"La tua azienda":"Your company"}</h1>
+        <h1 className="csTitle">{companyName||(isIt?"La tua azienda":"Your company")}</h1>
         <div className="csFormOneCol">
-        <div className="csField csFieldName"><label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label><input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName||questName} onChange={e=>setCompanyName(e.target.value)}/></div>
+        <div className="csField csFieldName">
+          <label>{isIt?"Nome Azienda":"Company Name"}<span className="csNameHint">{isIt?"· inserisci il nome della tua azienda":"· enter your company name"}</span></label>
+          <input className="csInput csInputName" placeholder={isIt?"Es. Acme S.p.A.":"E.g. Acme Ltd"} value={companyName} onChange={e=>setCompanyName(e.target.value)}/>
+          {questName&&<p style={{margin:"4px 0 0",fontSize:"12px",color:"#6a9a88",lineHeight:1.4}}>{isIt?"Sessione:":"Session:"} <span style={{color:"#9abfb0"}}>{questName}</span></p>}
+        </div>
           <div className="csField">
             <label>{isIt?"Logo azienda (opzionale)":"Company logo (optional)"}</label>
             <div style={{display:"flex",alignItems:"center",gap:"10px",flexWrap:"wrap"}}>
@@ -272,28 +276,53 @@ export function CompanySetupScreen({
           <div className="csField">
             <div className="csSiteTotal">{isIt?"Totale sedi":"Total locations"}: <strong>{siteTotal===0?"—":siteTotal}</strong></div>
             <div className="csSiteTableWrap">
-              <table className="csSiteTable">
-                <thead>
-                  <tr>
-                    <th className="csSiteThRow">{isIt?"Tipo sede":"Site type"}</th>
-                    {geoColKeys.map(g=><th key={g} className="csSiteThGeo">{isIt?geoColLabels[g].it:geoColLabels[g].en}</th>)}
-                  </tr>
-                </thead>
-                <tbody>
-                  {siteRowDefs.map(row=>(
-                    <tr key={row.key}>
-                      <td className="csSiteRowLabel">{isIt?row.label.it:row.label.en}</td>
-                      {geoColKeys.map(g=>(
-                        <td key={g} className="csSiteCell">
-                          <input className="csSiteInput" type="number" min={0}
-                            value={(siteTable[row.key][g]??0)===0?"":(siteTable[row.key][g]??0)}
-                            onChange={e=>updateSiteCell(row.key,g,parseInt(e.target.value))}/>
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              {(()=>{
+                const hasData=(g:SiteGeoKey)=>siteRowDefs.some(row=>(siteTable[row.key][g]??0)>0);
+                const sortedCols=[...geoColKeys].sort((a,b)=>{
+                  const aD=hasData(a)?0:1;
+                  const bD=hasData(b)?0:1;
+                  return aD-bD || geoColKeys.indexOf(a)-geoColKeys.indexOf(b);
+                });
+                return (
+                  <table className="csSiteTable">
+                    <thead>
+                      <tr>
+                        <th className="csSiteThRow">{isIt?"Tipo sede":"Site type"}</th>
+                        <th className="csSiteThGeo" style={{color:"#39efb4",borderBottom:"1px solid #39efb4"}}>{isIt?"Totale":"Total"}</th>
+                        {sortedCols.map(g=><th key={g} className={`csSiteThGeo${hasData(g)?"":" csSiteThGeoEmpty"}`}>{isIt?geoColLabels[g].it:geoColLabels[g].en}</th>)}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {siteRowDefs.map(row=>{
+                        const rowTotal=(["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"] as SiteGeoKey[]).reduce((s,g)=>s+(siteTable[row.key][g]??0),0);
+                        return (
+                        <tr key={row.key}>
+                          <td className="csSiteRowLabel">{isIt?row.label.it:row.label.en}</td>
+                          <td className="csSiteCell" style={{fontWeight:700,color:rowTotal>0?"#39efb4":"#57606a",textAlign:"right",fontSize:"19.5px",paddingRight:"6px"}}>{rowTotal>0?rowTotal:"—"}</td>
+                          {sortedCols.map(g=>(
+                            <td key={g} className="csSiteCell">
+                              <input className="csSiteInput" type="number" min={0}
+                                value={(siteTable[row.key][g]??0)===0?"":(siteTable[row.key][g]??0)}
+                                onChange={e=>updateSiteCell(row.key,g,parseInt(e.target.value))}/>
+                            </td>
+                          ))}
+                        </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td className="csSiteRowLabel" style={{fontWeight:700,color:"#39efb4",fontSize:"22px",letterSpacing:".08em",textTransform:"uppercase"}}>{isIt?"Totale":"Total"}</td>
+                        <td className="csSiteCell" style={{fontWeight:700,color:"#39efb4",textAlign:"right",fontSize:"19.5px",paddingRight:"6px"}}>{siteTotalAll()>0?siteTotalAll():"—"}</td>
+                        {sortedCols.map(g=>{
+                          const colTotal=(["uffici","ops","datacenter","altro"] as SiteRowKey[]).reduce((s,r)=>s+(siteTable[r][g]??0),0);
+                          return <td key={g} className="csSiteCell" style={{fontWeight:700,color:colTotal>0?"#39efb4":"#57606a",textAlign:"right",fontSize:"19.5px",paddingTop:"4px",paddingRight:"6px"}}>{colTotal>0?colTotal:"—"}</td>;
+                        })}
+                      </tr>
+                    </tfoot>
+                  </table>
+                );
+              })()}
             </div>
           </div>
           <div className="csFourCol">
@@ -344,6 +373,10 @@ interface CompanyScreenProps extends CommonProps {
   showGeo?: boolean;
   frameworkChecks?: Record<string,{inUso:boolean,diInteresse:boolean}>;
   toggleFw?: (id:string,col:"inUso"|"diInteresse")=>void;
+  fwOpen?: boolean;
+  setFwOpen?: (v:boolean)=>void;
+  rptOpen?: boolean;
+  setRptOpen?: (v:boolean)=>void;
   sustainabilityReportSince?: number|"mai";
   setSustainabilityReportSince?: (v:number|"mai")=>void;
   setEsgReadiness?: (v: EsgReadiness) => void;
@@ -361,6 +394,10 @@ export function CompanyScreen({
   showGeo = false,
   frameworkChecks,
   toggleFw,
+  fwOpen: fwOpenProp = false,
+  setFwOpen: setFwOpenProp,
+  rptOpen: rptOpenProp = false,
+  setRptOpen: setRptOpenProp,
   sustainabilityReportSince = 2024,
   setSustainabilityReportSince,
   setEsgReadiness,
@@ -406,8 +443,13 @@ export function CompanyScreen({
     datacenter: {color:"#b08adc", path:"M2,4 L18,4 L18,8 L2,8 Z M2,10 L18,10 L18,14 L2,14 Z M2,16 L18,16 L18,20 L2,20 Z M15,6 L15,6.5 M15,12 L15,12.5 M15,18 L15,18.5"},
     altro:      {color:"#e8a84a", path:"M10,2 C6.13,2 3,5.13 3,9 C3,14.25 10,22 10,22 C10,22 17,14.25 17,9 C17,5.13 13.87,2 10,2 Z M10,11.5 C8.62,11.5 7.5,10.38 7.5,9 C7.5,7.62 8.62,6.5 10,6.5 C11.38,6.5 12.5,7.62 12.5,9 C12.5,10.38 11.38,11.5 10,11.5 Z"},
   };
-  const [rptOpen,setRptOpen]=useState(false);
-  const [fwOpen,setFwOpen]=useState(false);
+  // fwOpen e rptOpen sollevati ad App per evitare reset al re-render causato da toggleFw
+  const [rptOpenLocal,setRptOpenLocal]=useState(false);
+  const [fwOpenLocal,setFwOpenLocal]=useState(false);
+  const fwOpen = setFwOpenProp ? fwOpenProp : fwOpenLocal;
+  const setFwOpen = setFwOpenProp ?? setFwOpenLocal;
+  const rptOpen = setRptOpenProp ? rptOpenProp : rptOpenLocal;
+  const setRptOpen = setRptOpenProp ?? setRptOpenLocal;
   const [zoomWarnOpen,setZoomWarnOpen]=useState(false);
   useEffect(()=>{
     const handler=(e:KeyboardEvent)=>{
@@ -429,8 +471,59 @@ export function CompanyScreen({
       </span>
     </div>;
   };
+  // Note sui framework
+  type FwCov = {it:string; en:string};
+  const FW_ENVIZI_COV: Record<string,FwCov> = {
+    ghg:        {it:"Calcolo Scope 1, 2 e principali categorie Scope 3 con fattori gestiti centralmente.",                         en:"Scope 1, 2 and key Scope 3 categories with centrally managed emission factors."},
+    tcfd:       {it:"Framework ampiamente adottato in passato per la disclosure climatica; le sue raccomandazioni sono oggi incorporate in IFRS S1 e S2.", en:"Widely adopted framework for climate disclosure; its recommendations are now incorporated into IFRS S1 and S2."},
+    cdp:        {it:"Questionario annuale di rendicontazione ambientale richiesto da investitori e clienti; facilita la trasparenza su clima, acqua e foreste.", en:"Annual environmental disclosure questionnaire requested by investors and clients; facilitates transparency on climate, water and forests."},
+    gri:        {it:"Standard globale per la rendicontazione di sostenibilità; copre temi economici, ambientali e sociali con indicatori comparabili.", en:"Global standard for sustainability reporting; covers economic, environmental and social topics with comparable indicators."},
+    sasb:       {it:"Standard settoriali che identificano gli indicatori ESG finanziariamente rilevanti per ogni industria.",   en:"Industry-specific standards identifying financially material ESG indicators for each sector."},
+    sdg:        {it:"I 17 Obiettivi di Sviluppo Sostenibile delle Nazioni Unite; usati per collegare le attività aziendali all'agenda globale.",     en:"The 17 UN Sustainable Development Goals; used to link company activities to the global agenda."},
+    ifrs_s1:    {it:"Standard ISSB per la disclosure generale di rischi e opportunità ESG rilevanti per gli investitori.", en:"ISSB standard for general disclosure of ESG risks and opportunities material to investors."},
+    ifrs_s2:    {it:"Standard ISSB specifico per il clima; richiede disclosure su governance, strategia, gestione del rischio e metriche climatiche.", en:"ISSB climate-specific standard; requires disclosure on governance, strategy, risk management and climate metrics."},
+    sfdr:       {it:"Regolamento UE che impone ai gestori di fondi la disclosure sui rischi di sostenibilità e sugli impatti negativi degli investimenti.", en:"EU regulation requiring fund managers to disclose sustainability risks and principal adverse impacts of investments."},
+    gresb:      {it:"Benchmark internazionale per la valutazione della performance ESG nel settore immobiliare e delle infrastrutture.",        en:"International benchmark for assessing ESG performance in real estate and infrastructure."},
+    secr:       {it:"Obbligo UK di rendicontare consumi energetici e emissioni di carbonio nel report annuale; si applica alle società quotate e alle grandi imprese.",             en:"UK requirement to report energy consumption and carbon emissions in the annual report; applies to quoted companies and large businesses."},
+    energystar: {it:"Programma di certificazione energetica statunitense per edifici e prodotti; gestito dall'EPA tramite Portfolio Manager.", en:"US energy certification programme for buildings and products; managed by the EPA via Portfolio Manager."},
+    nabers:     {it:"Sistema australiano di valutazione della performance energetica degli edifici commerciali; la valutazione è effettuata da un assessor accreditato.", en:"Australian rating system for energy performance of commercial buildings; rating is carried out by an accredited assessor."},
+  };
+
+  // Dati dei modal — definiti qui (scope componente) perché i modal sono figli diretti del <main>
+  type RptPath = {num:1|2|3|4|5;label:{it:string;en:string};desc:{it:string;en:string};for:{it:string;en:string}};
+  const rptPaths:RptPath[]=[
+    {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
+    {num:2,label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico, un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
+    {num:3,label:{it:"Adozione integrale volontaria di CSRD/ESRS",en:"Full voluntary adoption of CSRD/ESRS"},desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
+    {num:4,label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},for:{it:"L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
+    {num:5,label:{it:"Rendicontazione libera",en:"Free-form reporting"},desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},for:{it:"L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
+  ];
+  type FwRow = {id:string;label:string;area:string;legacy?:boolean};
+  const fwGroups:{cat:{it:string;en:string};rows:FwRow[]}[]=[
+    {cat:{it:"GHG & Clima",en:"GHG & Climate"},rows:[
+      {id:"ghg",   label:"GHG Protocol – Scope 1, 2, 3",area:isIt?"Globale":"Global"},
+      {id:"tcfd",  label:"TCFD",                         area:isIt?"Globale":"Global", legacy:true},
+      {id:"cdp",   label:"CDP",                          area:isIt?"Globale":"Global"},
+    ]},
+    {cat:{it:"Standard internazionali e framework volontari o adottati dalle giurisdizioni",en:"International standards and voluntary or jurisdiction-adopted frameworks"},rows:[
+      {id:"gri",     label:"GRI Standards",                   area:isIt?"Globale":"Global"},
+      {id:"sasb",    label:"SASB Standards",                   area:isIt?"Globale":"Global"},
+      {id:"sdg",     label:"UN Sustainable Development Goals", area:isIt?"Globale":"Global"},
+      {id:"ifrs_s1", label:"IFRS S1",                          area:isIt?"Globale":"Global"},
+      {id:"ifrs_s2", label:"IFRS S2",                          area:isIt?"Globale":"Global"},
+    ]},
+    {cat:{it:"Finanza & Mercati",en:"Finance & Markets"},rows:[
+      {id:"sfdr",  label:"SFDR",  area:isIt?"UE – Servizi finanziari":"EU – Financial services"},
+      {id:"gresb", label:"GRESB", area:isIt?"Globale – Real estate e infrastrutture":"Global – Real estate & infrastructure"},
+    ]},
+    {cat:{it:"Regionali & Settoriali",en:"Regional & Sector"},rows:[
+      {id:"secr",       label:"SECR",        area:isIt?"Regno Unito":"United Kingdom"},
+      {id:"energystar", label:"ENERGY STAR", area:isIt?"Nord America":"North America"},
+      {id:"nabers",     label:"NABERS",      area:isIt?"Australia":"Australia"},
+    ]},
+  ];
   return <main className="companyScreen">
-  {zoomWarnOpen&&<div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
+  {zoomWarnOpen&&<div style={{position:"absolute",inset:0,zIndex:9999,background:"rgba(7,18,15,.82)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={()=>setZoomWarnOpen(false)}>
     <div style={{background:"#0d1f19",border:"1px solid rgba(57,239,180,.3)",borderRadius:"14px",padding:"28px 32px",maxWidth:"380px",width:"90vw",textAlign:"center",boxShadow:"0 8px 40px rgba(0,0,0,.6)"}} onClick={e=>e.stopPropagation()}>
       <p style={{margin:"0 0 8px",fontSize:"13px",fontFamily:"var(--font-geist-mono,monospace)",letterSpacing:".14em",textTransform:"uppercase",color:"#39efb4"}}>{isIt?"Attenzione":"Warning"}</p>
       <p style={{margin:"0 0 20px",fontSize:"15px",color:"#e8f5ef",lineHeight:1.5}}>{isIt?"Il rapporto di visualizzazione è ottimizzato per questa schermata. Sei sicuro di voler cambiare lo zoom?":"The display ratio is optimised for this screen. Are you sure you want to change the zoom?"}</p>
@@ -445,15 +538,16 @@ export function CompanyScreen({
     {showGeo ? (
     <section className="geoMapsSection" style={{position:"relative",flex:1,minHeight:0}} aria-label={`${displayCompanyName} footprint`}>
       {(()=>{
-        const GEO_META: Record<SiteGeoKey,{units:string,currencies:string}> = {
-          italia:      {units:"kWh · km · m³ · L",      currencies:"EUR · ..."},
-          europa:      {units:"kWh · km · m³ · L",      currencies:"EUR · ..."},
-          uk:          {units:"kWh · mi · ft³ · gal",   currencies:"GBP · ..."},
-          nordamerica: {units:"kWh · mi · ft³ · gal",   currencies:"USD · CAD · ..."},
-          sudamerica:  {units:"kWh · km · m³ · L",      currencies:"BRL · ARS · ..."},
-          asia:        {units:"kWh · km · m³ · L",      currencies:"CNY · JPY · ..."},
-          africa:      {units:"kWh · km · m³ · L",      currencies:"ZAR · NGN · ..."},
-          australia:   {units:"kWh · km · m³ · L",      currencies:"AUD · NZD · ..."},
+        type GeoMeta = {currency:string; energy:string; volume:string; mass:string; system:string};
+        const GEO_META: Record<SiteGeoKey, GeoMeta> = {
+          italia:      {currency:"EUR",          energy:"kWh",  volume:"m³ / L",   mass:"kg / t",     system:"SI"},
+          europa:      {currency:"EUR / locale", energy:"kWh",  volume:"m³ / L",   mass:"kg / t",     system:"SI"},
+          uk:          {currency:"GBP",          energy:"kWh",  volume:"ft³ / gal",mass:"lb / ton",   system:"Imperial"},
+          nordamerica: {currency:"USD / CAD",    energy:"kWh",  volume:"ft³ / gal",mass:"lb / ton",   system:"Imperial"},
+          sudamerica:  {currency:"BRL / ARS / locale", energy:"kWh", volume:"m³ / L", mass:"kg / t", system:"SI"},
+          asia:        {currency:"CNY / JPY / locale", energy:"kWh", volume:"m³ / L", mass:"kg / t", system:"SI"},
+          africa:      {currency:"ZAR / NGN / locale", energy:"kWh", volume:"m³ / L", mass:"kg / t", system:"SI"},
+          australia:   {currency:"AUD / NZD",    energy:"kWh",  volume:"m³ / L",   mass:"kg / t",     system:"SI"},
         };
         const GEO_KEYS: SiteGeoKey[] = ["italia","europa","uk","nordamerica","sudamerica","asia","africa","australia"];
         const GEO_LABELS: Record<SiteGeoKey,{it:string,en:string}> = {
@@ -483,11 +577,9 @@ export function CompanyScreen({
         const hasAnySedes = GEO_KEYS.some(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
         const extraGeos = GEO_KEYS.slice(4).filter(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
         const visibleGeos = [...GEO_KEYS.slice(0,4), ...extraGeos];
-        const REF_UNITS = "kWh · km · m³ · L";
-        const REF_CURR  = "EUR · ...";
         const activePop = GEO_KEYS.filter(g=>(["uffici","ops","datacenter","altro"] as SiteRowKey[]).some(r=>(siteTable[r][g]??0)>0));
-        const diffUnits = activePop.filter(g=>GEO_META[g].units !== REF_UNITS);
-        const diffCurr  = activePop.filter(g=>GEO_META[g].currencies !== REF_CURR);
+        const diffUnits = activePop.filter(g=>GEO_META[g].system !== "SI");
+        const diffCurr  = activePop.filter(g=>!GEO_META[g].currency.startsWith("EUR"));
         const diffTotal = new Set([...diffUnits,...diffCurr]).size;
         const complexity = diffTotal === 0 ? null : diffTotal <= 1 ? "low" : diffTotal <= 3 ? "medium" : "high";
         const complexLabel:{[k:string]:{it:string,en:string,color:string}} = {
@@ -539,13 +631,19 @@ export function CompanyScreen({
                       const val=siteTable[d.key][g]??0;
                       return <span key={d.key} className="geoMapIconChip" style={{borderColor:d.color,color:d.color,opacity:val===0?0.35:1}}>{isIt?d.label.it:d.label.en} · {val}</span>;
                     })}</div>
-                    <div className="geoMapMetaBox geoMapMetaBoxCurr">
-                      <span className="geoMapMetaBoxLabel">{isIt?"Valute":"Currencies"}</span>
-                      <span className="geoMapMetaBoxValue">{GEO_META[g].currencies}</span>
-                    </div>
-                    <div className="geoMapMetaBox geoMapMetaBoxUnits">
-                      <span className="geoMapMetaBoxLabel">{isIt?"Unità di misura":"Units"}</span>
-                      <span className="geoMapMetaBoxValue">{GEO_META[g].units}</span>
+                    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"3px 6px",marginTop:"4px"}}>
+                      {[
+                        {label:isIt?"Valuta":"Currency",   value:GEO_META[g].currency,  color:"#f5c855"},
+                        {label:isIt?"Energia":"Energy",    value:GEO_META[g].energy,    color:"#7dd3fc"},
+                        {label:isIt?"Volume":"Volume",     value:GEO_META[g].volume,    color:"#86efac"},
+                        {label:isIt?"Massa":"Mass",        value:GEO_META[g].mass,      color:"#c4b5fd"},
+                        {label:isIt?"Sistema":"System",    value:GEO_META[g].system,    color:GEO_META[g].system==="SI"?"#39efb4":"#fca5a5"},
+                      ].map(({label,value,color})=>(
+                        <div key={label} style={{background:"rgba(0,0,0,.18)",borderRadius:"5px",padding:"3px 6px",borderLeft:`2px solid ${color}`}}>
+                          <div style={{fontSize:"9px",fontWeight:700,color:"#6a9a88",letterSpacing:".08em",textTransform:"uppercase",lineHeight:1.2}}>{label}</div>
+                          <div style={{fontSize:"11px",fontWeight:600,color,lineHeight:1.3,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{value}</div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 );
@@ -561,6 +659,12 @@ export function CompanyScreen({
                 {isIt
                   ? <>{displayCompanyName} ha la necessità di convertire <strong>unità di misura</strong> e <strong>valute</strong> nel proprio reporting ESG, con un livello di complessità <span style={{color:complexLabel[complexity].color,fontWeight:700}}>{complexLabel[complexity].it}</span>.</>
                   : <>{displayCompanyName} needs to convert <strong>measurement units</strong> and <strong>currencies</strong> in its ESG reporting, with a <span style={{color:complexLabel[complexity].color,fontWeight:700}}>{complexLabel[complexity].en}</span> level of complexity.</>
+                }
+              </p>
+              <p style={{margin:0,fontSize:"clamp(10px,0.85vw,12px)",color:"#7a9a90",lineHeight:1.5,borderTop:"1px solid rgba(57,239,180,.1)",paddingTop:"8px"}}>
+                {isIt
+                  ? <>⚠ <strong style={{color:"#b5c9c1"}}>Normalizzazione richiesta.</strong> Sistemi Imperial e locali richiedono conversione in SI prima dell'aggregazione. Valute non-EUR richiedono tassi di cambio storici per il confronto. Envizi gestisce automaticamente conversioni di unità, tassi di cambio e normalizzazione per intensità.</>
+                  : <>⚠ <strong style={{color:"#b5c9c1"}}>Normalisation required.</strong> Imperial and local systems must be converted to SI before aggregation. Non-EUR currencies require historical exchange rates for comparison. Envizi automatically handles unit conversions, exchange rates and intensity normalisation.</>
                 }
               </p>
             </div>}
@@ -646,14 +750,7 @@ export function CompanyScreen({
         <p className="csReadinessDesc">{activeReadiness.desc}</p>
       </div>}
       {(()=>{
-        const paths:{num:1|2|3|4|5,label:{it:string,en:string},desc:{it:string,en:string},for:{it:string,en:string}}[]=[
-          {num:1,label:{it:"Standard VSME",en:"VSME Standard"},desc:{it:"Rendicontazione volontaria semplificata con dati ESG essenziali e moduli progressivi. Costi e complessità contenuti.",en:"Simplified voluntary reporting with essential ESG data and progressive modules. Contained costs and complexity."},for:{it:"L'azienda è una PMI che intende rispondere alle richieste di banche, clienti e imprese capofiliera.",en:"The company is an SME seeking to respond to requests from banks, clients and lead firms in the supply chain."}},
-          {num:2,label:{it:'Report volontario "CSRD-aligned"',en:'"CSRD-aligned" voluntary report'},desc:{it:"Selezione degli ESRS rilevanti, doppia materialità semplificata e indicazione trasparente delle parti non applicate.",en:"Selection of relevant ESRS, simplified double materiality and transparent disclosure of parts not applied."},for:{it:"L'azienda è un'impresa medio-grande, un fornitore strategico, un'organizzazione in crescita che intende avvicinarsi gradualmente ai requisiti CSRD.",en:"The company is a mid-large enterprise, a strategic supplier or a growing organisation aiming to gradually align with CSRD requirements."}},
-          {num:3,label:{it:"Adozione integrale volontaria di CSRD/ESRS",en:"Full voluntary adoption of CSRD/ESRS"},desc:{it:"Applicazione completa degli ESRS, doppia materialità, catena del valore, controlli interni ed eventuale assurance volontaria.",en:"Full application of ESRS, double materiality, value chain, internal controls and optional voluntary assurance."},for:{it:"L'azienda non è ancora soggetta alla CSRD, ma è vicina alle soglie, valuta una quotazione o riceve rilevanti richieste ESG dagli stakeholder.",en:"The company is not yet subject to CSRD but is close to the thresholds, considering a listing, or receiving significant ESG requests from stakeholders."}},
-          {num:4,label:{it:"CSRD obbligatoria",en:"Mandatory CSRD"},desc:{it:"Rendicontazione conforme alla normativa, inclusa nella relazione sulla gestione, redatta secondo gli ESRS applicabili e sottoposta a limited assurance.",en:"Regulatory-compliant reporting, included in the management report, prepared under applicable ESRS and subject to limited assurance."},for:{it:"L'organizzazione supera le soglie previste dalla normativa ed è pertanto soggetta agli obblighi della CSRD.",en:"The company or group exceeds the regulatory thresholds and is therefore subject to CSRD obligations."}},
-          {num:5,label:{it:"Rendicontazione libera",en:"Free-form reporting"},desc:{it:"Rendicontazione volontaria definita autonomamente dall'azienda, senza adottare integralmente VSME, ESRS o CSRD. Contenuti, indicatori, periodicità e formato sono scelti in funzione degli obiettivi aziendali.",en:"Voluntary reporting defined autonomously by the company, without fully adopting VSME, ESRS or CSRD. Contents, indicators, frequency and format are chosen based on company objectives."},for:{it:"L'azienda intende comunicare liberamente le proprie iniziative e prestazioni di sostenibilità.",en:"The company does not fall within the previous options and intends to freely communicate its sustainability initiatives and performance."}},
-        ];
-        const chosen = paths.find(p=>p.num===reportingPath);
+        const chosen = rptPaths.find(p=>p.num===reportingPath);
         return <>
           <button className="companyRptTrigger" onClick={()=>setRptOpen(true)}>
             {chosen
@@ -663,20 +760,8 @@ export function CompanyScreen({
           </button>
           {chosen&&<p className="companyRptDecision"><span>{isIt?"Motivo: ":"Reason: "}</span>{isIt?chosen.for.it:chosen.for.en}</p>}
           {frameworkChecks&&toggleFw&&(()=>{
-            const rows:[string,string,string][]=[
-              ["gresb",      "GRESB",                            isIt?"Globale – Real estate e infrastrutture":"Global – Real estate & infrastructure"],
-              ["cdp",        "CDP",                              isIt?"Globale":"Global"],
-              ["gri",        "GRI Standards",                    isIt?"Globale":"Global"],
-              ["sasb",       "SASB Standards",                   isIt?"Globale":"Global"],
-              ["tcfd",       "TCFD",                             isIt?"Globale":"Global"],
-              ["ghg",        "GHG Protocol – Scope 1, 2 e 3",   isIt?"Globale":"Global"],
-              ["sdg",        "UN Sustainable Development Goals", isIt?"Globale":"Global"],
-              ["sfdr",       "SFDR",                             isIt?"Unione europea – Servizi finanziari":"European Union – Financial services"],
-              ["secr",       "SECR",                             isIt?"Regno Unito":"United Kingdom"],
-              ["energystar", "ENERGY STAR",                      isIt?"Nord America":"North America"],
-              ["nabers",     "NABERS",                           isIt?"Australia":"Australia"],
-            ];
-            const selected = rows.filter(([id])=>frameworkChecks[id]?.inUso||frameworkChecks[id]?.diInteresse);
+            const allRows = fwGroups.flatMap(g=>g.rows);
+            const selected = allRows.filter(({id})=>frameworkChecks[id]?.inUso||frameworkChecks[id]?.diInteresse);
             return <>
               {/* Trigger + Avanti sulla stessa riga */}
               <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:"12px"}}>
@@ -688,7 +773,7 @@ export function CompanyScreen({
               </div>
               {/* Summary: selected list or fallback */}
               {selected.length>0
-                ? <div className="fwSummary">{selected.map(([id,label])=>{
+                ? <div className="fwSummary">{selected.map(({id,label})=>{
                     const c=frameworkChecks[id];
                     return <span key={id} className="fwSummaryChip">
                       {label}
@@ -698,65 +783,82 @@ export function CompanyScreen({
                   })}</div>
                 : <p className="fwSummaryEmpty">{isIt?"Nessun altro framework previsto.":"No other frameworks planned."}</p>
               }
-              {/* Popup */}
-              {fwOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setFwOpen(false)}}>
-                <div className="companyRptModal" style={{maxWidth:"1560px",width:"90vw"}}>
-                  <div className="companyRptModalHead">
-                    <p className="companyRptModalTitle">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</p>
-                    <button className="companyRptModalClose" onClick={()=>setFwOpen(false)}>✕</button>
-                  </div>
-                  <table className="fwTable">
-                    <thead>
-                      <tr>
-                        <th className="fwThLabel">{isIt?"Framework / requisito":"Framework / requirement"}</th>
-                        <th className="fwThArea">Area</th>
-                        <th className="fwThCheck">{isIt?"In uso":"In use"}</th>
-                        <th className="fwThCheck">{isIt?"Di interesse":"Of interest"}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rows.map(([id,label,area])=>(
-                        <tr key={id} className="fwRow">
-                          <td className="fwTdLabel">{label}</td>
-                          <td className="fwTdArea">{area}</td>
-                          <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.inUso?" fwCheckOn":""}`} onClick={()=>toggleFw(id,"inUso")}>{frameworkChecks[id]?.inUso?"☑":"☐"}</button></td>
-                          <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.diInteresse?" fwCheckOn":""}`} onClick={()=>toggleFw(id,"diInteresse")}>{frameworkChecks[id]?.diInteresse?"☑":"☐"}</button></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div style={{display:"flex",justifyContent:"flex-end",marginTop:"20px"}}>
-                    <button className="actionButton" onClick={()=>setFwOpen(false)}>{isIt?"Chiudi":"Close"}</button>
-                  </div>
-                </div>
-              </div>}
             </>;
           })()}
-
-          {rptOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setRptOpen(false)}}>
-            <div className="companyRptModal">
-              <div className="companyRptModalHead">
-                <p className="companyRptModalTitle">{isIt?"Seleziona il percorso di rendicontazione ESG più adatto:":"Select the most appropriate ESG reporting path:"}</p>
-                <button className="companyRptModalClose" onClick={()=>setRptOpen(false)}>✕</button>
-              </div>
-              <div className="companyRptModalCards">
-                {paths.map(p=>(
-                  <button key={p.num} className={`companyRptModalCard${reportingPath===p.num?" companyRptModalCardActive":""}`} onClick={()=>{setReportingPath(p.num);setRptOpen(false);}}>
-                    <div className="csReportingCardNum">{p.num}</div>
-                    <div className="csReportingCardBody">
-                      <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
-                      <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
-                      <p className="csReportingCardFor"><span>{isIt?"Motivo: ":"Reason: "}</span>{isIt?p.for.it:p.for.en}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>}
         </>;
       })()}
     </section>
     )}
+    {/* ── Modal fwOpen: figlio diretto di <main> per evitare clip da overflow:auto della section ── */}
+    {fwOpen&&frameworkChecks&&toggleFw&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setFwOpen(false)}}>
+      <div className="companyRptModal" style={{maxWidth:"1560px",width:"90vw"}} onClick={e=>e.stopPropagation()}>
+        <div className="companyRptModalHead">
+          <p className="companyRptModalTitle">{isIt?`Altri framework di interesse di ${displayCompanyName}`:`Other frameworks of interest for ${displayCompanyName}`}</p>
+          <button className="companyRptModalClose" onClick={()=>setFwOpen(false)}>✕</button>
+        </div>
+        <table className="fwTable">
+          <thead>
+            <tr>
+              <th className="fwThLabel">{isIt?"Framework / requisito":"Framework / requirement"}</th>
+              <th className="fwThArea">Area</th>
+              <th className="fwThEnvizi">{isIt?"Note":"Notes"}</th>
+              <th className="fwThCheck">{isIt?"In uso":"In use"}</th>
+              <th className="fwThCheck">{isIt?"Di interesse":"Of interest"}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fwGroups.map(group=>(
+              <React.Fragment key={group.cat.it}>
+                <tr style={{background:"transparent"}}>
+                  <td colSpan={5} style={{padding:"10px 0 4px",fontSize:"11px",fontWeight:700,letterSpacing:".12em",textTransform:"uppercase",color:"#39efb4",borderTop:"1px solid rgba(57,239,180,.12)",background:"transparent"}}>{isIt?group.cat.it:group.cat.en}</td>
+                </tr>
+                {group.rows.map(({id,label,area,legacy})=>{
+                  const cov = FW_ENVIZI_COV[id];
+                  return (
+                  <tr key={id} className="fwRow">
+                    <td className="fwTdLabel">
+                      {label}
+                      {legacy&&<span style={{marginLeft:"7px",padding:"1px 6px",borderRadius:"3px",border:"1px solid #6b7280",color:"#9ca3af",fontSize:"clamp(9px,.78vw,11px)",fontFamily:"var(--font-geist-mono,monospace)",fontWeight:700,letterSpacing:".08em",textTransform:"uppercase",verticalAlign:"middle"}}>legacy</span>}
+                    </td>
+                    <td className="fwTdArea">{area}</td>
+                    <td className="fwTdEnvizi">
+                      {cov&&<span className="fwEnviziDesc">{isIt?cov.it:cov.en}</span>}
+                    </td>
+                    <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.inUso?" fwCheckOn":""}`} onClick={e=>{e.stopPropagation();toggleFw(id,"inUso");}}>{frameworkChecks[id]?.inUso?"☑":"☐"}</button></td>
+                    <td className="fwTdCheck"><button className={`fwCheck${frameworkChecks[id]?.diInteresse?" fwCheckOn":""}`} onClick={e=>{e.stopPropagation();toggleFw(id,"diInteresse");}}>{frameworkChecks[id]?.diInteresse?"☑":"☐"}</button></td>
+                  </tr>
+                  );
+                })}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+        <div style={{display:"flex",justifyContent:"flex-end",marginTop:"20px"}}>
+          <button className="actionButton" onClick={()=>setFwOpen(false)}>{isIt?"Chiudi":"Close"}</button>
+        </div>
+      </div>
+    </div>}
+    {/* ── Modal rptOpen: figlio diretto di <main> per evitare clip da overflow:auto della section ── */}
+    {rptOpen&&<div className="companyRptOverlay" onClick={e=>{if(e.target===e.currentTarget)setRptOpen(false)}}>
+      <div className="companyRptModal">
+        <div className="companyRptModalHead">
+          <p className="companyRptModalTitle">{isIt?"Seleziona il percorso di rendicontazione ESG più adatto:":"Select the most appropriate ESG reporting path:"}</p>
+          <button className="companyRptModalClose" onClick={()=>setRptOpen(false)}>✕</button>
+        </div>
+        <div className="companyRptModalCards">
+          {rptPaths.map(p=>(
+            <button key={p.num} className={`companyRptModalCard${reportingPath===p.num?" companyRptModalCardActive":""}`} onClick={()=>{setReportingPath(p.num);setRptOpen(false);}}>
+              <div className="csReportingCardNum">{p.num}</div>
+              <div className="csReportingCardBody">
+                <strong className="csReportingCardLabel">{isIt?p.label.it:p.label.en}</strong>
+                <p className="csReportingCardDesc">{isIt?p.desc.it:p.desc.en}</p>
+                <p className="csReportingCardFor"><span>{isIt?"Motivo: ":"Reason: "}</span>{isIt?p.for.it:p.for.en}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>}
     <div className="welcomeBlueBar" style={{background:"#39efb4"}}/>
   </main>;
 }
